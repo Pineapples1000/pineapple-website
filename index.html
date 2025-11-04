@@ -20,7 +20,7 @@
             <span class="navText">Games</span>
         </a>
         <a class="navSection noTextDecoration">
-            <span class="navText">Games</span>
+            <span class="navText">Projects</span>
         </a>
     </header>
     <div class="box">
@@ -53,15 +53,32 @@
                 href="https://discord.gg/Y3XNzmQpCe">here</a>.</p>
         <p>I am currently setting up an email for my website, but I prefer to be contacted on discord. You can also
             suggest games and stuff in my discord server.</p>
+        <div id="discordAPI">
+            <img src="images/pappy.png">
+            <div>
+                <span id="discordServerAPIHeader"></span><br>
+                <span id="discordServerAPIOnlineCount"></span>
+            </div>
+        </div>
     </div>
     <footer>
         <p>&copy;2025, Pineapples.</p><br>
-        <a href="https://discord.gg/Y3XNzmQpCe"><img
-                src="https://cdn.prod.website-files.com/6257adef93867e50d84d30e2/66e3d7f4ef6498ac018f2c55_Symbol.svg"
-                width="2%"></a>
-        <a href="https://github.com/Pineapples1000"><img src="images/github-mark-white.png" width="2%"></a>
-        <a href="https://scratch.mit.edu/users/cuddlyscout"><img src="images/scratch-logo.png" width="2%"></a>
+        <a href="https://discord.gg/Y3XNzmQpCe"><img class="footerImage" src="https://cdn.prod.website-files.com/6257adef93867e50d84d30e2/66e3d7f4ef6498ac018f2c55_Symbol.svg"></a>
+        <a href="https://github.com/Pineapples1000"><img class="footerImage" src="images/github-mark-white.png"></a>
+        <a href="https://scratch.mit.edu/users/cuddlyscout"><img class="footerImage" src="images/scratch-logo.png"></a>
+        <!--<a href="https://www.khanacademy.org/profile/cuddlyscout"><img src="images/ka-logo.jpg" width="20px"></a>-->
     </footer>
     <script src="bgscript.js"></script>
+    <script>
+        fetch('https://discord.com/api/guilds/1409596172305170616/widget.json')
+            .then(response => response.json()) // Parse the JSON response
+            .then(data => {
+                const header = document.getElementById('discordServerAPIHeader');
+                header.textContent = data.name+" Discord Server";
+                const onlineCount = document.getElementById('discordServerAPIOnlineCount');
+                onlineCount.innerHTML = `<b>Online:</b> ${data.presence_count}<br><b>Offline:</b> ${data.members.length-data.presence_count}<br><b>Total Members:</b> ${data.members.length}`;
+            })
+            .catch(error => console.error('Error fetching Discord API JSON:', error));
+    </script>
 
 </html>

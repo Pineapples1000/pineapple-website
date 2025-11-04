@@ -9,6 +9,9 @@ body {
 #bodyID {
     background-image: url("images/bg-images/img0.jpg");
     background-size: 100vw auto;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
     color: #ffffff;
     font-family: 'Rubik';
     padding: 0px;
@@ -22,15 +25,17 @@ body {
     margin-bottom: 20px;
     margin-top: 10px;
     padding: 20px;
+    padding-right: 20px;
     background-color: rgb(255, 255, 255, 0.75);
     color: #000000;
-    transition: background-color 1s, margin 0.5s;
+    transition: background-color 1s, margin 0.5s,  padding-right 0.5s;
 }
 
 .box:hover {
     background-color: rgb(255, 255, 255, 0.9);
     margin-left: calc(10vw - 5px);
     margin-right: calc(10vw - 5px);
+    padding-right: 30px;
 }
 
 .box p {
@@ -46,6 +51,28 @@ body {
     padding-left: 24px;
 }
 
+/******DISCORD API******/
+#discordAPI {
+    display: inline-block;
+    /*background-color: #62ff13;*/
+    background: linear-gradient(45deg, #ffbb00, #15ff00);;
+    border-radius: 10px;
+    padding: 10px;
+}
+#discordAPI img {
+    width: 48px;
+    height: 48px;
+    vertical-align: middle;
+}
+#discordAPI div {
+    display: inline-block;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+#discordServerAPIHeader {
+    font-weight: bold;
+    font-size: 20px;
+}
 /******GENERAL STYLES********/
 .center {
     text-align: center;
@@ -118,6 +145,7 @@ footer {
     vertical-align: bottom;
 }
 
-footer img {
+.footerImage {
+    width: 30px;
     padding: 10px;
 }
