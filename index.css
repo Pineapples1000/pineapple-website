@@ -56,10 +56,20 @@ body {
     display: block;
     margin-right: 20px;
 }
+
 #latest-release div, #latest-release img {
     vertical-align: top;
     display: inline-flex;
 }
+
+/******CANVAS STYLES********/
+#myCanvas {
+    display: block; 
+    margin: 0 auto 0 auto; 
+    border-radius: 3px;
+    outline: none;
+}
+
 /******DISCORD API******/
 #discordAPI {
     display: inline-block;
