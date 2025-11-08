@@ -39,55 +39,13 @@ body {
 .box p {
     text-indent: 32px;
 }
-
-.pineappleBullet li {
-    list-style: none;
-    background-image: url("images/pappyBullet.png");
-    background-repeat: no-repeat;
-    background-position: left center;
-    background-size: 14px;
-    padding-left: 24px;
+/******CANVAS STYLES********/
+#myCanvas {
+    display: block; 
+    margin: 0 auto 0 auto; 
+    border-radius: 3px;
+    outline: none;
 }
-
-/******GAME PAGE STYLES********/
-#latest-release img {
-    width: 200px;
-    border-radius: 10px;
-    display: block;
-    margin-right: 20px;
-}
-#latest-release div, #latest-release img {
-    vertical-align: top;
-    display: inline-flex;
-}
-/******DISCORD API******/
-#discordAPI {
-    display: inline-block;
-    /*background-color: #62ff13;*/
-    background: linear-gradient(45deg, #ffbb00, #15ff00);
-    ;
-    border-radius: 10px;
-    padding: 10px;
-    text-align: center;
-}
-
-#discordAPI img {
-    width: 48px;
-    height: 48px;
-    vertical-align: middle;
-}
-
-#discordAPI div {
-    display: inline-block;
-    margin-left: 10px;
-    vertical-align: middle;
-}
-
-#discordServerAPIHeader {
-    font-weight: bold;
-    font-size: 20px;
-}
-
 /******GENERAL STYLES********/
 .center {
     text-align: center;

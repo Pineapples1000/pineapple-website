@@ -1,0 +1,2273 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>The Chest</title>
+    <script src="https://cdn.jsdelivr.net/gh/librepaint/drawlite@main/javascript/drawlite.js"></script>
+    <link rel="stylesheet" href="gamescss.css">
+    <link rel="icon" href="C:\Website Files\images\pappy.png" type="image/png">
+    <link href='https://fonts.googleapis.com/css?family=Rubik' rel='stylesheet' type='text/css'>
+</head>
+
+<body id="bodyID">
+    <header>
+        <a class="navSection noTextDecoration" href="index.html">
+            <img src="C:\Website Files\images\pappy.png" id="navImg">
+            <span class="navText">Pineapple Programming</span>
+        </a>
+        <a class="navSection noTextDecoration" href="games.html">
+            <span class="navText">Games</span>
+        </a>
+        <a class="navSection noTextDecoration">
+            <span class="navText">Projects</span>
+        </a>
+    </header>
+    <div class="box">
+        <h1 class="center">The Chest</h1>
+        <canvas id="myCanvas" width="600" height="600"></canvas>
+        <h2>Description</h2>
+        <p>In the chest, you find a magical chest in the forest, but alas, what secrets can it hold? Upgrade and jump on
+            the chest to collect loot, and find out!</p>
+        <h2>Controls</h2>
+        <p>Use arrow keys or WASD to move the player. <i>Trouble getting the canvas to stay? Try clicking on the canvas
+                and pressing space.</i></p>
+        <h2>Credits</h2>
+        <p>Made October 2025, by Pineapples. Original idea by theChAOTiC on Scratch. Changes from the original: Mostly
+            same graphics but reprogrammed, and it runs faster and is in JS, Also added a lot of content that isnt there
+            in the original, like the boss fight.</p>
+    </div>
+    <footer>
+        <p>&copy;2025, Pineapples. All rights reserved.</p><br>
+        <a href="https://discord.gg/Y3XNzmQpCe"><img class="footerImage"
+                src="https://cdn.prod.website-files.com/6257adef93867e50d84d30e2/66e3d7f4ef6498ac018f2c55_Symbol.svg"></a>
+        <a href="https://github.com/Pineapples1000"><img class="footerImage" src="images/github-mark-white.png"></a>
+        <a href="https://scratch.mit.edu/users/cuddlyscout"><img class="footerImage" src="images/scratch-logo.png"></a>
+        <a href="https://www.khanacademy.org/profile/cuddlyscout"><img class="footerImage" src="images/ka-logo.png"></a>
+    </footer>
+</body>
+
+<script type>
+    var canvas = document.getElementById("myCanvas");
+    var dl = Drawlite(canvas);
+    var { PI, TWO_PI, EPSILON, CORNER, CORNERS, LEFT, RIGHT, TOP, CENTER, BOTTOM, BASELINE, RADIUS, DEGREES, RADIANS, POINTS, LINES, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN, QUADS, QUAD_STRIP, CLOSE, ROUND, PROJECT, SQUARE, BEVEL, MITER, RGB, HSB, NATIVE, canvas, Color, PerlinNoise, PRNG, vec3, ctx, size, angleMode, noLoop, loop, frameRate, min, max, floor, round, ceil, abs, constrain, sq, sqrt, pow, sin, cos, tan, asin, acos, atan, atan2, log, random, dist, map, lerp, radians, degrees, color, lerpColor, fill, stroke, strokeWeight, strokeCap, strokeJoin, noStroke, noFill, beginShape, vertex, curveVertex, bezierVertex, bezierPoint, bezierTangent, splineTightness, splineVertex, splinePoint, splineTangent, lerpSpline, endShape, spline, snip, getColor, imageMode, image, loadImage, font, textSize, textAlign, textWidth, textAscent, textDescent, textLeading, text, background, point, line, rectMode, rect, triangle, quad, arc, circle, ellipseMode, ellipse, bezier, get, pushMatrix, popMatrix, resetMatrix, scale, translate, rotate, loadPixels, updatePixels, colorMode, enableContextMenu, millis, second, minute, hour, day, month, year, smooth, nosmooth, createGraphics, getProperties } = dl;
+
+    /**
+     * The Chest - By Pineapples 2025
+     * Use WASD/Arrow Keys to move. Upgrade and defeat the magic chest.
+     * Based off of "The Chest by theChAOTiC on Scratch 
+     * All code by me; all graphics reprogrammed
+    **/
+    /********************DEBUG**************************/
+    var Debug = false;
+    var DebugScene = 6;
+    textAlign(CENTER, CENTER);
+    /*******************VARIABLES*************************/
+    var keys = [];
+    var clicked = false;
+    /*******************UTILITIES***********************/
+    var Diff = function (num1, num2) {
+        if (num1 > num2) {
+            return num1 - num2;
+        } else {
+            return num2 - num1;
+        }
+    };
+    var flipImage = function (img, x, y, w, h) {
+        pushMatrix();
+        scale(-1, 1);
+        image(img, (x * -1) - w, y, w, h);
+        popMatrix();
+    }; //HAS TO HAVE get.width/get.height TO WORK
+    var pointRect = function (px, py, rx, ry, rw, rh) {
+        if (px > rx && px < rx + rw && py > ry && py < ry + rh) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+    var rectRect = function (x1, y1, w1, h1, x2, y2, w2, h2) {
+        if (x1 + w1 > x2 && y1 + h1 > y2 && x1 < x2 + w2 && y1 < y2 + h2) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+    var rectCircle = function (rx, ry, rw, rh, cx, cy, cd) {
+        //Made by Pineapples, 2025
+        if (cx > rx && cx < rx + rw && cy > ry && cy < ry + rh) {
+            return true;
+        } else {
+            this.sideX = null;
+            this.sideY = null;
+            if (cx < rx) {
+                this.sideX = rx;
+            } else if (cx > rx + rw) {
+                this.sideX = rx + rw;
+            } else {
+                this.sideX = cx;
+            }
+            if (cy < ry) {
+                this.sideY = ry;
+            } else if (cy > ry + rh) {
+                this.sideY = ry + rh;
+            } else {
+                this.sideY = cy;
+            }
+            if (pow(cx - this.sideX, 2) + pow(cy - this.sideY, 2) <= pow(cd / 2, 2)) {
+                return true;
+            }
+        }
+    };
+    var snipRandomBool = function () {
+        return round(random(0, 2)) === 0;
+    };
+    /*******************GRAPHICS************************/
+    var ConvertArt = function (art, colors, x, y, size) {
+        //strokeWeight(2);
+        noStroke();
+        for (var i = 0; i < art.length; i++) {
+            for (var e = 0; e < art[i].length; e++) {
+                if (art[i][e] !== "-") {
+                    fill(colors[art[i][e]]);
+                    //stroke(colors[art[i][e]]);
+                    rect(e * size + x, i * size + y, size, size);
+                }
+            }
+        }
+    };
+    var Scene = 0;
+    var Graphics = {
+        chest0: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "--aaaaaaaaaaaaaa--",
+                "-a33b13333331b33a-",
+                "-a3c1322222231c3a-",
+                "-a1d1111111111d1a-",
+                "-a3b132eegg231b3a-",
+                "aeeeegeffffgeeeeea",
+                "abbcccffaaffcccbba",
+                "abbcccffaaffcccbba",
+                "aeggeeeffffegeegga",
+                "-a3b132eeeg231b3a-",
+                "-a1c1111111111c1a-",
+                "-a3d1322222231d3a-",
+                "-acdcdcdccdcdcdca-",
+                "-abbbbbbbbbbbbbba-",
+                "-aaaaaaaaaaaaaaaa-",
+            ], {
+                "a": color(0, 0, 0),
+                "b": color(115, 100, 98),
+                "c": color(132, 118, 117),
+                "d": color(86, 77, 77),
+                "e": color(61, 54, 54),
+                "f": color(146, 134, 133),
+                "g": color(96, 70, 40),
+                "1": color(70, 32, 26),
+                "2": color(95, 52, 45),
+                "3": color(85, 40, 32),
+            }, 20, 15, 5);
+            return snip(0, 0, 130, 90);
+        },
+        chest1: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "--aaaaaaaaaaaaaa--",
+                "-a33h13222231h33a-",
+                "-a3i1322222231i3a-",
+                "-a1k1111111111k1a-",
+                "-a3i1322222231i3a-",
+                "-a3h132bbbb231h3a-",
+                "abbbbbbfggfbbbbbba",
+                "acdeeeffaaffeeedca",
+                "acdeeeffaaffeeedca",
+                "abbbbbbfggfbbbbbba",
+                "-a3h132bbbb231h3a-",
+                "-a1i1111111111i1a-",
+                "-a3k1322222231k3a-",
+                "ajijijijiijijijija",
+                "ahhhhhhhhhhhhhhhha",
+                "aaaaaaaaaaaaaaaaaa",
+            ], {
+                "a": color(0, 0, 0),
+                "b": color(52, 23, 19),
+                "c": color(193, 177, 53),
+                "d": color(214, 197, 59),
+                "e": color(227, 215, 122),
+                "f": color(240, 234, 188),
+                "g": color(255, 255, 255),
+                "1": color(70, 32, 26),
+                "2": color(95, 52, 45),
+                "3": color(85, 40, 32),
+                "h": color(115, 100, 98),
+                "i": color(132, 118, 117),
+                "j": color(86, 77, 77),
+                "k": color(146, 134, 133),
+            }, 20, 15, 5);
+            return snip(0, 5, 130, 90);
+        },
+        chest2: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "----aaaaaaaaaaaaaa----",
+                "---a233B133331B332a---",
+                "--a111c13333331c111a--",
+                "--a23d1322222231d32a--",
+                "--a11e1111111111e11a--",
+                "--a23d1322222231d32a--",
+                "--a11c132bbbb231c11a--",
+                "-abbbbbbbfggfbbbbbbba-",
+                "-accdeeeffaaffeeedcca-",
+                "-accdeeeffaaffeeedcca-",
+                "-abbbbbbbfggfbbbbbbba-",
+                "--a23c132bbbb231c32a--",
+                "--a11d1111111111d11a--",
+                "-ai23e1322222231e32ia-",
+                "ahijijijijiijijijijiha",
+                "ahhhhhhhhhhhhhhhhhhhha",
+                "aaaaaaaaaaaaaaaaaaaaaa",
+            ], {
+                "a": color(0, 0, 0),
+                "b": color(52, 23, 19),
+                "B": color(140, 129, 38),
+                "c": color(193, 177, 53),
+                "d": color(214, 197, 59),
+                "e": color(227, 215, 122),
+                "f": color(240, 234, 188),
+                "g": color(255, 255, 255),
+                "1": color(70, 32, 26),
+                "2": color(95, 52, 45),
+                "3": color(85, 40, 32),
+                "h": color(115, 100, 98),
+                "i": color(132, 118, 117),
+                "j": color(86, 77, 77),
+                "k": color(146, 134, 133),
+            }, 10, 5, 5);
+            return snip(0, 0, 130, 90);
+        },
+        chest3: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "---aaaaaaaaaaaaaaaaaaaa---",
+                "--a32B233B133331B332B23a--",
+                "-a11c111c13333331c111c11a-",
+                "-a2c223d1322222231d322c2a-",
+                "-a1e111e1111111111e111e1a-",
+                "-a2d223d1322222231d322d2a-",
+                "-a1c111c132bbbb231c111c1a-",
+                "abbbbbbbbbbfggfbbbbbbbbbba",
+                "accdddeeeefgaagfeeeedddcca",
+                "acbddbeeeefgaagfeeeebddbca",
+                "abbbbbbbbbbfggfbbbbbbbbbba",
+                "-a2c231c132bbbb231c132c2a-",
+                "1a1d111d1111111111d111d1a-",
+                "ahiiiiiiiiiiiiiiiiiiiiiiha",
+                "ahijiijiijiiiiiijiijiijiha",
+                "ahhhhhhhhhhhhhhhhhhhhhhhha",
+                "aaaaaaaaaaaaaaaaaaaaaaaaaa",
+            ], {
+                "a": color(0, 0, 0),
+                "b": color(52, 23, 19),
+                "B": color(140, 129, 38),
+                "c": color(193, 177, 53),
+                "d": color(214, 197, 59),
+                "e": color(227, 215, 122),
+                "f": color(240, 234, 188),
+                "g": color(255, 255, 255),
+                "1": color(70, 32, 26),
+                "2": color(95, 52, 45),
+                "3": color(85, 40, 32),
+                "h": color(115, 100, 98),
+                "i": color(132, 118, 117),
+                "j": color(86, 77, 77),
+                "k": color(146, 134, 133),
+            }, 0, 5, 5);
+            return snip(0, 0, 130, 90);
+        },
+        chest4: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "------------aa------------",
+                "---aaaaaaaaaffaaaaaaaaa---",
+                "--a12f122f1AbbA1f221f21a--",
+                "-a11d111d12bAAb21d111d11a-",
+                "-a2b332b123cbbc321b233b2a-",
+                "-a1c111c111bccb111c111c1a-",
+                "-a2b332b123cbbc321b233b2a-",
+                "-a1d111d12AAbbAA21d111d1a-",
+                "a2222222221bccb1222222222a",
+                "add2A2ccc1A5445A1ccc2A2dda",
+                "ad2Abb2cc1A*55*A1cc2bbA2da",
+                "a22Abb21121bccb12112bbA22a",
+                "-a21112d123bccb321d21112a-",
+                "-a1b111b1111AA1111b111b1a-",
+                "abcccccccccb11bcccccccccba",
+                "abcAccAccAccbbccAccAccAcba",
+                "abbabbabbabbbbbbabbabbabba",
+                "aaaaaaaaaaaaaaaaaaaaaaaaaa",
+            ], {
+                "a": color(0, 0, 0),
+                "A": color(160, 147, 44),
+                "b": color(214, 197, 59),
+                "c": color(227, 215, 122),
+                "d": color(193, 177, 53),
+                "f": color(140, 129, 38),
+                "1": color(58, 0, 20),
+                "2": color(93, 0, 32),
+                "3": color(114, 34, 61),
+                "4": color(255, 255, 255),
+                "5": color(87, 80, 24),
+                "*": color(255, 0, 0),
+            }, 0, 0, 5);
+            return snip(0, 0, 130, 90);
+        },
+        chest5: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "---aaaaaaaaaaaaaaaaaaaa---",
+                "--a12f122f122221f221f21a--",
+                "-a11d111d12222221d111d11a-",
+                "-a2b332b1233333321b233b2a-",
+                "-a1c111c1111111111c111c1a-",
+                "-a2b332b1233333321b233b2a-",
+                "-a1d111d1233333321d111d1a-",
+                "a2222222223hhhh3222222222a",
+                "add2A2ccc2hhhhhh2ccc2A2dda",
+                "ad2Abb2cc2h*hh*h2cc2bbA2da",
+                "a22Abb22223hhhh32222bbA22a",
+                "-a22222d122iiii221d22222a-",
+                "-a1b111b1111111111b111b1a-",
+                "aeggggggggggggggggggggggea",
+                "aegBggBggBggggggBggBggBgea",
+                "aeeaeeaeeaeeeeeeaeeaeeaeea",
+                "aaaaaaaaaaaaaaaaaaaaaaaaaa",
+            ], {
+                "a": color(0, 0, 0),
+                "A": color(160, 147, 44),
+                "B": color(86, 77, 77),
+                "b": color(214, 197, 59),
+                "c": color(227, 215, 122),
+                "d": color(193, 177, 53),
+                "e": color(115, 100, 98),
+                "f": color(140, 129, 38),
+                "g": color(132, 118, 117),
+                "h": color(123, 115, 104),
+                "i": color(91, 85, 77),
+                "1": color(34, 15, 12),
+                "2": color(46, 21, 17),
+                "3": color(55, 27, 22),
+                "4": color(255, 255, 255),
+                "5": color(87, 80, 24),
+                "*": color(153, 255, 255),
+            }, 0, 5, 5);
+            return snip(0, 0, 130, 90);
+        },
+        upgradeTier0: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "-aaaaaaaaaaaaaaaaaa-",
+                "accaeeeaeeeeaeeeaeea",
+                "abbadddaddddadddadda",
+                "abbadddaddddadddadda",
+                "-aaaaaaaaaaaaaaaaaa-",
+            ], {
+                "a": color(0, 0, 0),
+                "b": color(0, 153, 51),
+                "c": color(127, 203, 152),
+                "d": color(68, 68, 68),
+                "e": color(102, 102, 102),
+            }, 0, 0, 5);
+            return snip(0, 0, 100, 25);
+        },
+        upgradeTier1: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "-aaaaaaaaaaaaaaaaaa-",
+                "accacccaeeeeaeeeaeea",
+                "abbabbbaddddadddadda",
+                "abbabbbaddddadddadda",
+                "-aaaaaaaaaaaaaaaaaa-",
+            ], {
+                "a": color(0, 0, 0),
+                "b": color(0, 153, 51),
+                "c": color(127, 203, 152),
+                "d": color(68, 68, 68),
+                "e": color(102, 102, 102),
+            }, 0, 0, 5);
+            return snip(0, 0, 100, 25);
+        },
+        upgradeTier2: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "-aaaaaaaaaaaaaaaaaa-",
+                "accacccaccccaeeeaeea",
+                "abbabbbabbbbadddadda",
+                "abbabbbabbbbadddadda",
+                "-aaaaaaaaaaaaaaaaaa-",
+            ], {
+                "a": color(0, 0, 0),
+                "b": color(0, 153, 51),
+                "c": color(127, 203, 152),
+                "d": color(68, 68, 68),
+                "e": color(102, 102, 102),
+            }, 0, 0, 5);
+            return snip(0, 0, 100, 25);
+        },
+        upgradeTier3: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "-aaaaaaaaaaaaaaaaaa-",
+                "accacccaccccacccaeea",
+                "abbabbbabbbbabbbadda",
+                "abbabbbabbbbabbbadda",
+                "-aaaaaaaaaaaaaaaaaa-",
+            ], {
+                "a": color(0, 0, 0),
+                "b": color(0, 153, 51),
+                "c": color(127, 203, 152),
+                "d": color(68, 68, 68),
+                "e": color(102, 102, 102),
+            }, 0, 0, 5);
+            return snip(0, 0, 100, 25);
+        },
+        upgradeTier4: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "-aaaaaaaaaaaaaaaaaa-",
+                "accacccaccccacccacca",
+                "abbabbbabbbbabbbabba",
+                "abbabbbabbbbabbbabba",
+                "-aaaaaaaaaaaaaaaaaa-",
+            ], {
+                "a": color(0, 0, 0),
+                "b": color(0, 153, 51),
+                "c": color(127, 203, 152),
+            }, 0, 0, 5);
+            return snip(0, 0, 100, 25);
+        },
+        upgradeTokenFrame: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "--1111111111111111--",
+                "-122222222222222221-",
+                "12111111111111111121",
+                "121++++++++++++++121",
+                "121+============+121",
+                "121+============+121",
+                "121+============+121",
+                "121+============+121",
+                "121+============+121",
+                "121+============+121",
+                "131+============+131",
+                "131+============+131",
+                "131+============+131",
+                "131+============+131",
+                "131+============+131",
+                "131+============+131",
+                "131++++++++++++++131",
+                "13111111111111111131",
+                "-133333333333333331-",
+                "--1111111111111111--",
+            ], {
+                "1": color(34, 30, 30),
+                "2": color(227, 215, 122),
+                "3": color(193, 177, 53),
+                "+": color(99, 102, 115),
+                "=": color(111, 115, 129),
+            }, 0, 0, 5);
+            return snip(0, 0, 100, 100);
+        },
+        upgradeToken0: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "------------",
+                "--aaaaaaaa--",
+                "-abbbbbbbba-",
+                "-afggffggfa-",
+                "-abbbccbbba-",
+                "acdddeedddca",
+                "-abbbccbbba-",
+                "-afggffggfa-",
+                "-abbbbbbbba-",
+                "-aaaaaaaaaa-",
+                "------------",
+                "------------",
+            ], {
+                "a": color(34, 30, 30),
+                "b": color(70, 32, 26),
+                "c": color(102, 102, 102),
+                "d": color(127, 127, 127),
+                "e": color(178, 178, 178),
+                "f": color(82, 41, 35),
+                "g": color(95, 52, 45),
+            }, 0, 0, 5);
+            return snip(0, 0, 60, 60);
+        },
+        upgradeToken1: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "------------",
+                "---aaaaaa---",
+                "---acbbca---",
+                "---acbbca---",
+                "----aeea----",
+                "-----aa-----",
+                "----abba----",
+                "---adeeda---",
+                "---adeeda---",
+                "---aaaaaa---",
+                "------------",
+                "------------",
+            ], {
+                "a": color(34, 30, 30),
+                "b": color(204, 204, 201),
+                "c": color(178, 178, 178),
+                "d": color(172, 129, 70),
+                "e": color(192, 160, 115),
+            }, 0, 0, 5);
+            return snip(0, 0, 60, 60);
+        },
+        upgradeToken2: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "-----ff-----",
+                "----f23f----",
+                "---f1322f---",
+                "--f232132f--",
+                "-a13233222a-",
+                "-abddbbbbba-",
+                "--aecceeea--",
+                "-abddbbbbba-",
+                "-abddbbbbba-",
+                "-abddbbbbba-",
+                "--aaaaaaaa--",
+                "--aa-aa-aa--",
+            ], {
+                "a": color(0, 0, 0),
+                "b": color(37, 37, 36),
+                "c": color(58, 58, 56),
+                "d": color(76, 76, 73),
+                "e": color(22, 22, 21),
+                "f": color(129, 132, 144),
+                "1": color(255, 255, 255),
+                "2": color(227, 215, 122),
+                "3": color(193, 177, 53),
+            }, 0, 0, 5);
+            return snip(0, 0, 60, 60);
+        },
+        upgradeToken3: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "------------",
+                "----ffff----",
+                "---fbbbbf---",
+                "--fbaaaabf--",
+                "-fbcdcccabf-",
+                "-fbcaddcabf-",
+                "-fbcaddcabf-",
+                "-fbcaaadabf-",
+                "--fbccccbf--",
+                "---fbbbbf---",
+                "----ffff----",
+                "------------",
+            ], {
+                "a": color(185, 143, 63),
+                "b": color(57, 37, 0),
+                "c": color(114, 75, 0),
+                "d": color(163, 107, 0),
+                "f": color(129, 132, 144),
+            }, 0, 0, 5);
+            return snip(0, 0, 60, 60);
+        },
+        upgradeToken4: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "----aaaa----",
+                "----acca----",
+                "----abba----",
+                "---acbbca---",
+                "aaacaaaacaaa",
+                "acbba--abbca",
+                "acbba--abbca",
+                "aaacaaaacaaa",
+                "---acbbca---",
+                "----abba----",
+                "----acca----",
+                "----aaaa----",
+            ], {
+                "a": color(0, 25, 25),
+                "b": color(0, 204, 204),
+                "c": color(0, 159, 159),
+            }, 0, 0, 5);
+            return snip(0, 0, 60, 60);
+        },
+        upgradeToken5: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "------------",
+                "-aaa----aaa-",
+                "abbba--abbba",
+                "abcba--abcba",
+                "adeda--adeda",
+                "adeda--adeda",
+                "adeedaadeeda",
+                "adeeeddeeeda",
+                "adeeeeeeeeda",
+                "-adddddddda-",
+                "--aaaaaaaa--",
+                "------------",
+            ], {
+                "a": color(59, 59, 65),
+                "b": color(154, 154, 154),
+                "c": color(178, 178, 178),
+                "d": color(151, 45, 45),
+                "e": color(178, 53, 53),
+                "f": color(0, 0, 0),
+            }, 0, 0, 5);
+            return snip(0, 0, 60, 60);
+        },
+        upgradeToken6: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "------------",
+                "------------",
+                "aaa-aa------",
+                "abcaaaa-----",
+                "aabcdae-----",
+                "-aabaae-----",
+                "--aaa-e-----",
+                "---e11eeee--",
+                "---e1e1233e-",
+                "---e111222e-",
+                "---eeeeeeee-",
+                "------------",
+            ], {
+                "a": color(34, 30, 30),
+                "b": color(114, 114, 114),
+                "c": color(97, 97, 97),
+                "d": color(74, 74, 74),
+                "e": color(34, 15, 12),
+                "1": color(55, 24, 20),
+                "2": color(70, 32, 26),
+                "3": color(89, 55, 50),
+            }, 0, 0, 5);
+            return snip(0, 0, 60, 60);
+        },
+        upgradeToken7: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "------------",
+                "---aaaaaa---",
+                "---abbbba---",
+                "---abccba---",
+                "---abccba---",
+                "-aaabccbaaa-",
+                "-abbccccbba-",
+                "--adccccda--",
+                "---adccda---",
+                "----adda----",
+                "-----aa-----",
+                "------------",
+            ], {
+                "a": color(20, 44, 28),
+                "b": color(63, 120, 82),
+                "c": color(52, 112, 72),
+                "d": color(86, 136, 103),
+            }, 0, 0, 5);
+            return snip(0, 0, 60, 60);
+        },
+        upgradeToken8: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "------------",
+                "--aa----aa--",
+                "-abba--abba-",
+                "-abbba-abba-",
+                "--abbba-aa--",
+                "---abbba----",
+                "----accca---",
+                "--aa-accca--",
+                "-abba-accca-",
+                "-abba--acca-",
+                "--aa----aa--",
+                "------------",
+            ], {
+                "a": color(74, 76, 86),
+                "b": color(255, 197, 0),
+                "c": color(255, 214, 79),
+            }, 0, 0, 5);
+            return snip(0, 0, 60, 60);
+        },
+        upgradeToken9: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "------------",
+                "--aa----aa--",
+                "-abba--abba-",
+                "-abccaaccba-",
+                "--acddddca--",
+                "--acddddca--",
+                "-abbbbbbbba-",
+                "-abcbcdbcba-",
+                "-abcbbbbcba-",
+                "-abcbcdbcba-",
+                "--abbbbbba--",
+                "---aaaaaa---",
+            ], {
+                "a": color(40, 40, 40),
+                "b": color(161, 162, 165),
+                "c": color(178, 179, 181),
+                "d": color(197, 198, 199),
+            }, 0, 0, 5);
+            return snip(0, 0, 60, 60);
+        },
+        upgradeToken10: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "------------",
+                "------------",
+                "------------",
+                "-----aa-----",
+                "----abca----",
+                "---abdeea---",
+                "--aceececa--",
+                "-abcbbebcea-",
+                "abcdcebedcea",
+                "aaaaaaaaaaaa",
+                "------------",
+                "------------",
+            ], {
+                "a": color(54, 49, 32),
+                "b": color(161, 147, 44),
+                "c": color(193, 177, 53),
+                "d": color(255, 255, 255),
+                "e": color(227, 215, 122),
+            }, 0, 0, 5);
+            return snip(0, 0, 60, 60);
+        },
+        upgradeToken11: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "-----ff-----",
+                "----f23f----",
+                "---f1322f---",
+                "--f232132f--",
+                "-a13233222a-",
+                "-abddbbbbba-",
+                "--aecceeea--",
+                "-abddbbbbba-",
+                "-abddbbbbba-",
+                "-abddbbbbba-",
+                "--aaaaaaaa--",
+                "--aa-aa-aa--",
+            ], {
+                "a": color(0, 0, 0),
+                "b": color(37, 37, 36),
+                "c": color(58, 58, 56),
+                "d": color(76, 76, 73),
+                "e": color(22, 22, 21),
+                "f": color(129, 132, 144),
+                "1": color(255, 255, 255),
+                "2": color(123, 227, 225),
+                "3": color(53, 191, 177),
+            }, 0, 0, 5);
+            return snip(0, 0, 60, 60);
+        },
+        upgradeToken12: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "aaa---------",
+                "aefa--------",
+                "adefa-------",
+                "-adefa------",
+                "--adefa-----",
+                "---adefa-b--",
+                "----adefbjb-",
+                "-----adbjb--",
+                "------bibgc-",
+                "-----bibghgc",
+                "------b-cghc",
+                "---------cc-",
+            ], {
+                "a": color(46, 46, 45),
+                "b": color(29, 29, 0),
+                "c": color(41, 10, 0),
+                "d": color(204, 204, 204),
+                "e": color(179, 179, 179),
+                "f": color(158, 158, 158),
+                "g": color(89, 23, 0),
+                "h": color(124, 32, 0),
+                "i": color(104, 104, 0),
+                "j": color(159, 159, 0),
+            }, 0, 0, 5);
+            return snip(0, 0, 60, 60);
+        },
+        grassTile: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "bbcbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "bcbcbbbbbbbbbbbbbcbbbbbbbbbbbb",
+                "bbcbbbbbcbbbbbbbcbcbbbbbbbcbbb",
+                "bbbbbbbcbcbbbbbbbcbbbbbbbcbcbb",
+                "aabbbbaacbbbbbaaaabbbbbbabcbbb",
+                "--abba--aabbaa----aabbba-abbaa",
+                "---aa-----aa--------aaa---aa--",
+            ], {
+                "a": color(4, 56, 0),
+                "b": color(0, 107, 12),
+                "c": color(8, 92, 0),
+            }, 0, 0, 5);
+            return snip(0, 0, 150, 40);
+        },
+        bossGrassTile: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                "bbcbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "bcbcbbbbbbbbbbbbbcbbbbbbbbbbbb",
+                "bbcbbbbbcbbbbbbbcbcbbbbbbbcbbb",
+                "bbbbbbbcbcbbbbbbbcbbbbbbbcbcbb",
+                "aabbbbaacbbbbbaaaabbbbbbabcbbb",
+                "--abba--aabbaa----aabbba-abbaa",
+                "---aa-----aa--------aaa---aa--",
+            ], {
+                "a": color(0, 0, 15),
+                "b": color(0, 8, 36),
+                "c": color(0, 247, 255),
+            }, 0, 0, 5);
+            return snip(0, 0, 150, 40);
+        },
+        player0: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "---aaaaaa--",
+                "--acbbbbba-",
+                "-addcddddda",
+                "acdceeeeeea",
+                "abceffafafa",
+                "abcfafafafa",
+                "abcfafafafa",
+                "abcfafafafa",
+                "abbdeffffea",
+                "-abcddddda-",
+                "1caaaaaaac1",
+                "1ccccccccc1",
+                "1ceeeeeeec1",
+                "-111111111-",
+                "-11-----11-",
+            ], {
+                "a": color(33, 27, 18),
+                "b": color(64, 67, 77),
+                "c": color(82, 86, 98),
+                "d": color(96, 101, 115),
+                "e": color(112, 118, 134),
+                "f": color(132, 137, 151),
+                "1": color(0, 27, 37)
+            }, 0, 5, 5);
+            return snip(0, 0, 55, 80);
+        },
+        player1: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "---aaaaaa--",
+                "--acbbbbba-",
+                "-addcddddda",
+                "acdceeeeeea",
+                "abceffafafa",
+                "abcfafafafa",
+                "abcfafafafa",
+                "abcfafafafa",
+                "abbdeffffea",
+                "-abcddddda-",
+                "1caaaaaaac1",
+                "1ccccccccc1",
+                "1ceeeeeeec1",
+                "-111111111-",
+                "--11---11--",
+                "--11---11--",
+            ], {
+                "a": color(33, 27, 18),
+                "b": color(64, 67, 77),
+                "c": color(82, 86, 98),
+                "d": color(96, 101, 115),
+                "e": color(112, 118, 134),
+                "f": color(132, 137, 151),
+                "1": color(0, 27, 37)
+            }, 0, 0, 5);
+            return snip(0, 0, 55, 80);
+        },
+        coin0: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "--aaaa--",
+                "-abbbba-",
+                "adcdddba",
+                "adbccdba",
+                "adbccdba",
+                "adbbbcba",
+                "-adddda-",
+                "--aaaa--",
+            ], {
+                "a": color(57, 37, 0),
+                "b": color(185, 143, 63),
+                "c": color(163, 107, 0),
+                "d": color(114, 75, 0),
+            }, 0, 0, 5);
+            return snip(0, 0, 40, 40);
+        },
+        coin1: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "--aaaa--",
+                "-abbbba-",
+                "adcdddba",
+                "adbccdba",
+                "adbccdba",
+                "adbbbcba",
+                "-adddda-",
+                "--aaaa--",
+            ], {
+                "a": color(57, 37, 0),
+                "b": color(162, 164, 169),
+                "c": color(144, 147, 153),
+                "d": color(107, 111, 120),
+            }, 0, 0, 5);
+            return snip(0, 0, 40, 40);
+        },
+        coin2: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "--aaaa--",
+                "-abbbba-",
+                "adcdddba",
+                "adbccdba",
+                "adbccdba",
+                "adbbbcba",
+                "-adddda-",
+                "--aaaa--",
+            ], {
+                "a": color(57, 37, 0),
+                "b": color(240, 234, 188),
+                "c": color(227, 215, 122),
+                "d": color(193, 177, 53),
+            }, 0, 0, 5);
+            return snip(0, 0, 40, 40);
+        },
+        coin3: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "--aaa--",
+                "-acdea-",
+                "abbccda",
+                "abcddda",
+                "abbcdea",
+                "abcddca",
+                "-abcba-",
+                "--aaa--",
+            ], {
+                "a": color(48, 72, 64),
+                "b": color(122, 183, 163),
+                "c": color(140, 209, 186),
+                "d": color(211, 237, 229),
+                "e": color(255, 255, 255)
+            }, 2, 0, 5);
+            return snip(0, 0, 40, 40);
+        },
+        coin4: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "--1111--",
+                "-113211-",
+                "11323211",
+                "1a2a2a21",
+                "-1a2a21-",
+                "-12b2b1-",
+                "--12b1--",
+                "---11---",
+            ], {
+                "1": color(63, 19, 12),
+                "2": color(77, 25, 15),
+                "3": color(127, 41, 25),
+                "a": color(127, 41, 25),
+                "b": color(84, 26, 16)
+            }, 0, 0, 5);
+            return snip(0, 0, 40, 40);
+        },
+        shop: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "1111111111111111111111111",
+                "11111-----11111-----11111",
+                "11111-----11111-----11111",
+                "11111-----11111-----11111",
+                "11111-----11111-----11111",
+                "11111-----11111-----11111",
+                "111111---1111111---111111",
+                "-111--111--111--111--111-",
+                "--1-------------------1--",
+                "--1-------------------1--",
+                "--1-------------------1--",
+                "--1------1111111------1--",
+                "--1------1-----1------1--",
+                "--1-1111-1-----1-1111-1--",
+                "--1-1--1-1-----1-1--1-1--",
+                "--1-1--1-1-----1-1--1-1--",
+                "--1-1--1-1-----1-1--1-1--",
+                "--1-1111-1-----1-1111-1--",
+                "--1------1-----1------1--",
+                "--1------1-----1------1--",
+                "1111111111111111111111111",
+            ], {
+                "1": color(0, 0, 0),
+            }, 0, 10, 5);
+            return snip(0, 0, 125, 125);
+        },
+        home: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "-----1-----",
+                "----111-1--",
+                "---11-111--",
+                "--11---11--",
+                "-11-----11-",
+                "11-------11",
+                "-1--111--1-",
+                "-1--1-1--1-",
+                "-1--1-1--1-",
+                "-111111111-",
+            ], {
+                "1": color(0, 0, 0),
+            }, 0, 2, 5);
+            return snip(0, 0, 55, 55);
+        },
+        lazer: function () {
+            fill(0, 0, 92);
+            rect(0, 0, 60, 480);
+            fill(0, 0, 145);
+            rect(3, 0, 54, 480);
+            fill(0, 0, 255);
+            rect(6, 0, 48, 480);
+            fill(0, 50, 255);
+            rect(9, 0, 42, 480);
+            fill(0, 119, 255);
+            rect(12, 0, 36, 480);
+            fill(0, 170, 255);
+            rect(15, 0, 30, 480);
+            fill(0, 221, 255);
+            rect(18, 0, 24, 480);
+            fill(0, 255, 255);
+            rect(21, 0, 18, 480);
+            return snip(0, 0, 60, 480);
+        },
+        star: function () {
+            background(0, 0, 0, 0);
+            ConvertArt([
+                "---11----------",
+                "---1a11--------",
+                "---1aaa1-------",
+                "----1aaa1---111",
+                "----1aaa1111aa1",
+                "----1aaaaaaaa1-",
+                "---11aabaaaaa1-",
+                "--1aaabbbaaa1--",
+                "-1aaaaabaa11---",
+                "-1aaaaaaaa1----",
+                "1aa1111aaa1----",
+                "111---1aaa1----",
+                "-------1aaa1---",
+                "--------11a1---",
+                "----------11---",
+            ], {
+                "1": color(0, 0, 0),
+                "a": color(184, 184, 184),
+                "b": color(0, 255, 251),
+            }, 0, 2, 3);
+            return snip(0, 0, 45, 45);
+        },
+    };
+    var Current = 0;
+    /*****************GAME OBJECTS*********************/
+    var Game = {
+        money: 0,
+        prices: [200, 1000, 5000, 20000, "MAXED"],
+        allUpgrades: false,
+        upgradesPage: false,
+        chestpieces: 0,
+        badLuck: 0,
+        chestInflation: 0,
+        upgradeTiers: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        //upgradeTiers: [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+        upgrades: [
+            [
+                ["Adventurer's Chest", "Loot Chance: 20% (+20%)"],
+                ["Rare Chest", "Loot Chance: 40% (+20%)"],
+                ["Wizard's Chest", "Loot Chance: 60% (+20%)"],
+                ["Legendary Chest", "Loot Chance: 80% (+20%)"],
+                ["MAXED", "Loot Chance: 100%"]
+            ], //Implemented
+            [
+                ["Weak Loot", "Loot Lifetime: 3 seconds (+1)"],
+                ["Sturdy Loot", "Loot Lifetime: 4 seconds (+1)"],
+                ["Strong Loot", "Loot Lifetime: 5 seconds (+1)"],
+                ["Resistant Loot", "Loot Lifetime: 6 seconds (+1)"],
+                ["MAXED", "Loot Lifetime: 7 seconds"],
+            ], //Implemented
+            [
+                ["All in!", "Jackpot Chance: %1 (+%1)"],
+                ["Feeling lucky...", "Jackpot Chance: %2 (+%1)"],
+                ["Its got to be this time...", "Jackpot Chance: %3 (+%1)"],
+                ["One last time...", "Jackpot Chance: %4 (+%1)"],
+                ["MAXED", "Jackpot Chance: %5"],
+            ], //Implemented
+            [
+                ["Silver", "Unlocks chance for a silver coin!"],
+                ["Gold", "Unlocks chance for a gold coin!"],
+                ["Diamond", "Unlocks chance for diamonds!"],
+                ["Chest shards!", "wha.. this seems fishy."],
+                ["MAXED", "Thats all but those chest shards... be warned."],
+            ], //Implemented
+            [
+                ["Reduced Arc", "Spread Reduction: 0% (+50%)"],
+                ["Controlled Arc", "Spread Reduction: 50% (+50%)"],
+                ["Researched Trajectory", "Spread Reduction: 100% (+50%)"],
+                ["Ultra Arc Control", "Spread Reduction: 150% (+50%)"],
+                ["MAXED", "Spread Reduction: 200%"],
+            ], //Implemented
+            [
+                ["Weak Magnet", "Magnet Range: 20 (+20)"],
+                ["Powerful Magnet", "Magnet Range: 40 (+20)"],
+                ["Experimental Magnet", "Magnet Range: 60 (+20)"],
+                ["The One Magnet", "Magnet Range: 80 (+20)"],
+                ["MAXED", "Magnet Range: 100"],
+            ], //Implemented
+            [
+                ["Boots of haste", "Speed Boost: 0% (+25%)"],
+                ["Boots of speed", "Speed Boost: 25% (+25%)"],
+                ["Boots of hastiness", "Speed Boost: 50% (+25%)"],
+                ["Speedy shoes", "Speed Boost: 75% (+25%)"],
+                ["MAXED", "Spread Reduction: 100%"],
+            ], //Implemented
+            [
+                ["Bouncy", "Jumping efficiency: 0% (+25%)"],
+                ["Human Hammer", "Jumping efficiency: 25% (+25%)"],
+                ["Cannonball!!!", "Jumping efficiency: 50% (+25%)"],
+                ["Jackhammer", "Jumping efficiency: 75% (+25%)"],
+                ["MAXED", "Jumping efficiency: 100%"],
+            ], //Implemented
+            [
+                ["Interest", "Interest on Loot: 0% (+10%)"],
+                ["Trader", "Interest on Loot: 10% (+10%)"],
+                ["Charmer", "Interest on Loot: 20% (+10%)"],
+                ["Charming Merchant", "Interest on Loot: 30% (+10%)"],
+                ["MAXED", "Interest on Loot: 40%"],
+            ], //Implemented
+            [
+                ["Leather Coat", "Health: 1 (+1)"],
+                ["Chainmail Armor", "Health: 2 (+1)"],
+                ["Iron Armor", "Health: 3 (+1)"],
+                ["Steel plate", "Health: 4 (+1)"],
+                ["MAXED", "Health: 5"],
+            ], //Implemented
+            [
+                ["Passive Income I", "Money Per Second: 0 (+4)"],
+                ["Passive Income II", "Money Per Second: 4 (+12)"],
+                ["Passive Income III", "Money Per Second: 16 (+48)"],
+                ["Passive Income IV", "Money Per Second: 64 (+192)"],
+                ["MAXED", "Money Per Second: 256"],
+            ], //Implemented
+            [
+                ["Cash Prize", "Items in Jackpot: 10 (+10)"],
+                ["Lottery Winner", "Items in Jackpot: 20 (+10)"],
+                ["Lump sum", "Items in Jackpot: 30 (+10)"],
+                ["Big lottery", "Items in Jackpot: 40 (+10)"],
+                ["MAXED", "Items in Jackpot: 50"],
+            ], //Implemented
+        ],
+        time: 0,
+    };
+    var addMoney = function (m) {
+        if (Debug) {
+            Game.money += (m * ((Game.upgradeTiers[8] * 0.1) + 1)) * 1000;
+        } else {
+            Game.money += m * ((Game.upgradeTiers[8] * 0.1) + 1);
+        }
+    };
+    /*******************COINS*************************/
+    var deleteThis = null;
+    var coins = [];
+    var Coin = function (x, y, t) {
+        this.x = x;
+        this.y = y;
+        this.yv = (random(0, 5) + 10) * -1;
+        this.xv = random(0, 6 - Game.upgradeTiers[5]);
+        this.d = snipRandomBool();
+        this.t = t;
+        this.dead = false;
+        this.collectYet = false;
+        this.life = 600;
+    };
+    Coin.prototype.draw = function () {
+        this.y += this.yv;
+        this.yv += 0.32;
+        if (this.y >= 480) {
+            this.yv = 0;
+            this.y = 480;
+            if (!this.collectYet) {
+                this.collectYet = true;
+                this.life = 60 * (Game.upgradeTiers[1] + 5);
+                this.xv = 0;
+            }
+        }
+        if (!this.collectYet) {
+            if (this.d) {
+                if (this.x > 5) {
+                    this.x -= this.xv;
+                }
+            } else {
+                if (this.x < 595) {
+                    this.x += this.xv;
+                }
+            }
+        } else {
+            this.x += this.xv;
+            if (this.x < 5) {
+                this.x = 5;
+            } else if (this.x > 595) {
+                this.x = 595;
+            }
+            if (this.xv < 0) {
+                this.xv += 0.32;
+                if (this.xv >= 0) {
+                    this.xv = 0;
+                }
+            } else if (this.xv > 0) {
+                this.xv -= 0.32;
+                if (this.xv <= 0) {
+                    this.xv = 0;
+                }
+            }
+        }
+        if ((this.life < 120 && this.life % 15 < 10) || this.life >= 120) {
+            switch (this.t) {
+                case 0:
+                    image(Graphics.coin0, this.x - 10, this.y - 10, 20, 20);
+                    break;
+                case 1:
+                    image(Graphics.coin1, this.x - 10, this.y - 10, 20, 20);
+                    break;
+                case 2:
+                    image(Graphics.coin2, this.x - 10, this.y - 10, 20, 20);
+                    break;
+                case 3:
+                    image(Graphics.coin3, this.x - 10, this.y - 10, 20, 20);
+                    break;
+                case 4:
+                    image(Graphics.coin4, this.x - 10, this.y - 10, 20, 20);
+                    break;
+            }
+        }
+    };
+    Coin.prototype.time = function (currForPos) {
+        this.life--;
+        if (this.life <= 0 || this.dead) {
+            deleteThis = currForPos;
+            this.dead = true;
+        } else {
+            this.draw();
+        }
+    };
+    Coin.prototype.collideWithPlayer = function (px, py) {
+        //Magnet size: (Game.upgradeTiers[4]+1)*40
+        if (rectCircle(px, py, 55, 80, this.x, this.y, (Game.upgradeTiers[4] + 1) * 80)) {
+            //println(dist(px+27, py+40, this.x, this.y));
+            if (px + 27 > this.x) {
+                this.xv += 1;
+            } else {
+                this.xv -= 1;
+            }
+            if (py + 40 > this.y) {
+                this.yv += 1;
+            } else {
+                this.yv -= 0.5;
+            }
+        }
+        if (rectCircle(px, py, 55, 80, this.x, this.y, 20)) {
+            this.dead = true;
+            switch (this.t) {
+                case 0:
+                    addMoney(10);
+                    break;
+                case 1:
+                    addMoney(50);
+                    break;
+                case 2:
+                    addMoney(200);
+                    break;
+                case 3:
+                    addMoney(500);
+                    break;
+                case 4:
+                    addMoney(1000);
+                    Game.chestpieces++;
+                    if (Debug) {
+                        Game.chestpieces += 9;
+                    }
+                    break;
+            }
+        }
+    };
+    var chestHit = function () {
+        Game.money++;
+        Game.chestInflation = 5;
+        if ((floor(random(0, 5)) <= Game.upgradeTiers[0]) || Game.badLuck === 5) {
+            Game.badLuck = 0;
+            if (floor(random(0, 100)) <= Game.upgradeTiers[2]) {
+                for (var i = 0; i < (Game.upgradeTiers[11] + 1) * 10; i++) {
+                    coins.push(new Coin(300, 420, floor(random(0, (Game.upgradeTiers[3] + 1)))));
+                }
+            } else {
+                coins.push(new Coin(300, 420, floor(random(0, (Game.upgradeTiers[3] + 1)))));
+            }
+        } else {
+            Game.badLuck++; //Because bad luck can happen LOL
+        }
+    };
+    var runThroughCoins = function () {
+        deleteThis = null;
+        for (var i = 0; i < coins.length; i++) {
+            coins[i].time(i);
+        }
+        if (deleteThis !== null) {
+            coins.splice(deleteThis, 1);
+        }
+    };
+    /********************BOSS**************************/
+    var Boss = {
+        health: 100,
+        stars: [],
+        attackPhase: 0,
+        attackDuration: 0,
+        minionsB: 0,
+        minions: [10, 10, 0, 0],
+    };
+    var bossHit = function () {
+        if (Boss.minionsB !== 1) {
+            Boss.health--;
+            Game.chestInflation = 5;
+            if (Boss.health > 15) {
+                for (var i = 0; i < 20; i++) {
+                    coins.push(new Coin(300, 420, 3));
+                }
+            }
+        }
+    };
+    /*******************RESET**************************/
+    var reset = function () {
+        Scene = 2;
+        Boss.health = 100;
+        Boss.stars = [];
+        Boss.attackPhase = 0;
+        Boss.attackDuration = 0;
+        Boss.minionsB = 0;
+        Boss.minions = [10, 10, 0, 0];
+        Game.money = 0;
+        Game.allUpgrades = false;
+        Game.upgradesPage = false;
+        Game.badLuck = 0;
+        Game.chestInflation = 0;
+        Game.upgradeTiers = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        coins = [];
+    };
+    /*******************PLAYER*************************/
+    var Player = function (x, y) {
+        this.x = x;
+        this.y = y;
+        this.yv = 0;
+        this.d = true;
+        this.stage = 0;
+        this.jump = false;
+        this.moveB = true;
+        this.health = 100;
+        this.cooldown = 0;
+    };
+    Player.prototype.draw = function () {
+        if (this.d) {
+            if (floor((this.stage % 20) / 10) === 0) {
+                image(Graphics.player0, this.x, this.y);
+            } else {
+                image(Graphics.player1, this.x, this.y);
+            }
+        } else {
+            if (floor((this.stage % 20) / 10) === 0) {
+                flipImage(Graphics.player0, this.x, this.y, 55, 80);
+            } else {
+                flipImage(Graphics.player1, this.x, this.y, 55, 80);
+            }
+        }
+        if (Scene === 4) {
+            noStroke();
+            fill(255, 0, 0);
+            rect(this.x, this.y - 10, 55, 5);
+            fill(26, 255, 0);
+            rect(this.x, this.y - 10, max(55 * (this.health / 100), 0), 5);
+        }
+        this.cooldown--;
+    };
+    Player.prototype.chestCollision = function (chestX, chestY, chestW, n) {
+        if (Scene === 4 && this.y > chestY - 80 && this.y < chestY - 40 && this.x + 55 > chestX && this.x < chestX + chestW && this.yv < -1) {
+            this.yv = 8;
+            if (n === 2) {
+                Boss.minions[0]--;
+                Boss.minions[2] = 5;
+            } else if (n === 3) {
+                Boss.minions[1]--;
+                Boss.minions[3] = 5;
+            } else {
+                bossHit();
+            }
+        }
+        else if (Scene === 6 && this.y > chestY - 80 && this.y < chestY - 40 && this.x + 55 > chestX && this.x < chestX + chestW && this.yv < -1) {
+            if (n === 0) {
+                this.teleport(10, 395);
+                Scene = 2;
+            } else {
+                reset();
+                this.teleport(10, 395);
+                Scene = 2;
+                this.reset();
+            }
+
+        }
+        else if (this.y > chestY - 80 && this.y < chestY - 40 && this.x + 55 > chestX && this.x < chestX + chestW && this.yv < -1) {
+            this.yv = 10 - (Game.upgradeTiers[7] * 1.75);
+            chestHit();
+        }
+    };
+    Player.prototype.coinCollecting = function () {
+        for (var i = 0; i < coins.length; i++) {
+            if (!coins[i].dead && coins[i].collectYet) {
+                coins[i].collideWithPlayer(this.x, this.y);
+            }
+        }
+    };
+    Player.prototype.move = function () {
+        //General gravity stuff LOL
+        this.yv -= 0.32;
+        this.y -= this.yv;
+        //Ground collision: is it sloppy: yes; but for this game its ok 
+        if (this.y >= 400 && this.health >= 0) {
+            this.yv = 0;
+            this.y = 400;
+            this.jump = true;
+        }
+        //Chest collisions
+        if (Scene === 6) {
+            this.chestCollision(255, 415, 90, 0);
+            this.chestCollision(495, 420, 60, 1);
+        } else {
+            switch (Game.upgradeTiers[0]) {
+                case 0:
+                    this.chestCollision(270, 425, 60);
+                    break;
+                case 1:
+                    this.chestCollision(270, 420, 60);
+                    break;
+                case 2:
+                    this.chestCollision(265, 415, 70);
+                    break;
+                case 3:
+                    this.chestCollision(255, 415, 90);
+                    break;
+                case 4:
+                    this.chestCollision(255, 415, 90);
+                    break;
+            }
+        }
+        if (Scene === 4 && Boss.minionsB === 1) {
+            if (Boss.minions[0] > 0) {
+                this.chestCollision(40, 420, 60, 2);
+            }
+            if (Boss.minions[1] > 0) {
+                this.chestCollision(496, 420, 60, 3);
+            }
+        }
+        //Jumping
+        if ((keys[38] || keys[87]) && this.jump && this.moveB) {
+            this.yv = 10;
+            this.jump = false;
+        }
+        //Right
+        if ((keys[68] || keys[39]) && this.moveB) {
+            this.d = true;
+            this.stage++;
+            if (this.x < 545) {
+                this.x += ((Game.upgradeTiers[6] * 0.75) + 3);
+            }
+        }
+        //Left
+        else if ((keys[65] || keys[37]) && this.moveB) {
+            this.d = false;
+            this.stage++;
+            if (this.x > 0) {
+                this.x -= ((Game.upgradeTiers[6] * 0.75) + 3);
+            }
+        }
+        //Else
+        else {
+            this.stage = 0;
+        }
+    };
+    Player.prototype.teleport = function (nx, ny) {
+        this.x = nx;
+        this.y = ny;
+        this.yv = 0;
+        this.d = true;
+    };
+    Player.prototype.loseHealth = function (amount) {
+        if (this.cooldown <= 0) {
+            this.health -= amount;
+            this.cooldown = 20;
+        }
+    };
+    Player.prototype.dead = function () {
+        if (this.health <= 0) {
+            //println("dead");
+            /*fill(0, 0, 0, Game.time);
+            noStroke();
+            rect(0, 0, 600, 600);
+            if (Game.time >= 256) {
+                background(0, 0, 0);
+            }
+            else if (Game.time >= 600) {
+                this.health = 100;
+                Game.time = 0;
+                this.teleport(10, 395);
+                Scene = 2;
+                Boss.health = 100;
+                Boss.stars = [];
+                Boss.attackPhase = 0;
+                Boss.attackDuration = 0;
+                Boss.minionsB = 0;
+                Boss.minions = [10, 10, 0, 0];
+                Game.upgradesPage = false;
+                Game.badLuck = 0;
+                Game.chestInflation = 0;
+                coins = [];
+            }*/
+            Scene = 7;
+            Game.time = 0;
+
+            this.health = 100;
+            this.teleport(10, 395);
+        }
+        //Game.time++;
+    };
+    Player.prototype.reset = function () {
+        this.moveB = true;
+        this.health = 100;
+        this.cooldown = 0;
+    };
+    var Bob = new Player(10, 395);
+    /********************INTRO*************************/
+    var Pineapple = {
+        SceneCount: 0,
+        TextFade: 255,
+        frameAmount: 120,
+        Drawing: [
+            "-----B------",
+            "---BBDB-B---",
+            "--BDBDBBDB--",
+            "-BBDCDBDDBB-",
+            "BCBBCDCDBBCB",
+            "BCCBDCCDBCCB",
+            "-BCCDCCDCCB-",
+            "--BCCCCCCB--",
+            "--BACCCCAB--",
+            "-BEAEAEAEAB-",
+            "-BAEAAAEAAB-",
+            "BAEAEAEAEAEB",
+            "BEAAAEAAAEAB",
+            "BAEAEAEAEAEB",
+            "BAAEAAAEAAAB",
+            "BAEAEAEAEAEB",
+            "BEAAAEAAAEAB",
+            "-BEAEAEAEAB-",
+            "--BEAAAEAB--",
+            "---BBBBBB---",
+        ],
+        Colors: {
+            "A": color(255, 255, 0),
+            "B": color(0, 0, 0),
+            "C": color(75, 128, 0),
+            "D": color(182, 245, 142),
+            "E": color(255, 174, 0),
+        },
+        BlockData: [],
+        TextDisplayed: "",
+        TextTBD: "Pineapples Presents...",
+        TextNum: 0,
+        FloatingPineapples: [],
+        RenderBlocksRandomly: function (x, y, size) {
+            this.BlockData = [];
+            for (var i = 0; i < this.Drawing.length; i++) {
+                for (var e = 0; e < this.Drawing[i].length; e++) {
+                    if (this.Drawing[i][e] !== "-") {
+                        this.BlockData.push([e * size + x, i * size + y, round(random(0, get.width - size)), round(random(0, get.height - size)), this.Drawing[i][e], size]);
+                    }
+                }
+            }
+        },
+        ConfigureBlockSpeeds: function () {
+            for (var i = 0; i < this.BlockData.length; i++) {
+                this.BlockData[i].push(Diff(this.BlockData[i][0], this.BlockData[i][2]) / this.frameAmount);
+                this.BlockData[i].push(Diff(this.BlockData[i][1], this.BlockData[i][3]) / this.frameAmount);
+            }
+        },
+        MoveBlocks: function () {
+            noStroke();
+            for (var i = 0; i < this.BlockData.length; i++) {
+                fill(this.Colors[this.BlockData[i][4]]);
+                rect(this.BlockData[i][2], this.BlockData[i][3], this.BlockData[i][5], this.BlockData[i][5]);
+                if (round(this.BlockData[i][2]) === this.BlockData[i][0]) {
+                    this.BlockData[i][2] = this.BlockData[i][0];
+                } else if (this.BlockData[i][2] < this.BlockData[i][0]) {
+                    this.BlockData[i][2] += this.BlockData[i][6];
+                } else if (this.BlockData[i][2] > this.BlockData[i][0]) {
+                    this.BlockData[i][2] -= this.BlockData[i][6];
+                }
+                if (round(this.BlockData[i][3]) === this.BlockData[i][1]) {
+                    this.BlockData[i][3] = this.BlockData[i][1];
+                } else if (this.BlockData[i][3] < this.BlockData[i][1]) {
+                    this.BlockData[i][3] += this.BlockData[i][7];
+                } else if (this.BlockData[i][3] > this.BlockData[i][1]) {
+                    this.BlockData[i][3] -= this.BlockData[i][7];
+                }
+            }
+        },
+        Draw: function (x, y, size) {
+            noStroke();
+            for (var i = 0; i < this.Drawing.length; i++) {
+                for (var e = 0; e < this.Drawing[i].length; e++) {
+                    if (this.Drawing[i][e] !== "-") {
+                        fill(this.Colors[this.Drawing[i][e]]);
+                        rect(e * size + x, i * size + y, size, size);
+                    }
+                }
+            }
+        },
+        Image: 0,
+        ConvertDrawToImage: function () {
+            background(0, 0, 0, 0);
+            this.Draw(0, 0, 20);
+            return snip(0, 0, 240, 400);
+        },
+        SetupFloatingPineapples: function () {
+            for (var i = 0; i < 10; i++) {
+                this.FloatingPineapples.push([round(random(0, 400)), round(random(0, 360)), round(random(6, 10)), round(random(20, 50))]);
+            }
+        },
+        DrawFloaters: function () {
+            for (var i = 0; i < this.FloatingPineapples.length; i++) {
+                pushMatrix();
+                translate(get.width / 2, get.height / 2);
+                rotate(this.FloatingPineapples[i][1]);
+                image(this.Image, this.FloatingPineapples[i][0], 0, this.FloatingPineapples[i][3] * 0.6, this.FloatingPineapples[i][3]);
+                this.FloatingPineapples[i][0] += this.FloatingPineapples[i][2];
+                if (this.FloatingPineapples[i][0] > max(get.width, get.height) - 200) {
+                    this.FloatingPineapples[i][0] = 0;
+                    this.FloatingPineapples[i][1] = round(random(0, 360));
+                    this.FloatingPineapples[i][2] = round(random(6, 10));
+                    this.FloatingPineapples[i][3] = round(random(20, 50));
+                }
+                popMatrix();
+            }
+        },
+        IntroText: function () {
+            textAlign(CENTER, CENTER);
+            fill(0, 0, 0, this.TextFade);
+            textSize((get.width - 100) / 10);
+            text(this.TextDisplayed, get.width / 2, get.height - ((get.height - 200) / 4)); //350 400 500 600
+            if (this.SceneCount % 10 === 0 && this.TextDisplayed.length < this.TextTBD.length) {
+                this.TextDisplayed += this.TextTBD[this.TextNum];
+                this.TextNum++;
+            } else if (this.TextDisplayed.length === this.TextTBD.length) {
+                this.TextFade -= 5;
+            }
+            if (this.TextFade <= 0) {
+                Scene = 6;
+            }
+        },
+        Setup: function () {
+            Pineapple.RenderBlocksRandomly((get.width / 2) - 60, (get.height / 2) - 100, 10);
+            Pineapple.ConfigureBlockSpeeds();
+            Pineapple.Image = Pineapple.ConvertDrawToImage();
+            Pineapple.SetupFloatingPineapples();
+        },
+        Intro: function () {
+            background(255, 255, 50);
+            if (this.SceneCount > this.frameAmount) {
+                this.DrawFloaters();
+                image(this.Image, (get.width / 2) - 60, (get.height / 2) - 100, 120, 200);
+                this.IntroText();
+            } else {
+                this.MoveBlocks();
+            }
+            this.SceneCount++;
+        },
+    };
+    Pineapple.Setup();
+    /*******************LOADING************************/
+    var LoadGraphics = function () {
+        var GraphicsInArray = Object.keys(Graphics);
+        Graphics[GraphicsInArray[Current]] = Graphics[GraphicsInArray[Current]]();
+        Current++;
+        if (Current >= GraphicsInArray.length) {
+            if (Debug) {
+                Scene = DebugScene;
+            } else {
+                Scene = 1;
+            }
+        }
+        pushMatrix();
+        scale(get.width / 400, get.height / 400);
+        background(255, 255, 255);
+        image(Pineapple.Image, 170, 100, 60, 100);
+        fill(255, 238, 0);
+        noStroke();
+        rect(100, 250, (200 / GraphicsInArray.length) * Current, 20, 5);
+        fill(0, 0, 0);
+        textAlign(CENTER, CENTER);
+        textSize(15);
+        text("Loading...", 200, 223);
+        popMatrix();
+    };
+    /*******************ATTACKS************************/
+    var runBossAttacks = function () {
+        //Attack phase loop
+        switch (Boss.attackPhase) {
+            case 0:
+                if (Boss.attackDuration < 180 && Boss.attackDuration > 70) {
+                    fill(0, 251, 255);
+                    for (var i = 0; i < abs((round(Boss.attackDuration / 5) % 7) - 3); i++) {
+                        rect(270, 405 - (10 * i), 60, 4);
+                    }
+                }
+                else if (Boss.attackDuration <= 190 && Boss.attackDuration > 100) {
+                    image(Graphics.lazer, 300 + (Boss.attackDuration - 180) * -3, -68, max((Boss.attackDuration - 180) * 6, 1), 480);
+                }
+                else if (Boss.attackDuration <= 590 && Boss.attackDuration > 100) {
+                    image(Graphics.lazer, 270, -68);
+                    if (rectRect(Bob.x, Bob.y, 55, 80, 270, -6, 60, 480)) {
+                        Bob.loseHealth(20);
+                    }
+                }
+                else if (Boss.attackDuration <= 600 && Boss.attackDuration > 100) {
+                    image(Graphics.lazer, 270 + (Boss.attackDuration - 590) * 3, -68, max(60 + (Boss.attackDuration - 590) * -6, 1), 480);
+                }
+                else if (Boss.attackDuration > 600) {
+                    Boss.attackDuration = 0;
+                    Boss.attackPhase = 1;
+                }
+                break;
+            case 1:
+                if (Boss.attackDuration % 20 === 0 && Boss.attackDuration <= 600) {
+                    if (Boss.attackDuration % 100 === 0) {
+                        Boss.stars.push([Bob.x + 22, -30, 0]);
+                    } else {
+                        Boss.stars.push([round(random(0, 600)), -30, 0]);
+                    }
+                }
+                if (Boss.attackDuration >= 800) {
+                    Boss.attackDuration = 0;
+                    Boss.attackPhase = 0;
+                }
+                break;
+        }
+        //Run through those stars
+        deleteThis = 1;
+        for (var i = 0; i < Boss.stars.length; i++) {
+            pushMatrix();
+            translate(Boss.stars[i][0] + 10, Boss.stars[i][1] + 10);
+            rotate(Boss.stars[i][2]);
+            //image(Graphics.star, -10, -10, 20, 20);
+            image(Graphics.star, -15, -15, 30, 30);
+            Boss.stars[i][2] += 15;
+            Boss.stars[i][1] += 5;
+            popMatrix();
+            if (Boss.stars[i][1] > 650) {
+                deleteThis = 0;
+            }
+            if (rectRect(Bob.x, Bob.y, 55, 80, Boss.stars[i][0] - 5, Boss.stars[i][1] - 5, 20, 20)) {
+                Bob.loseHealth(5);
+            }
+        }
+        if (deleteThis === 0) {
+            Boss.stars.shift();
+        }
+        //Handle the minions
+        if (Boss.health <= 50 && Boss.minionsB === 0) {
+            Boss.minions = [10, 10, 0, 0];
+            Boss.minionsB = 1;
+        } else if (Boss.minionsB === 1) {
+            if (Boss.minions[0] > 0) {
+                image(Graphics.chest1, 20 - Boss.minions[2], 408 - Boss.minions[2], 104 + (Boss.minions[2] * 2), 72 + Boss.minions[2]);
+                if (Boss.minions[2] > 0) {
+                    Boss.minions[2] -= 1;
+                } else {
+                    Boss.minions[2] = 0;
+                }
+            }
+            if (Boss.minions[1] > 0) {
+                image(Graphics.chest1, 476 - Boss.minions[3], 408 - Boss.minions[3], 104 + (Boss.minions[3] * 2), 72 + Boss.minions[3]);
+                if (Boss.minions[3] > 0) {
+                    Boss.minions[3] -= 1;
+                } else {
+                    Boss.minions[3] = 0;
+                }
+            }
+            if (Boss.minions[1] <= 0 && Boss.minions[0] <= 0) {
+                Boss.minionsB = 2;
+            }
+        }
+        Boss.attackDuration++;
+        Bob.dead();
+    };
+    /******************FUNCTIONS***********************/
+    var DrawUpgrades = function () {
+        fill(0, 0, 0, 180);
+        noStroke();
+        rect(0, 0, 600, 600);
+        for (var i = 0; i < 12; i++) {
+            image(Graphics.upgradeTokenFrame, ((i % 5) * 110) + 30, 100 + (floor(i / 5) * 150));
+            switch (i) {
+                case 0:
+                    image(Graphics.upgradeToken0, ((i % 5) * 110) + 50, 100 + (floor(i / 5) * 150) + 20);
+                    break;
+                case 1:
+                    image(Graphics.upgradeToken1, ((i % 5) * 110) + 50, 100 + (floor(i / 5) * 150) + 20);
+                    break;
+                case 2:
+                    image(Graphics.upgradeToken2, ((i % 5) * 110) + 50, 100 + (floor(i / 5) * 150) + 20);
+                    break;
+                case 3:
+                    image(Graphics.upgradeToken3, ((i % 5) * 110) + 50, 100 + (floor(i / 5) * 150) + 20);
+                    break;
+                case 4:
+                    image(Graphics.upgradeToken4, ((i % 5) * 110) + 50, 100 + (floor(i / 5) * 150) + 20);
+                    break;
+                case 5:
+                    image(Graphics.upgradeToken5, ((i % 5) * 110) + 50, 100 + (floor(i / 5) * 150) + 20);
+                    break;
+                case 6:
+                    image(Graphics.upgradeToken6, ((i % 5) * 110) + 50, 100 + (floor(i / 5) * 150) + 20);
+                    break;
+                case 7:
+                    image(Graphics.upgradeToken7, ((i % 5) * 110) + 50, 100 + (floor(i / 5) * 150) + 20);
+                    break;
+                case 8:
+                    image(Graphics.upgradeToken8, ((i % 5) * 110) + 50, 100 + (floor(i / 5) * 150) + 20);
+                    break;
+                case 9:
+                    image(Graphics.upgradeToken9, ((i % 5) * 110) + 50, 100 + (floor(i / 5) * 150) + 20);
+                    break;
+                case 10:
+                    image(Graphics.upgradeToken10, ((i % 5) * 110) + 50, 100 + (floor(i / 5) * 150) + 20);
+                    break;
+                case 11:
+                    image(Graphics.upgradeToken11, ((i % 5) * 110) + 50, 100 + (floor(i / 5) * 150) + 20);
+                    break;
+
+
+            }
+            switch (Game.upgradeTiers[i]) {
+                case 0:
+                    image(Graphics.upgradeTier0, ((i % 5) * 110) + 30, 210 + (floor(i / 5) * 150));
+                    break;
+                case 1:
+                    image(Graphics.upgradeTier1, ((i % 5) * 110) + 30, 210 + (floor(i / 5) * 150));
+                    break;
+                case 2:
+                    image(Graphics.upgradeTier2, ((i % 5) * 110) + 30, 210 + (floor(i / 5) * 150));
+                    break;
+                case 3:
+                    image(Graphics.upgradeTier3, ((i % 5) * 110) + 30, 210 + (floor(i / 5) * 150));
+                    break;
+                case 4:
+                    image(Graphics.upgradeTier4, ((i % 5) * 110) + 30, 210 + (floor(i / 5) * 150));
+                    break;
+            }
+            if (pointRect(get.mouseX, get.mouseY, ((i % 5) * 110) + 30, 100 + (floor(i / 5) * 150), 100, 100)) {
+                fill(255, 255, 255);
+                textSize(30);
+                text(Game.upgrades[i][Game.upgradeTiers[i]][0], 420, 420);
+                textSize(20);
+                text(Game.upgrades[i][Game.upgradeTiers[i]][1], 420, 480);
+                if (Game.upgradeTiers[i] === 4) {
+                    text(Game.prices[Game.upgradeTiers[i]], 420, 520);
+                } else {
+                    text("$" + Game.prices[Game.upgradeTiers[i]], 420, 520);
+                }
+                if (Game.upgradeTiers[i] < 4 && clicked && Game.money >= Game.prices[Game.upgradeTiers[i]]) {
+                    Game.money -= Game.prices[Game.upgradeTiers[i]];
+                    Game.upgradeTiers[i]++;
+                    Game.allUpgrades = true;
+                    for (var j = 0; j < 12; j++) {
+                        if (Game.upgradeTiers[j] < 4) {
+                            Game.allUpgrades = false;
+                        }
+                    }
+                    if (Game.allUpgrades) {
+                        Game.chestpieces = 0;
+                    }
+                }
+            }
+        }
+
+    };
+    var DrawGame = function () {
+        //Background
+        background(153, 219, 255);
+        fill(61, 47, 0);
+        noStroke();
+        rect(0, 500, 600, 100);
+        stroke(0, 255, 13);
+        for (var i = 0; i < 4; i++) {
+            image(Graphics.grassTile, i * 150, 480);
+        }
+        //Chest
+        switch (Game.upgradeTiers[0]) {
+            case 0:
+                image(Graphics.chest0, 248 - Game.chestInflation, 408 - Game.chestInflation, 104 + (Game.chestInflation * 2), 72 + Game.chestInflation);
+                break;
+            case 1:
+                image(Graphics.chest1, 248 - Game.chestInflation, 408 - Game.chestInflation, 104 + (Game.chestInflation * 2), 72 + Game.chestInflation);
+                break;
+            case 2:
+                image(Graphics.chest2, 248 - Game.chestInflation, 408 - Game.chestInflation, 104 + (Game.chestInflation * 2), 72 + Game.chestInflation);
+                break;
+            case 3:
+                image(Graphics.chest3, 248 - Game.chestInflation, 408 - Game.chestInflation, 104 + (Game.chestInflation * 2), 72 + Game.chestInflation);
+                break;
+            case 4:
+                image(Graphics.chest4, 248 - Game.chestInflation, 408 - Game.chestInflation, 104 + (Game.chestInflation * 2), 72 + Game.chestInflation);
+                break;
+        }
+        if (Game.chestInflation > 0) {
+            Game.chestInflation -= 1;
+        } else {
+            Game.chestInflation = 0;
+        }
+        //Player
+        Bob.draw();
+        Bob.move();
+        Bob.coinCollecting();
+        //Coins
+        runThroughCoins();
+        //Display money on top
+        fill(0, 0, 0);
+        textSize(50);
+        text(Game.money, 300, 53);
+        if (Game.allUpgrades) {
+            if (Game.chestpieces >= 500) {
+                noStroke();
+                rect(200, 90, 200, 80);
+                fill(0, 255, 255);
+                rect(205, 95, 190, 20);
+                if (pointRect(get.mouseX, get.mouseY, 210, 120, 180, 40)) {
+                    fill(130, 130, 130);
+                    if (clicked) {
+                        Scene = 3;
+                    }
+                } else {
+                    fill(166, 166, 166);
+                }
+                rect(210, 120, 180, 40);
+                fill(0, 0, 0);
+                textSize(15);
+                text("500/500 chest shards", 300, 105);
+                text("Build The Magic Chest", 300, 140);
+            } else {
+                noStroke();
+                rect(200, 90, 200, 30);
+                fill(166, 166, 166);
+                rect(205, 95, 190, 20);
+                fill(0, 255, 255);
+                rect(205, 95, floor(190 * (Game.chestpieces / 500) / 5) * 5, 20);
+                fill(0, 0, 0);
+                textSize(15);
+                text(Game.chestpieces + "/500 chest shards", 300, 105);
+            }
+        }
+        //Give Passive Currency
+        if (get.frameCount % 60 === 0 && pow(4, Game.upgradeTiers[10]) !== 1) {
+            Game.money += pow(4, Game.upgradeTiers[10]);
+        }
+        //Home
+        if (pointRect(get.mouseX, get.mouseY, 510, 10, 80, 80)) {
+            image(Graphics.upgradeTokenFrame, 508, 8, 84, 84);
+            if (clicked && !Game.upgradesPage) {
+                Scene = 6;
+                Bob.teleport(10, 395);
+            }
+        } else {
+            image(Graphics.upgradeTokenFrame, 510, 10, 80, 80);
+        }
+        //Upgrades button
+        if (Game.upgradesPage) {
+            DrawUpgrades();
+        }
+        if (pointRect(get.mouseX, get.mouseY, 10, 10, 80, 80)) {
+            image(Graphics.upgradeTokenFrame, 8, 8, 84, 84);
+            if (clicked) {
+                Game.upgradesPage = !Game.upgradesPage;
+            }
+        } else {
+            image(Graphics.upgradeTokenFrame, 10, 10, 80, 80);
+        }
+        image(Graphics.home, 530, 30, 40, 40);
+        if (Game.upgradesPage) {
+            image(Graphics.home, 30, 30, 40, 40);
+        } else {
+            image(Graphics.shop, 30, 30, 40, 40);
+        }
+    };
+    var DrawBossAnimation = function () {
+        background(0, 0, 0);
+        noStroke();
+        if (Game.time < 51) {
+            DrawGame();
+            fill(0, 0, 0, min(255, Game.time * 5));
+            rect(0, 0, 600, 600);
+            if (Game.time === 50) {
+                Bob.teleport(10, 400);
+                coins = [];
+            }
+        } else if (Game.time < 600) {
+            //image(Graphics.chest5, 248-Game.chestInflation, 408-Game.chestInflation, 104+(Game.chestInflation*2), 72+Game.chestInflation); 
+            fill(153, 255, 255, min(max(Game.time - 200, 0), 255));
+            rect(248 + 44, 448, 4, 4);
+            rect(248 + 56, 448, 4, 4);
+        } else if (Game.time < 900) {
+            Bob.draw();
+            image(Graphics.chest5, 248, 408, 104, 72);
+            fill(0, 0, 0, max(0, 255 - (Game.time - 600)));
+            rect(248, 408, 104, 72);
+            rect(0, 400, 200, 80);
+            fill(153, 255, 255);
+            rect(248 + 44, 448, 4, 4);
+            rect(248 + 56, 448, 4, 4);
+        } else {
+            background(0, 0, min(23, (Game.time - 1000) / 5));
+            Bob.draw();
+            image(Graphics.chest5, 248, 408, 104, 72);
+            fill(0, 1, 43);
+            rect(0, 500, 600, 100);
+            for (var i = 0; i < 4; i++) {
+                image(Graphics.bossGrassTile, i * 150, 480);
+            }
+            fill(0, 0, 0, max(0, 255 - (Game.time - 900)));
+            rect(0, 480, 600, 120);
+            if (Game.time >= 1200) {
+                Game.time = 0;
+                Scene = 4;
+            }
+        }
+        Game.time++;
+    };
+    var DrawBossFight = function () {
+        //Background
+        background(0, 0, 23);
+        fill(0, 1, 43);
+        noStroke();
+        rect(0, 500, 600, 100);
+        for (var i = 0; i < 4; i++) {
+            image(Graphics.bossGrassTile, i * 150, 480);
+        }
+        //Chest
+        image(Graphics.chest5, 248 - Game.chestInflation, 408 - Game.chestInflation, 104 + (Game.chestInflation * 2), 72 + Game.chestInflation);
+        if (Game.chestInflation > 0) {
+            Game.chestInflation -= 1;
+        } else {
+            Game.chestInflation = 0;
+        }
+        //Player
+        Bob.draw();
+        Bob.move();
+        Bob.coinCollecting();
+        //Coins
+        runThroughCoins();
+        //Run boss attacks
+        runBossAttacks();
+        //Health bar
+        noStroke();
+        fill(255, 0, 0);
+        rect(50, 50, 500, 10);
+        if (Boss.minionsB === 1) {
+            fill(0, 255, 255);
+        } else {
+            fill(13, 255, 0);
+        }
+        rect(50, 50, max(500 * (Boss.health / 100), 0), 10);
+        fill(255, 255, 255);
+        textSize(20);
+        if (Boss.health <= 0) {
+            Game.time = 0;
+            Scene = 5;
+        }
+    };
+    var DrawBossEndAnimation = function () {
+        background(0, 0, 23);
+        noStroke();
+        if (Game.time < 100) {
+            background(0, 0, 23);
+            fill(0, 1, 43);
+            noStroke();
+            rect(0, 500, 600, 100);
+            for (var i = 0; i < 4; i++) {
+                image(Graphics.bossGrassTile, i * 150, 480);
+            }
+            image(Graphics.chest5, 248, 408, 104, 72);
+            Bob.x += 2;
+            Bob.d = true;
+            Bob.draw();
+            Bob.moveB = false;
+            Bob.move();
+        } else if (Game.time < 200) {
+            background(0, 0, 23);
+            fill(0, 1, 43);
+            noStroke();
+            rect(0, 500, 600, 100);
+            for (var i = 0; i < 4; i++) {
+                image(Graphics.bossGrassTile, i * 150, 480);
+            }
+            image(Graphics.chest5, 248, 408, 104, 72);
+            Bob.d = false;
+            Bob.draw();
+            Bob.move();
+        } else if (Game.time < 455) {
+            background(0, 0, 23);
+            fill(0, 1, 43);
+            noStroke();
+            rect(0, 500, 600, 100);
+            for (var i = 0; i < 4; i++) {
+                image(Graphics.bossGrassTile, i * 150, 480);
+            }
+            image(Graphics.chest5, 248, 408, 104, 72);
+            Bob.draw();
+            Bob.move();
+            fill(255, 255, 255, Game.time - 200);
+            rect(0, 0, 600, 600);
+        } else {
+            Game.time = 0;
+            Bob.teleport(10, 395);
+            Bob.moveB = true;
+            Scene = 6;
+            Game.allUpgrades = false;
+        }
+        Game.time++; //
+    };
+    var Menu = function () {
+        background(153, 219, 255);
+        fill(61, 47, 0);
+        noStroke();
+        rect(0, 500, 600, 100);
+        stroke(0, 255, 13);
+        for (var i = 0; i < 4; i++) {
+            image(Graphics.grassTile, i * 150, 480);
+        }
+        image(Graphics.chest4, 248, 408, 104, 72);
+        image(Graphics.chest1, 474, 408, 104, 72);
+        Bob.draw();
+        Bob.move();
+        fill(0, 0, 0);
+        textSize(50);
+        text("The Chest", 300, 65);
+        textSize(30);
+        text("Play", 300, 365);
+        textSize(20);
+        text("Reset Game", 524, 385);
+        text("Jump on a chest to play!", 300, 104);
+        Boss.attackDuration = 0;
+        Boss.attackPhase = 1;
+    };
+    var Dead = function () {
+        background(0, 0, 0);
+        fill(255, 255, 255);
+        textSize(40);
+        text("You died...", 300, 50);
+        fill(128, 128, 128);
+        rect(90, 290, 420, 120);
+        fill(181, 181, 181);
+        rect(100, 300, 400, 100);
+        fill(0, 0, 0);
+        textSize(20);
+        text("Click to respawn.", 300, 350);
+        if (pointRect(get.mouseX, get.mouseY, 100, 300, 400, 100) && clicked) {
+            //println("yes");
+            Game.time = 0;
+            Scene = 2;
+            Boss.health = 100;
+            Boss.stars = [];
+            Boss.attackPhase = 0;
+            Boss.attackDuration = 0;
+            Boss.minionsB = 0;
+            Boss.minions = [10, 10, 0, 0];
+            Game.upgradesPage = false;
+            Game.badLuck = 0;
+            Game.chestInflation = 0;
+            Game.allUpgrades = true;
+            Game.chestpieces = 500;
+            coins = [];
+        }
+    };
+    /********************DRAW************************/
+    dl.draw = function () {
+        switch (Scene) {
+            case 0:
+                LoadGraphics();
+                break;
+            case 1:
+                Pineapple.Intro();
+                break;
+            case 2:
+                DrawGame();
+                break;
+            case 3:
+                DrawBossAnimation();
+                break;
+            case 4:
+                DrawBossFight();
+                break;
+            case 5:
+                DrawBossEndAnimation();
+                break;
+            case 6:
+                Menu();
+                break;
+            case 7:
+                Dead();
+                break;
+        }
+        clicked = false;
+    };
+    /*******************MOUSE**************************/
+    dl.mouseReleased = function () {
+        clicked = true;
+    };
+    /********************KEYS************************/
+    dl.keyPressed = function (e) {
+        keys[e.keyCode] = true;
+    };
+    dl.keyReleased = function (e) {
+        delete keys[e.keyCode];
+    };
+</script>
+<script>
+    let bgChange = document.getElementById("bodyID");
+    let bgNum = Math.floor(Math.random() * 22);
+    bgChange.style.backgroundImage = "url('images/bg-images/img" + bgNum + ".jpg')";
+</script>
+
+</html>

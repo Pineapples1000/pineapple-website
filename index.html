@@ -11,74 +11,88 @@
 </head>
 
 <body id="bodyID">
-    <header>
-        <a class="navSection noTextDecoration" href="index.html">
-            <img src="images/pappy.png" id="navImg">
-            <span class="navText">Pineapple Programming</span>
-        </a>
-        <a class="navSection noTextDecoration">
-            <span class="navText">Games</span>
-        </a>
-        <a class="navSection noTextDecoration">
-            <span class="navText">Projects</span>
-        </a>
-    </header>
-    <div class="box">
-        <h2>About Me</h2>
-        <p>
-            Hi, I'm Pineapples, a web/game developer. I enjoy making fun games for a hobby!
-            I live in the United States and I started programming in 2018, when I was 8.
-            In Febuary, 2022 I created a Khan Academy account and started their introduction to programming course.
-            Since then, I've made many projects on there, most significantly games.
-            Now I plan to make more cool stuff before I go off to college, hopefully for a CS or Software Engineering
-            Degree.
-            Some of my other hobbies include skiing, hiking, biking, and photography.
-            All the background images on this website are taken by me.
-            I am a member of the boy scouts and currently have obtained the Life rank.
-        </p>
-    </div>
-    <div class="box">
-        <h2>Programming Languages I have experience in:</h2>
-        <ul class="pineappleBullet">
-            <li>Javascript - Made several games in Javascript</li>
-            <li>HTML/CSS - Made many webpages, including this one!! =)</li>
-            <li>Node.js - Did a little bit of work in Node.js, similar to JS</li>
-            <li>Java - Took the APCS Course</li>
-            <li>C# - Finished the W3Schools C# course for Unity use</li>
-        </ul>
-    </div>
-    <div class="box">
-        <h2>Contact Me</h2>
-        <p>I can be contacted through my Discord server, linked in the footer below or <a class="LinkDesign"
-                href="https://discord.gg/Y3XNzmQpCe">here</a>.</p>
-        <p>I am currently setting up an email for my website, but I prefer to be contacted on discord. You can also
-            suggest games and stuff in my discord server.</p>
-        <div id="discordAPI">
-            <img src="images/pappy.png">
-            <div>
-                <span id="discordServerAPIHeader"></span><br>
-                <span id="discordServerAPIOnlineCount"></span>
+    <div id="wrapper">
+        <header>
+            <a class="navSection noTextDecoration" href="index.html">
+                <img src="images/pappy.png" id="navImg">
+                <span class="navText">Pineapple Programming</span>
+            </a>
+            <a class="navSection noTextDecoration" href="games.html">
+                <span class="navText">Games</span>
+            </a>
+            <a class="navSection noTextDecoration">
+                <span class="navText">Projects</span>
+            </a>
+        </header>
+        <div class="box">
+            <h2>About Me</h2>
+            <p>
+                Hi, I'm Pineapples, a web/game developer. I enjoy making fun games for a hobby!
+                I live in the United States and I started programming in 2018, when I was 8.
+                In Febuary, 2022 I created a Khan Academy account and started their introduction to programming course.
+                Since then, I've made many projects on there, most significantly games.
+                Now I plan to make more cool stuff before I go off to college, hopefully for a CS or Software
+                Engineering
+                Degree.
+                Some of my other hobbies include skiing, hiking, biking, and photography.
+                All the background images on this website are taken by me.
+                I am a member of the boy scouts and currently have obtained the Life rank.
+            </p>
+        </div>
+        <div class="box">
+            <h2>Programming Languages I have experience in:</h2>
+            <ul class="pineappleBullet">
+                <li>Javascript - Made several games in Javascript</li>
+                <li>HTML/CSS - Made many webpages, including this one!! =)</li>
+                <li>Node.js - Did a little bit of work in Node.js, similar to JS</li>
+                <li>Java - Took the APCS Course</li>
+                <li>C# - Finished the W3Schools C# course for Unity use</li>
+            </ul>
+        </div>
+        <div class="box">
+            <h2>Contact Me</h2>
+            <p>I can be contacted through my Discord server, linked in the footer below or <a class="LinkDesign"
+                    href="https://discord.gg/Y3XNzmQpCe">here</a>.</p>
+            <p>I am currently setting up an email for my website, but I prefer to be contacted on discord. You can also
+                suggest games and stuff in my discord server.</p>
+            <div id="discordAPI">
+                <img src="images/pappy.png">
+                <div>
+                    <span id="discordServerAPIHeader"></span><br>
+                    <span id="discordServerAPIOnlineCount"></span>
+                </div>
             </div>
         </div>
     </div>
     <footer>
-        <p>&copy;2025, Pineapples.</p><br>
-        <a href="https://discord.gg/Y3XNzmQpCe"><img class="footerImage" src="https://cdn.prod.website-files.com/6257adef93867e50d84d30e2/66e3d7f4ef6498ac018f2c55_Symbol.svg"></a>
+        <p>&copy;2025, Pineapples. All rights reserved.</p><br>
+        <a href="https://discord.gg/Y3XNzmQpCe"><img class="footerImage"
+                src="https://cdn.prod.website-files.com/6257adef93867e50d84d30e2/66e3d7f4ef6498ac018f2c55_Symbol.svg"></a>
         <a href="https://github.com/Pineapples1000"><img class="footerImage" src="images/github-mark-white.png"></a>
         <a href="https://scratch.mit.edu/users/cuddlyscout"><img class="footerImage" src="images/scratch-logo.png"></a>
-        <!--<a href="https://www.khanacademy.org/profile/cuddlyscout"><img src="images/ka-logo.jpg" width="20px"></a>-->
+        <a href="https://www.khanacademy.org/profile/cuddlyscout"><img class="footerImage" src="images/ka-logo.png"
+                width="20px"></a>
     </footer>
-    <script src="bgscript.js"></script>
-    <script>
+</body>
+<script src="bgscript.js"></script>
+<script>
+    const header = document.getElementById('discordServerAPIHeader');
+    const onlineCount = document.getElementById('discordServerAPIOnlineCount');
+    var fetchDiscord = function () {
+        onlineCount.innerHTML = `<i>Loading...</i>`;
         fetch('https://discord.com/api/guilds/1409596172305170616/widget.json')
             .then(response => response.json()) // Parse the JSON response
             .then(data => {
-                const header = document.getElementById('discordServerAPIHeader');
-                header.textContent = data.name+" Discord Server";
-                const onlineCount = document.getElementById('discordServerAPIOnlineCount');
-                onlineCount.innerHTML = `<b>Online:</b> ${data.presence_count}<br><b>Offline:</b> ${data.members.length-data.presence_count}<br><b>Total Members:</b> ${data.members.length}`;
+                header.textContent = data.name + " Discord Server";
+                onlineCount.innerHTML = `<b>Online:</b> ${data.presence_count}`;
             })
-            .catch(error => console.error('Error fetching Discord API JSON:', error));
-    </script>
+            .catch(error => {
+                console.error('Error fetching Discord API JSON:', error);
+                header.textContent = "Loading Error";
+                onlineCount.innerHTML = `<a class="LinkDesign" onclick="fetchDiscord();">Try Again</a>`;
+            });
+    }
+    fetchDiscord();
+</script>
 
 </html>
