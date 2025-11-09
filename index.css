@@ -8,7 +8,8 @@ body {
 
 body {
     background-image: url("images/bg-images/img0.jpg");
-    background-size: 100vw auto;
+    background-size: cover;
+    background-position: center top;
     background-repeat: no-repeat;
     background-attachment: fixed;
     color: #ffffff;
@@ -62,12 +63,8 @@ body {
     display: inline-flex;
 }
 
-/******CANVAS STYLES********/
-#myCanvas {
-    display: block; 
-    margin: 0 auto 0 auto; 
-    border-radius: 3px;
-    outline: none;
+.updates li {
+    margin: 6px;
 }
 
 /******DISCORD API******/

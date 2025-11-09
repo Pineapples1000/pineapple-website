@@ -1,0 +1,3384 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>The Chest</title>
+    <script src="https://cdn.jsdelivr.net/gh/librepaint/drawlite@main/javascript/drawlite.js"></script>
+    <link rel="stylesheet" href="index.css">
+    <link rel="icon" href="images/pappy.png" type="image/png">
+    <link href='https://fonts.googleapis.com/css?family=Rubik' rel='stylesheet' type='text/css'>
+    <style>
+        /******CANVAS STYLES********/
+        #myCanvas {
+            display: block;
+            margin: 0 auto 0 auto;
+            border-radius: 3px;
+            outline: none;
+            max-width: 70vw;
+            max-height: 70vw;
+        }
+    </style>
+</head>
+
+<body id="bodyID">
+    <header>
+        <a class="navSection noTextDecoration" href="index.html">
+            <img src="images/pappy.png" id="navImg">
+            <span class="navText">Pineapple Programming</span>
+        </a>
+        <a class="navSection noTextDecoration" href="games.html">
+            <span class="navText">Games</span>
+        </a>
+        <a class="navSection noTextDecoration">
+            <span class="navText">Projects</span>
+        </a>
+    </header>
+    <div class="box">
+        <h1 class="center">Minesweeper</h1>
+        <canvas id="myCanvas" width="600" height="600"></canvas>
+        <h2>Description</h2>
+        <p>Classic Minesweeper, play until you have uncovered every space except all the mines.</p>
+        <h2>Controls</h2>
+        <p>Use mouse to control everything. Instructions found in game. <i>Trouble getting the canvas to stay? Try
+                clicking on the canvas
+                and pressing space.</i></p>
+        <h2>Credits</h2>
+        <p>Made May 2023 - September 2024, by Pineapples. The Original Graphics are copied from the original
+            Minesweeper, released by Microsoft, to whom I have absolutely no association. You can get Microsoft
+            Minesweeper for FREE at their website. HOWEVER, the code containing the pixel sprites does not belong to
+            them, and was reprogrammed by me.</p>
+        <h2>Changelog</h2>
+            <b>V2.6.0 12/27/2024</b>
+            -Added in-game settings<br>
+
+            <b>V2.5.2 12/26/2024</b>
+            - Updated how-to page
+            - Added DrawGrid() function
+            - Added Chording<br>
+
+            <b>V2.5.1 12/5/2024</b>
+            - Added Save code
+            - Added mobile mode<br>
+
+            <b>RELEASED 9/6/2024</b><br>
+
+            <b>V2.5.0 9/5/2024</b>
+            - Finished Shop
+            - Tidied up game
+            - Removed "Level creator"
+            - Added How Page<br>
+
+            <b>V2.4.2 8/29/2024</b>
+            - Modified Level Five to make it possible.
+            - COMPLETELY tidied and cleaned code up.
+            - Added Tileset Under The Sea<br>
+
+            <b>V2.4.1 8/28/2024</b>
+            - Added TileSet "Flower Field"<br>
+
+            <b>V2.4.0 8/27/2024</b>
+            - Made Working Shop Buttons
+            - Cleaned up Graphic Code Nicely<br>
+
+            <b>V2.3.6 8/19/2024</b>
+            - Fixed Shop Object function
+            - Began Shop<br>
+
+            <b>V2.3.5 8/12/2024</b>
+            - Added Shop Button Graphics, the Gift boxes and bags.<br>
+
+            <b>V2.3.4 8/8/2024</b>
+            - Added Hash function from my other WIP project, "Pineapple Bank Systems"<br>
+
+            <b>V2.3.3 7/11/2024</b>
+            - Implemented Custom Game Feature
+            - Updated SetUp() function to better suit Custom Mode
+            - Added Crystal weigher function...
+            - Started Shop<br>
+
+            <b>V2.3.2 7/10/2024</b>
+            - Put some variables into objects
+            - Started the crystal/shop feature
+            - Updated Levels slightly
+            - Added Pineapple logo
+            - Finished Unlocking Levels
+            - Added Crystal Gain per each level
+            - Stopped image rendering stroke issue to make graphics clearer<br>
+
+            <b>V2.3.1 7/9/2024</b>
+            - Added Menu
+            - Added Levels
+            - Added Play Graphic
+            - Add Lock Feature<br>
+
+            <b>V2.3.0 6/22/2024</b>
+            - Added Mobile Option
+            - Added Background
+            - Added Glazy Blue Background Button Design<br>
+
+            <b>V2.2.4 6/16/2024</b>
+            - Added Win scene<br>
+
+            <b>V2.2.3 5/15/2024</b>
+            - Finished Death Animation
+            - Implemented Death Reset<br>
+
+            <b>V2.2.2 5/14/2024</b>
+            - Added Red Bomb
+            - Implemented X graphic
+            - Clears bombs when dead
+            - Started Death Animation<br>
+
+            <b>V2.2.1 5/10/2024</b>
+            - Added X graphic
+            - Began end Game Scene<br>
+
+            <b>V2.2.0 5/3/2024</b>
+            - Added binomial coefficent function
+            - Added Fractuals
+            - Added Safe First Click
+            - Now you can't click while flagged<br>
+
+            <b>V2.1.3 4/28/2024</b>
+            - Fixed Auto-Clearing bug, split into two functions.<br>
+
+            <b>V2.1.2 4/25/2024</b>
+            - Finished Clicking
+            - Introduced Status Array
+            - Inplemented Flagging<br>
+
+            <b>V2.1.1 4/23/2024</b>
+            - Added semi-working clicking
+            - Started Auto-Clearing, Recurring Function Bug?<br>
+
+            <b>V2.1.0 4/21/2024</b>
+            - Added Good Pixel Graphics<br>
+
+            <b>V2.0.1 4/20/2024</b>
+            - Set up tile generation<br>
+
+            <b>V2.0.0 4/19/2024</b>
+            - Redid entire project
+            - Finished Generation
+            - Fixed Warping Tile Bug<br>
+
+            <b>V1.0.0 5/26/2023</b>
+            - Started project
+            - Made Base Code for game
+    </div>
+    <footer>
+        <p>&copy;2025, Pineapples. All rights reserved.</p><br>
+        <a href="https://discord.gg/Y3XNzmQpCe"><img class="footerImage"
+                src="https://cdn.prod.website-files.com/6257adef93867e50d84d30e2/66e3d7f4ef6498ac018f2c55_Symbol.svg"></a>
+        <a href="https://github.com/Pineapples1000"><img class="footerImage" src="images/github-mark-white.png"></a>
+        <a href="https://scratch.mit.edu/users/cuddlyscout"><img class="footerImage" src="images/scratch-logo.png"></a>
+        <a href="https://www.khanacademy.org/profile/cuddlyscout"><img class="footerImage" src="images/ka-logo.png"></a>
+    </footer>
+</body>
+
+<script type>
+    var canvas = document.getElementById("myCanvas");
+    var dl = Drawlite(canvas);
+    var { PI, TWO_PI, EPSILON, CORNER, CORNERS, LEFT, RIGHT, TOP, CENTER, BOTTOM, BASELINE, RADIUS, DEGREES, RADIANS, POINTS, LINES, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN, QUADS, QUAD_STRIP, CLOSE, ROUND, PROJECT, SQUARE, BEVEL, MITER, RGB, HSB, NATIVE, canvas, Color, PerlinNoise, PRNG, vec3, ctx, size, angleMode, noLoop, loop, frameRate, min, max, floor, round, ceil, abs, constrain, sq, sqrt, pow, sin, cos, tan, asin, acos, atan, atan2, log, random, dist, map, lerp, radians, degrees, color, lerpColor, fill, stroke, strokeWeight, strokeCap, strokeJoin, noStroke, noFill, beginShape, vertex, curveVertex, bezierVertex, bezierPoint, bezierTangent, splineTightness, splineVertex, splinePoint, splineTangent, lerpSpline, endShape, spline, snip, getColor, imageMode, image, loadImage, font, textSize, textAlign, textWidth, textAscent, textDescent, textLeading, text, background, point, line, rectMode, rect, triangle, quad, arc, circle, ellipseMode, ellipse, bezier, get, pushMatrix, popMatrix, resetMatrix, scale, translate, rotate, loadPixels, updatePixels, colorMode, enableContextMenu, millis, second, minute, hour, day, month, year, smooth, nosmooth, createGraphics, getProperties } = dl;
+    var currentLevel = 1;
+    /**
+                       Minesweeper V2.6.0
+                       Game by Pineapples, 
+                      April-September 2024
+    @NOTES {
+    - Might not work on KA Processing.JS due to KA limits
+    - Works embedded on HTML webpage... but PJS in HTML calls for MESSY CODE!!!
+    - Yes I know I am using up the global variable space, I started this a long time ago. I might eventually put it all into objects like I normally do.
+    - Level 7 and 8 are REALLY hard. So far ive made it past level 6.
+    }
+    @CREDITS {
+    
+        NOTE: LINKS MAY NOT BE PROVIDED DUE TO KA RULES
+        
+        NOTE: THE ONLY CREDIT YOU WILL FIND IN THIS SECTION IS THAT OF PEOPLE WHO ARE NOT KNOWN AS "PINEAPPLES." ANY CODE THAT IS NOT DIRECTLY REFERED TO IN THIS SECTION IS 100% WRITTEN BY PINEAPPLES, 2023-2024.
+    
+    - The Original Graphics are copied from the original Minesweeper, released by Microsoft, to whom I have absolutely no association.
+    -You can get Microsoft Minesweeper for FREE at their website.
+    -HOWEVER, the code containing the pixel sprites does not belong to them, and was reprogrammed by me.
+    
+    -The Pineapple Logo is also copied from freepix dot com visit their website to find it.
+    }
+    @TODO {
+    - Export to HTML and import fonts!
+    - Put variables into objects.
+    }
+    @CHANGELOG {
+    
+    V2.6.0  12/27/2024
+    - Added in-game settings
+    
+    V2.5.2  12/26/2024
+    - Updated how-to page
+    - Added DrawGrid() function
+    - Added Chording
+    
+    V2.5.1  12/5/2024
+    - Added Save code
+    - Added mobile mode
+    
+    RELEASED 9/6/2024
+    
+    V2.5.0     9/5/2024
+    - Finished Shop
+    - Tidied up game
+    - Removed "Level creator"
+    - Added How Page
+    
+    V2.4.2     8/29/2024
+    - Modified Level Five to make it possible.
+    - COMPLETELY tidied and cleaned code up.
+    - Added Tileset Under The Sea
+    
+    V2.4.1     8/28/2024
+    - Added TileSet "Flower Field"
+    
+    V2.4.0     8/27/2024
+    - Made Working Shop Buttons
+    - Cleaned up Graphic Code Nicely
+    
+    V2.3.6     8/19/2024
+    - Fixed Shop Object function
+    - Began Shop
+    
+    V2.3.5     8/12/2024
+    - Added Shop Button Graphics, the Gift boxes and bags.
+    
+    V2.3.4     8/8/2024
+    - Added Hash function from my other WIP project, "Pineapple Bank Systems"
+    
+    V2.3.3     7/11/2024
+    - Implemented Custom Game Feature
+    - Updated SetUp() function to better suit Custom Mode
+    - Added Crystal weigher function...
+    - Started Shop
+    
+    V2.3.2     7/10/2024
+    - Put some variables into objects
+    - Started the crystal/shop feature
+    - Updated Levels slightly
+    - Added Pineapple logo
+    - Finished Unlocking Levels
+    - Added Crystal Gain per each level
+    - Stopped image rendering stroke issue to make graphics clearer
+    
+    V2.3.1     7/9/2024
+    - Added Menu
+    - Added Levels
+    - Added Play Graphic
+    - Add Lock Feature
+    
+    V2.3.0     6/22/2024
+    - Added Mobile Option
+    - Added Background
+    - Added Glazy Blue Background Button Design
+    
+    V2.2.4     6/16/2024
+    - Added Win scene
+    
+    V2.2.3     5/15/2024
+    - Finished Death Animation
+    - Implemented Death Reset
+    
+    V2.2.2     5/14/2024
+    - Added Red Bomb
+    - Implemented X graphic
+    - Clears bombs when dead
+    - Started Death Animation
+    
+    V2.2.1     5/10/2024
+    - Added X graphic
+    - Began end Game Scene
+    
+    V2.2.0     5/3/2024
+    - Added binomial coefficent function
+    - Added Fractuals
+    - Added Safe First Click
+    - Now you can't click while flagged
+    
+    V2.1.3     4/28/2024
+    - Fixed Auto-Clearing bug, split into two functions.
+    
+    V2.1.2     4/25/2024
+    - Finished Clicking
+    - Introduced Status Array
+    - Inplemented Flagging
+    
+    V2.1.1     4/23/2024
+    - Added semi-working clicking
+    - Started Auto-Clearing, Recurring Function Bug?
+    
+    V2.1.0     4/21/2024
+    - Added Good Pixel Graphics
+    
+    V2.0.1     4/20/2024
+    - Set up tile generation
+    
+    V2.0.0     4/19/2024
+    - Redid entire project
+    - Finished Generation
+    - Fixed Warping Tile Bug
+    
+    V1.0.0     5/26/2023
+    - Started project
+    - Made Base Code for game
+    
+    }
+    @KNOWN_BUGS {
+    
+    Image Coord Spacing - MOSTLY Fixed
+    
+    Recurring Function Limit Bug - Fixed
+    
+    Warping Tile Bug - Fixed
+    
+    }
+    @EASTER_EGG {
+        Oh, but there is an easter egg...
+        I doubt anyone will find this...
+        Describe the egg itself if found.
+        
+        First Person To Find Easter Egg: Cataclysmic Code 🌩
+    }
+    **/
+    /*****************PINEAPPLE LOGO SETUP********************/
+    //{
+
+    //Define the pineapple
+    var Pineapple1 = {
+        //Drawing from freepix.com
+        Drawing: [
+            "------------",
+            "------------",
+            "------------",
+            "------------",
+            "------------",
+            "------------",
+            "----BBBB----",
+            "---BEAEAB---",
+            "--BAAEAAAB--",
+            "-BEAEAEAEAB-",
+            "-BAEAAAEAAB-",
+            "BAEAEAEAEAEB",
+            "BEAAAEAAAEAB",
+            "BAEAEAEAEAEB",
+            "BAAEAAAEAAAB",
+            "BAEAEAEAEAEB",
+            "BEAAAEAAAEAB",
+            "-BEAEAEAEAB-",
+            "--BEAAAEAB--",
+            "---BBBBBB---",
+        ],
+        Colors: {
+            "A": color(255, 255, 0),
+            "B": color(0, 0, 0),
+            "C": color(75, 128, 0),
+            "D": color(182, 245, 142),
+            "E": color(255, 174, 0),
+        },
+        Draw: function (x, y, size) {
+            noStroke();
+            for (var i = 0; i < this.Drawing.length; i++) {
+                for (var e = 0; e < this.Drawing[i].length; e++) {
+                    if (this.Drawing[i][e] !== "-") {
+                        fill(this.Colors[this.Drawing[i][e]]);
+                        rect(e * size + x, i * size + y, size, size);
+                    }
+                }
+            }
+        }
+    };
+    var Pineapple2 = {
+        //Drawing from freepix.com
+        Drawing: [
+            "-----B------",
+            "---BBDB-B---",
+            "--BDBDBBDB--",
+            "-BBDCDBDDBB-",
+            "BCBBCDCDBBCB",
+            "BCCBDCCDBCCB",
+            "-BCCDCCDCCB-",
+            "--BCCCCCCB--",
+            "----CCCC----",
+            "------------",
+            "------------",
+            "------------",
+            "------------",
+            "------------",
+            "------------",
+            "------------",
+            "------------",
+            "------------",
+            "------------",
+            "------------",
+        ],
+        Colors: {
+            "A": color(255, 255, 0),
+            "B": color(0, 0, 0),
+            "C": color(75, 128, 0),
+            "D": color(182, 245, 142),
+            "E": color(255, 174, 0),
+        },
+        Draw: function (x, y, size) {
+            noStroke();
+            for (var i = 0; i < this.Drawing.length; i++) {
+                for (var e = 0; e < this.Drawing[i].length; e++) {
+                    if (this.Drawing[i][e] !== "-") {
+                        fill(this.Colors[this.Drawing[i][e]]);
+                        rect(e * size + x, i * size + y, size, size);
+                    }
+                }
+            }
+        }
+    };
+
+    //Set the background to nothing
+    background(0, 0, 0, 0);
+
+    //Capture the pineapple
+    Pineapple1.Draw(0, 0, 5);
+    Pineapple1.Sprite = snip(0, 0, 60, 100);
+
+    //Repeat
+    background(0, 0, 0, 0);
+    Pineapple2.Draw(0, 0, 5);
+    Pineapple2.Sprite = snip(0, 0, 60, 100);
+
+    //}
+    /**********************VARIABLES**************************/
+    //{
+    //Mobile?
+    var mobile = true;
+
+    //chord click
+    var chordClick = false;//true = right;
+
+    //How Scene
+    var HowScene = 0;
+
+    //Set Font
+    //textFont(createFont("Pixelify Sans"));
+
+    //Set up Objects
+    var Menu = {
+        TriangleOffset: 0,
+        P_I_N_E_A_P_P_L_E: 0,
+        Name: 0,
+        NameD: ["", "Custom Game", "Levels", "Tile Museum"],
+        TextD: ["", "Create a custom match\nfor you and your\nfriends to play!\nCustomize components of\nthe game to get\nyourself the perfect game!", "Standard basic\nMinesweeper,\nwith 8 different unlockable\nlevels of play!", "View rare minesweeper \nsightings and other stuff!"],
+    };
+    var Levels = [
+        {
+            Difficulty: 0,
+            Size: 8,
+            Bombs: 5,
+            Locked: false,
+            Coins: 10,
+            Beaten: false,
+        },
+        {
+            Difficulty: 0,
+            Size: 10,
+            Bombs: 10,
+            Locked: true,
+            Coins: 20,
+            Beaten: false,
+        },
+        {
+            Difficulty: 0,
+            Size: 10,
+            Bombs: 15,
+            Locked: true,
+            Coins: 30,
+            Beaten: false,
+        },
+        {
+            Difficulty: 1,
+            Size: 15,
+            Bombs: 30,
+            Locked: true,
+            Coins: 50,
+            Beaten: false,
+        },
+        {
+            Difficulty: 1,
+            Size: 10,
+            Bombs: 20,
+            Locked: true,
+            Coins: 100,
+            Beaten: false,
+        },
+        {
+            Difficulty: 2,
+            Size: 20,
+            Bombs: 60,
+            Locked: true,
+            Coins: 120,
+            Beaten: false,
+        },
+        {
+            Difficulty: 2,
+            Size: 25,
+            Bombs: 100,
+            Locked: true,
+            Coins: 150,
+            Beaten: false,
+        },
+        {
+            Difficulty: 3,
+            Size: 30,
+            Bombs: 200,
+            Locked: true,
+            Coins: 300,
+            Beaten: false,
+        },
+    ];
+    for (var i = 0; i < currentLevel; i++) {
+        Levels[i].Locked = false;
+    }
+    var Game = {
+        Places: [],
+        Status: [],
+        //Status Key:
+        /**
+            0 - Not Clicked or Flagged
+            1 - Clicked
+            2 - Flagged
+        **/
+        LBN: 0,
+        Size: 10,
+        CurrentLevel: 7,
+    };//Game.
+    var Shop = {
+        Crystals: 0,
+        Type: 0,
+        Gifts: function (x, y, w, h, boxColor, ribbonColor, ribbonWidth) {
+            y -= 1;
+            fill(boxColor);
+            noStroke();
+            rect(x, y, w, h, 3);
+            fill(ribbonColor);
+            rect(x + ((w - ribbonWidth) / 2), y, ribbonWidth, h);
+            rect(x, y + ((h - ribbonWidth) / 2), w, ribbonWidth);
+        },
+        Bags: function (x, y, w, h, boxColor, handleColor) {
+            y -= 1;
+            fill(boxColor);
+            noStroke();
+            rect(x, y, w, h);
+            strokeWeight(2);
+            stroke(handleColor);
+            line((x + (w / 2) - 4), y, (x + (w / 2) - 4), y - 3);
+            line((x + (w / 2) + 4), y, (x + (w / 2) + 4), y - 3);
+            noFill();
+            arc(x + (w / 2), y - 3, 8, 8, 180, 360);
+        },
+        TileShop: [
+            {
+                Name: "Original",
+                Purchased: true,
+                Price: 0,
+            },
+            {
+                Name: "Flower Field",
+                Purchased: false,
+                Price: 40,
+            },
+            {
+                Name: "Underwater",
+                Purchased: false,
+                Price: 50,
+            },
+        ],
+        TileSlideNumber: 0,
+
+    };
+    var Custom = {
+        CustomSize: 10,
+        CustomBombNumber: 10,
+        findCoinsRelevant: function (Csize, Cbombs) {
+            return ((Csize - 4) * 2) / ((Csize * Csize) / (Cbombs * 2));
+        },
+        CrystalGain: 1,
+    };
+
+    //Set up Shop variables
+    var TileNumber = 0;
+    //var Crystals = 0;
+
+    //Setup Hash Function
+    function Hash(s) {
+        //THank you bryc from Github!
+        for (var i = 0, h = 0xdeadbeef; i < s.length; i++) {
+            h = Math.imul(h ^ s.charCodeAt(i), 2654435761);
+        }
+        return (h ^ h >>> 16) >>> 0;
+    }
+
+    //Scene
+    var mode = "FirstScene";
+
+    //Mobile Mode: Nope
+    //var mobile = false;
+
+    //Gameplay Variables {
+    var NBombs = 0;
+    var Died = false;
+    var DiedScene;
+    var NumBombs = 0;
+    var Flags;
+    var First = false;//First Turn
+    var Bombcount = 0;//NOT NEEDED YET 
+    var Checklist = [];
+    var rdom;
+    var SizeP;
+    var clicked = false;
+    var clicking = false;
+    var TimeSD = 0;
+    var left = false;
+    var Virus = [];
+    var bombDeaths = "\u0054\u0068\u0069\u0073\u0020\u0050\u0072\u006f\u0067\u0072\u0061\u006d\u0020\u0077\u0061\u0073\u0020\u006d\u0061\u0064\u0065\u0020\u0062\u0079\u0020\u0050\u0069\u006e\u0065\u0061\u0070\u0070\u006c\u0065\u0073\u0020\u0028\u0063\u0075\u0064\u0064\u006c\u0079\u0073\u0063\u006f\u0075\u0074\u0029\u0020\u006f\u006e\u0020\u004b\u0068\u0061\u006e\u0020\u0041\u0063\u0061\u0064\u0065\u006d\u0079\u0020\u0069\u006e\u0020\u0032\u0030\u0032\u0034\u0020\u0061\u006e\u0064\u0020\u0069\u0073\u0020\u006c\u0069\u0063\u0065\u006e\u0063\u0065\u0064\u0020\u0075\u006e\u0064\u0065\u0072\u0020\u0074\u0068\u0065\u0020\u004d\u0049\u0054\u0020\u006c\u0069\u0063\u0065\u006e\u0073\u0065\u002e";
+    //}
+
+    //Losing Object
+    var DieText = {
+        Text: "",
+        Digit: 0,
+        Current: "",
+        TextFade: 0,
+    };
+
+    //}
+    /***********************GRAPHICS**************************/
+    //{
+    //Define Graphics
+    var TileSets = [
+        //Original
+        {
+            BasicTile: {
+                Drawing: [
+                    "aaaaaaaaaaaaaaac",
+                    "aaaaaaaaaaaaaacb",
+                    "aaccccccccccccbb",
+                    "aaccccccccccccbb",
+                    "aaccccccccccccbb",
+                    "aaccccccccccccbb",
+                    "aaccccccccccccbb",
+                    "aaccccccccccccbb",
+                    "aaccccccccccccbb",
+                    "aaccccccccccccbb",
+                    "aaccccccccccccbb",
+                    "aaccccccccccccbb",
+                    "aaccccccccccccbb",
+                    "aaccccccccccccbb",
+                    "acbbbbbbbbbbbbbb",
+                    "cbbbbbbbbbbbbbbb",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(255, 255, 255),
+                    "b": color(128, 128, 128),
+                    "c": color(192, 192, 192),
+                },
+            },
+            BasicFlag: {
+                Drawing: [
+                    "aaaaaaaaaaaaaaac",
+                    "aaaaaaaaaaaaaacb",
+                    "aaccccccccccccbb",
+                    "aacccccddcccccbb",
+                    "aacccddddcccccbb",
+                    "aaccdddddcccccbb",
+                    "aacccddddcccccbb",
+                    "aacccccddcccccbb",
+                    "aaccccccecccccbb",
+                    "aaccccccecccccbb",
+                    "aacccceeeeccccbb",
+                    "aacceeeeeeeeccbb",
+                    "aacceeeeeeeeccbb",
+                    "aaccccccccccccbb",
+                    "acbbbbbbbbbbbbbb",
+                    "cbbbbbbbbbbbbbbb",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(255, 255, 255),
+                    "b": color(128, 128, 128),
+                    "c": color(192, 192, 192),
+                    "d": color(255, 0, 0),
+                    "e": color(0, 0, 0),
+                },
+            },
+            B1: {
+                Drawing: [
+                    "bbbbbbbbbbbbbbbb",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaccaaaaaa",
+                    "baaaaaacccaaaaaa",
+                    "baaaaaccccaaaaaa",
+                    "baaaacccccaaaaaa",
+                    "baaaaaacccaaaaaa",
+                    "baaaaaacccaaaaaa",
+                    "baaaaaacccaaaaaa",
+                    "baaaaaacccaaaaaa",
+                    "baaaacccccccaaaa",
+                    "baaaacccccccaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(192, 192, 192),
+                    "b": color(128, 128, 128),
+                    "c": color(0, 0, 255),
+                },
+            },
+            B2: {
+                Drawing: [
+                    "bbbbbbbbbbbbbbbb",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaccccccccaaaa",
+                    "baaccccccccccaaa",
+                    "baacccaaaacccaaa",
+                    "baaaaaaaaacccaaa",
+                    "baaaaaaaccccaaaa",
+                    "baaaaacccccaaaaa",
+                    "baaacccccaaaaaaa",
+                    "baaccccaaaaaaaaa",
+                    "baaccccccccccaaa",
+                    "baaccccccccccaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(192, 192, 192),
+                    "b": color(128, 128, 128),
+                    "c": color(9, 131, 9),
+                },
+            },
+            B3: {
+                Drawing: [
+                    "bbbbbbbbbbbbbbbb",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baacccccccccaaaa",
+                    "baaccccccccccaaa",
+                    "baaaaaaaaacccaaa",
+                    "baaaaaaaaacccaaa",
+                    "baaaaaccccccaaaa",
+                    "baaaaaccccccaaaa",
+                    "baaaaaaaaacccaaa",
+                    "baaaaaaaaacccaaa",
+                    "baaccccccccccaaa",
+                    "baacccccccccaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(192, 192, 192),
+                    "b": color(128, 128, 128),
+                    "c": color(255, 0, 0),
+                },
+            },
+            B4: {
+                Drawing: [
+                    "bbbbbbbbbbbbbbbb",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaacccacccaaaa",
+                    "baaaacccacccaaaa",
+                    "baaacccaacccaaaa",
+                    "baaacccaacccaaaa",
+                    "baaccccccccccaaa",
+                    "baaccccccccccaaa",
+                    "baaaaaaaacccaaaa",
+                    "baaaaaaaacccaaaa",
+                    "baaaaaaaacccaaaa",
+                    "baaaaaaaacccaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(192, 192, 192),
+                    "b": color(128, 128, 128),
+                    "c": color(9, 8, 132),
+                },
+            },
+            B5: {
+                Drawing: [
+                    "bbbbbbbbbbbbbbbb",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaccccccccccaaa",
+                    "baaccccccccccaaa",
+                    "baacccaaaaaaaaaa",
+                    "baacccaaaaaaaaaa",
+                    "baacccccccccaaaa",
+                    "baaccccccccccaaa",
+                    "baaaaaaaaacccaaa",
+                    "baaaaaaaaacccaaa",
+                    "baaccccccccccaaa",
+                    "baacccccccccaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(192, 192, 192),
+                    "b": color(128, 128, 128),
+                    "c": color(255, 230, 0),
+                },
+            },
+            B6: {
+                Drawing: [
+                    "bbbbbbbbbbbbbbbb",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaacccccccccaaa",
+                    "baaccccccccccaaa",
+                    "baacccaaaaaaaaaa",
+                    "baacccaaaaaaaaaa",
+                    "baacccccccccaaaa",
+                    "baaccccccccccaaa",
+                    "baacccaaaacccaaa",
+                    "baacccaaaacccaaa",
+                    "baaccccccccccaaa",
+                    "baaaccccccccaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(192, 192, 192),
+                    "b": color(128, 128, 128),
+                    "c": color(8, 132, 133),
+                },
+            },
+            B7: {
+                Drawing: [
+                    "bbbbbbbbbbbbbbbb",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaccccccccccaaa",
+                    "baaccccccccccaaa",
+                    "baaaaaaaaacccaaa",
+                    "baaaaaaaaacccaaa",
+                    "baaaaaaaacccaaaa",
+                    "baaaaaaaacccaaaa",
+                    "baaaaaaacccaaaaa",
+                    "baaaaaaacccaaaaa",
+                    "baaaaaacccaaaaaa",
+                    "baaaaaacccaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(192, 192, 192),
+                    "b": color(128, 128, 128),
+                    "c": color(0, 0, 0),
+                },
+            },
+            B8: {
+                Drawing: [
+                    "bbbbbbbbbbbbbbbb",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaccccccccaaaa",
+                    "baaccccccccccaaa",
+                    "baacccaaaacccaaa",
+                    "baacccaaaacccaaa",
+                    "baaaccccccccaaaa",
+                    "baaaccccccccaaaa",
+                    "baacccaaaacccaaa",
+                    "baacccaaaacccaaa",
+                    "baaccccccccccaaa",
+                    "baaaccccccccaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(192, 192, 192),
+                    "b": color(128, 128, 128),
+                    "c": color(132, 132, 132),
+                },
+            },
+            BasicBomb: {
+                Drawing: [
+                    "bbbbbbbbbbbbbbbb",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaacaaaaaaa",
+                    "baaaaaaacaaaaaaa",
+                    "baaacacccccacaaa",
+                    "baaaacccccccaaaa",
+                    "baaaccddcccccaaa",
+                    "baaaccddcccccaaa",
+                    "baccccccccccccca",
+                    "baaacccccccccaaa",
+                    "baaacccccccccaaa",
+                    "baaaacccccccaaaa",
+                    "baaacacccccacaaa",
+                    "baaaaaaacaaaaaaa",
+                    "baaaaaaacaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(192, 192, 192),
+                    "b": color(128, 128, 128),
+                    "c": color(0, 0, 0),
+                    "d": color(255, 255, 255),
+                },
+            },
+            BasicRB: {
+                Drawing: [
+                    "bbbbbbbbbbbbbbbb",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaacaaaaaaa",
+                    "baaaaaaacaaaaaaa",
+                    "baaacacccccacaaa",
+                    "baaaacccccccaaaa",
+                    "baaaccddcccccaaa",
+                    "baaaccddcccccaaa",
+                    "baccccccccccccca",
+                    "baaacccccccccaaa",
+                    "baaacccccccccaaa",
+                    "baaaacccccccaaaa",
+                    "baaacacccccacaaa",
+                    "baaaaaaacaaaaaaa",
+                    "baaaaaaacaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(255, 0, 0),
+                    "b": color(128, 128, 128),
+                    "c": color(0, 0, 0),
+                    "d": color(255, 255, 255),
+                },
+            },
+            BlankTile: {
+                Drawing: [
+                    "bbbbbbbbbbbbbbbb",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                    "baaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(192, 192, 192),
+                    "b": color(128, 128, 128),
+                },
+            },
+            RedX: {
+                Drawing: [
+                    "ddaaaaaaaaaaaadd",
+                    "dddaaaaaaaaaaddd",
+                    "adddccccccccdddb",
+                    "aadddccccccdddbb",
+                    "aacdddccccdddcbb",
+                    "aaccdddccdddccbb",
+                    "aacccddddddcccbb",
+                    "aaccccddddccccbb",
+                    "aaccccddddccccbb",
+                    "aacccddddddcccbb",
+                    "aaccdddccdddccbb",
+                    "aacdddccccdddcbb",
+                    "aadddccccccdddbb",
+                    "adddccccccccdddb",
+                    "dddbbbbbbbbbbddd",
+                    "ddbbbbbbbbbbbbdd",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(255, 255, 255),
+                    "b": color(128, 128, 128),
+                    "c": color(192, 192, 192),
+                    "d": color(255, 0, 0),
+                },
+            },
+        },
+        //Relish Flower Field
+        {
+            BasicTile: {
+                Drawing: [
+                    "aaaaaaaaaaaaaaaa",
+                    "abbbbbbfbfbbbbba",
+                    "abddbbbfffbfbfba",
+                    "adaadbbfffbfffba",
+                    "adaadbbbfbbfffba",
+                    "abddbddbcbbeefba",
+                    "abcbdaadcbeeeeba",
+                    "acbbdaadceeddeea",
+                    "acbbcddbceeddeea",
+                    "abcbcbbcbbeeeeba",
+                    "abbcbbbcbcbeecba",
+                    "abbcbbbcbcbcbbca",
+                    "abbcbbbccbbbcbca",
+                    "abbbbbbcbbbbcbca",
+                    "abbbbbbbbbbbbbca",
+                    "aaaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(59, 28, 0),
+                    "b": color(0, 255, 30),
+                    "c": color(0, 64, 7),
+                    "d": color(242, 255, 0),
+                    "e": color(255, 255, 255),
+                    "f": color(255, 0, 0),
+                },
+            },
+            BasicFlag: {
+                Drawing: [
+                    "aaaaaaaaaaaaaaaa",
+                    "adccddccddccddca",
+                    "accddccddccddcca",
+                    "acddccddccddccda",
+                    "addccddccddccdda",
+                    "adccddccddccddca",
+                    "accddccddccddcca",
+                    "acddccddccddccda",
+                    "addccddccddccdda",
+                    "adccddccddccddca",
+                    "accddccddccddcca",
+                    "acddccddccddccda",
+                    "addccddccddccdda",
+                    "adccddccddccddca",
+                    "accddccddccddcca",
+                    "aaaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(59, 28, 0),
+                    "b": color(112, 84, 0),
+                    "c": color(255, 255, 0),
+                    "d": color(0, 0, 0),
+                },
+            },
+            B1: {
+                Drawing: [
+                    "aaaaaaaaaaaaaaaa",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbccbbbbbba",
+                    "abbbbbbbcbbbbbba",
+                    "abbbbbbbcbbbbbba",
+                    "abbbbbbbcbbbbbba",
+                    "abbbbbbbcbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "aaaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(59, 28, 0),
+                    "b": color(112, 84, 0),
+                    "c": color(255, 255, 0)
+                },
+            },
+            B2: {
+                Drawing: [
+                    "aaaaaaaaaaaaaaaa",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbccccbbbbba",
+                    "abbbbbbbbcbbbbba",
+                    "abbbbbccccbbbbba",
+                    "abbbbbcbbbbbbbba",
+                    "abbbbbccccbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "aaaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(59, 28, 0),
+                    "b": color(112, 84, 0),
+                    "c": color(255, 255, 0)
+                },
+            },
+            B3: {
+                Drawing: [
+                    "aaaaaaaaaaaaaaaa",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbccccbbbbba",
+                    "abbbbbbbbcbbbbba",
+                    "abbbbbccccbbbbba",
+                    "abbbbbbbbcbbbbba",
+                    "abbbbbccccbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "aaaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(59, 28, 0),
+                    "b": color(112, 84, 0),
+                    "c": color(255, 255, 0)
+                },
+            },
+            B4: {
+                Drawing: [
+                    "aaaaaaaaaaaaaaaa",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbcbbbbbba",
+                    "abbbbbbccbbbbbba",
+                    "abbbbbcbcbbbbbba",
+                    "abbbbbccccbbbbba",
+                    "abbbbbbbcbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "aaaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(59, 28, 0),
+                    "b": color(112, 84, 0),
+                    "c": color(255, 255, 0)
+                },
+            },
+            B5: {
+                Drawing: [
+                    "aaaaaaaaaaaaaaaa",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbccccbbbbba",
+                    "abbbbbcbbbbbbbba",
+                    "abbbbbccccbbbbba",
+                    "abbbbbbbbcbbbbba",
+                    "abbbbbccccbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "aaaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(59, 28, 0),
+                    "b": color(112, 84, 0),
+                    "c": color(255, 255, 0)
+                },
+            },
+            B6: {
+                Drawing: [
+                    "aaaaaaaaaaaaaaaa",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbccccbbbbba",
+                    "abbbbbcbbbbbbbba",
+                    "abbbbbccccbbbbba",
+                    "abbbbbcbbcbbbbba",
+                    "abbbbbccccbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "aaaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(59, 28, 0),
+                    "b": color(112, 84, 0),
+                    "c": color(255, 255, 0)
+                },
+            },
+            B7: {
+                Drawing: [
+                    "aaaaaaaaaaaaaaaa",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbccccbbbbba",
+                    "abbbbbcbbcbbbbba",
+                    "abbbbbbbbcbbbbba",
+                    "abbbbbbbcbbbbbba",
+                    "abbbbbbbcbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "aaaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(59, 28, 0),
+                    "b": color(112, 84, 0),
+                    "c": color(255, 255, 0)
+                },
+            },
+            B8: {
+                Drawing: [
+                    "aaaaaaaaaaaaaaaa",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbccccbbbbba",
+                    "abbbbbcbbcbbbbba",
+                    "abbbbbccccbbbbba",
+                    "abbbbbcbbcbbbbba",
+                    "abbbbbccccbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "aaaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(59, 28, 0),
+                    "b": color(112, 84, 0),
+                    "c": color(255, 255, 0)
+                },
+            },
+            BasicBomb: {
+                Drawing: [
+                    "aaaaaaaaaaaaaaaa",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbddddddddbbba",
+                    "abbbbccccccbbbba",
+                    "abbbbccccccbbbba",
+                    "abbbbccccccbbbba",
+                    "abbbbccccccbbbba",
+                    "abbbddddddddbbba",
+                    "abbbbccccccbbbba",
+                    "abbbbccccccbbbba",
+                    "abbbbccccccbbbba",
+                    "abbbbccccccbbbba",
+                    "abbbddddddddbbba",
+                    "abbbbbbbbbbbbbba",
+                    "aaaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(59, 28, 0),
+                    "b": color(112, 84, 0),
+                    "c": color(255, 247, 0),
+                    "d": color(255, 183, 0),
+                },
+            },
+            BasicRB: {
+                Drawing: [
+                    "aaaaaaaaaaaaaaaa",
+                    "abebebbebfbbbeba",
+                    "abbfbbebbbbebfba",
+                    "abbbdddeddddebba",
+                    "afbbbccccccfebba",
+                    "abbebccccccfebfa",
+                    "abebbccccccfeeba",
+                    "abbfbccccccffbba",
+                    "abbbddddddddfbea",
+                    "abfbbccccccefbba",
+                    "abbbbccccccefbea",
+                    "aebbbccccccefbba",
+                    "abbbbccccccebbba",
+                    "abebdddddfffeffa",
+                    "abbbbbbeeeeeeefa",
+                    "aaaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(59, 28, 0),
+                    "b": color(112, 84, 0),
+                    "c": color(255, 247, 0),
+                    "d": color(255, 183, 0),
+                    "e": color(34, 255, 0),
+                    "f": color(12, 186, 0),
+                    "g": color(0, 0, 0),
+                },
+            },
+            BlankTile: {
+                Drawing: [
+                    "aaaaaaaaaaaaaaaa",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbba",
+                    "aaaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(59, 28, 0),
+                    "b": color(112, 84, 0),
+                },
+            },
+            RedX: {
+                Drawing: [
+                    "aaaaaaaaaaaaaaaa",
+                    "aeecddccddccdeea",
+                    "aeeedccddccdeeea",
+                    "aceeecddccdeeeda",
+                    "addeeedccdeeedda",
+                    "adcceeecdeeeddca",
+                    "accddeeeeeeddcca",
+                    "acddcceeeeddccda",
+                    "addccdeeeedccdda",
+                    "adccdeeeeeecddca",
+                    "accdeeeddeeedcca",
+                    "acdeeeddcceeecda",
+                    "adeeeddccddeeeda",
+                    "aeeeddccddcceeea",
+                    "aeeddccddccddeea",
+                    "aaaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(59, 28, 0),
+                    "b": color(112, 84, 0),
+                    "c": color(255, 255, 0),
+                    "d": color(0, 0, 0),
+                    "e": color(255, 0, 0)
+                },
+            },
+        },
+        //Under the sea
+        {
+            BasicTile: {
+                Drawing: [
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(0, 98, 255),
+                },
+            },
+            BasicFlag: {
+                Drawing: [
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaabbaaaaaaa",
+                    "aaaaaabbbbaaaaaa",
+                    "aaaaaabbbbaaaaaa",
+                    "aaaaaadaadaaaaaa",
+                    "aaaaaaddddaaaaaa",
+                    "aaaaaadaadaaaaaa",
+                    "aaaaabbbbbbaaaaa",
+                    "aaaaccccccccaaaa",
+                    "aaaaabbbbbbaaaaa",
+                    "aaaaabaaaabaaaaa",
+                    "aaaaabbbbbbaaaaa",
+                    "aaaaabaaaabaaaaa",
+                    "aaaabbbbbbbbaaaa",
+                    "aaaabbbbbbbbaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(0, 98, 255),
+                    "b": color(255, 0, 0),
+                    "c": color(148, 0, 0),
+                    "d": color(255, 255, 255),
+                },
+            },
+            B1: {
+                Drawing: [
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaadcdaaaaaaa",
+                    "aaaaccdcdcaaaaaa",
+                    "aaacccdcdcdacaaa",
+                    "aaacfcdcdcdccaaa",
+                    "aaacccdcdcdccaaa",
+                    "aaaaccdcdcaacaaa",
+                    "aaaaaadcdaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaafaaaaaaaa",
+                    "aaaaaaafaaaaaaaa",
+                    "aaaaaaafaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(27, 0, 230),
+                    "b": color(2, 79, 3),
+                    "c": color(255, 140, 0),
+                    "d": color(255, 255, 255),
+                    "f": color(3, 3, 3),
+                },
+            },
+            B2: {
+                Drawing: [
+                    "daadaadaaadaaaaa",
+                    "aadaaaaadaaaadaa",
+                    "daaadaaaaadaaaaa",
+                    "aaaaaaaaabaaaada",
+                    "aadaaaadaabadaaa",
+                    "aaaaaaaaaabbaada",
+                    "aaaaadaaabbbaaaa",
+                    "aaadaaaadbbaadaa",
+                    "aaaaabaaabbbaaaa",
+                    "aaaabadaaabbbaaa",
+                    "aaaabbaadabbbaaa",
+                    "aaaaabbaabbbbaaa",
+                    "aaaabbfafbbbaaaa",
+                    "aaaabbfafaaaaaaa",
+                    "aaaaaafafaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(23, 0, 201),
+                    "b": color(2, 79, 3),
+                    "c": color(0, 94, 255),
+                    "d": color(125, 164, 255),
+                    "f": color(3, 3, 3),
+                },
+            },
+            B3: {
+                Drawing: [
+                    "aaaaaaaaaaaaadaa",
+                    "aaaaaaaaaaaaadaa",
+                    "aaaaaaaaaaaaadaa",
+                    "aaaaaaaaaaaaadaa",
+                    "aaaaaaaaaaaaadaa",
+                    "aaaaaaaaaaaadaaa",
+                    "aaaaaaaaaaaadaaa",
+                    "aaaaaaaaaaaadaaa",
+                    "aaaaaaaaaaadaaaa",
+                    "aaaaaaaaacacaaaa",
+                    "aaaaaaaaaccaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaafafafaaaaaa",
+                    "aaaaafafafaaaaaa",
+                    "aaaaafafafaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(15, 0, 181),
+                    "c": color(140, 140, 140),
+                    "d": color(0, 0, 0),
+                    "f": color(3, 3, 3),
+                },
+            },
+            B4: {
+                Drawing: [
+                    "accaaaaaaaaaaaaa",
+                    "aaccaaaaaaaaaaaa",
+                    "ccabacaaaaaaaaaa",
+                    "accbccaaaaaaaaaa",
+                    "aaabcaaaaaaaaaaa",
+                    "cccbaaaaaaaaaaaa",
+                    "accbacaaaaddaada",
+                    "aaabccaaadfddada",
+                    "aaabccaaadddddda",
+                    "ccabaaaaaaddaada",
+                    "accbaccaaaaaaaaa",
+                    "aacbccaaaaaaaaaa",
+                    "aaabafafafaaaaaa",
+                    "aaaaafafafaaaaaa",
+                    "aaaaafaafaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(10, 0, 153),
+                    "b": color(2, 79, 3),
+                    "c": color(20, 153, 0),
+                    "d": color(0, 255, 234),
+                    "f": color(3, 3, 3),
+                },
+            },
+            B5: {
+                Drawing: [
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaacaaaaaaaaaa",
+                    "aaaaccaacaaaaaaa",
+                    "aacacaaacaaaaaaa",
+                    "aacacacacaaabaaa",
+                    "aacccacacaaaabaa",
+                    "aaaacccccaaabbaa",
+                    "aaaaccaaaaabbaaa",
+                    "aaaaaafafaabbbaa",
+                    "aaaaaafafaaabbaa",
+                    "aaaaaaafaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(6, 0, 128),
+                    "b": color(2, 79, 3),
+                    "c": color(252, 161, 255),
+                    "f": color(255, 255, 255),
+                },
+            },
+            B6: {
+                Drawing: [
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaadcccaaaa",
+                    "aaaacaacdccgcaaa",
+                    "aaaaccdcdccgccaa",
+                    "aaaaccdcdcccccaa",
+                    "aaaaccdcdcccccaa",
+                    "aaaacaacdccccaaa",
+                    "aaaaaaaadcccaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaafafafaaaaa",
+                    "aaaaaafafafaaaaa",
+                    "aaaaaaafaafaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(3, 0, 99),
+                    "b": color(2, 79, 3),
+                    "c": color(143, 0, 0),
+                    "d": color(255, 255, 255),
+                    "f": color(255, 255, 255),
+                    "g": color(0, 0, 0)
+                },
+            },
+            B7: {
+                Drawing: [
+                    "aaaacaaacaaaaaaa",
+                    "aaacaaaaacaaaaaa",
+                    "aaaccaaaccaaaaaa",
+                    "acaacccccaacaaaa",
+                    "acccccccccccaaaa",
+                    "caacccccccaacaaa",
+                    "cccccccccccccaaa",
+                    "aaacccccccaaaaaa",
+                    "aacccccccccaaaaa",
+                    "aacacccccacaaaaa",
+                    "aacaadadaacaaaaa",
+                    "aaccaaaaaccaaaaa",
+                    "aacafafafafaaaaa",
+                    "aaacfafafcfaaaaa",
+                    "aaaaafaafafaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(1, 0, 74),
+                    "b": color(2, 79, 3),
+                    "c": color(255, 0, 0),
+                    "d": color(0, 0, 0),
+                    "f": color(255, 255, 255),
+                },
+            },
+            B8: {
+                Drawing: [
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaddaaaaaaaddaaa",
+                    "aaccaaaaaaaccaaa",
+                    "aaddaccaaaaddaaa",
+                    "acccaddaaaaccaaa",
+                    "addaaccaaaacccaa",
+                    "accaadddaaaaccaa",
+                    "addaaaccaaaaccaa",
+                    "accaaaccaaaaccaa",
+                    "accaaaaaaaaaaaaa",
+                    "aaafafafafafaaaa",
+                    "aaafafafafafaaaa",
+                    "aaaafaafafafaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(0, 0, 43),
+                    "b": color(2, 79, 3),
+                    "c": color(145, 0, 0),
+                    "d": color(133, 133, 133),
+                    "f": color(255, 255, 255),
+                },
+            },
+            BasicBomb: {
+                Drawing: [
+                    "aababababababbaa",
+                    "aabbabababababaa",
+                    "aababababababbaa",
+                    "aabbabababababaa",
+                    "aababababababbaa",
+                    "aabbabababababaa",
+                    "aababababababbaa",
+                    "aabbabababababaa",
+                    "aababababababbaa",
+                    "aabbabababababaa",
+                    "aababababababbaa",
+                    "aabbabababababaa",
+                    "aababababababbaa",
+                    "aabbabababababaa",
+                    "abbbbbbbbbbbbbba",
+                    "aabaaaaaaaaaabaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(0, 0, 28),
+                    "b": color(0, 0, 0),
+                },
+            },
+            BasicRB: {
+                Drawing: [
+                    "aababababababbaa",
+                    "aabbabababababaa",
+                    "aababababababbaa",
+                    "aabbabababababaa",
+                    "aababadcdababbaa",
+                    "aabaccdcdcababaa",
+                    "aabcccdcdcdacbaa",
+                    "aabcbcdcdcdccbaa",
+                    "aabcccdcdcdccbaa",
+                    "aabbccdcdcabcbaa",
+                    "aababadcdababbaa",
+                    "aabbabababababaa",
+                    "aababababababbaa",
+                    "aabbabababababaa",
+                    "abbbbbbbbbbbbbba",
+                    "aabaaaaaaaaaabaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(0, 0, 28),
+                    "b": color(0, 0, 0),
+                    "c": color(255, 140, 0),
+                    "d": color(255, 255, 255),
+                },
+            },
+            BlankTile: {
+                Drawing: [
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaabaaaaaa",
+                    "aaaaaaaaaabaaaaa",
+                    "aaaaaaaaaabbaaaa",
+                    "aaaaaaaaabbbaaaa",
+                    "aaaaaaaaabbaaaaa",
+                    "aaaaabaaabbbaaaa",
+                    "aaaabaaaaabbbaaa",
+                    "aaaabbaaaabbbaaa",
+                    "aaaaabbaabbbbaaa",
+                    "aaaabbbaabbbaaaa",
+                    "aaaabbaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(30, 0, 255),
+                    "b": color(2, 79, 3),
+                },
+            },
+            RedX: {
+                Drawing: [
+                    "aaaaaaaaaaaaaaaa",
+                    "aaaaaaa0baaaaaaa",
+                    "aaaaaab0b0aaaaaa",
+                    "aaaaaa0b0baaaaaa",
+                    "aaaaaadaa0aaaaaa",
+                    "aaaaaa0d0daaaaaa",
+                    "aaaaaa0aa0aaaaaa",
+                    "aaaaabb0b0baaaaa",
+                    "aaaa0c0c0c0caaaa",
+                    "aaaaa0bbb0baaaaa",
+                    "aaaaabaaaabaaaaa",
+                    "aaaaa0b0bbbaaaaa",
+                    "aaaaab0aaa0aaaaa",
+                    "aaaa0bb0b0b0aaaa",
+                    "aaaab00b0b00aaaa",
+                    "aaaaaaaaaaaaaaaa",
+                ],
+                Colors: {//Now let's define our pallete.
+                    "a": color(0, 98, 255),
+                    "b": color(145, 69, 69),
+                    "c": color(79, 25, 25),
+                    "d": color(158, 158, 158),
+                    "0": color(0, 0, 0),
+                },
+            },
+        },
+    ];
+
+    //Crystals
+    var CrystalString = {
+        Drawing: [
+            "-------a--------",
+            "------aba-------",
+            "-----acbba------",
+            "-----acbba------",
+            "aaa--adbca------",
+            "acba-adbcaaaa---",
+            "aedbaadbcabca---",
+            "-aedcadccacdaaaa",
+            "--addaebcadabbca",
+            "aaaaeaebdaadcbda",
+            "adccaafedaddcdda",
+            "aecdeaffadddffa-",
+            "aeedeeaaeddffa--",
+            "-affefafedffa---",
+            "--affafffffa----",
+            "---aaaaaaaa-----",
+        ],
+        Colors: {//Now let's define our pallete.
+            "a": color(35, 75, 78),
+            "b": color(255, 249, 212),
+            "c": color(187, 227, 165),
+            "d": color(109, 200, 95),
+            "e": color(74, 161, 82),
+            "f": color(50, 117, 73)
+        },
+    };
+
+    //Convert the Graphic string to an image
+    var ConvertArt = function (art, x, y, size) {
+        size = size / art.Drawing.length;
+        //strokeWeight(2);
+        noStroke();
+        for (var i = 0; i < art.Drawing.length; i++) {
+            for (var e = 0; e < art.Drawing[i].length; e++) {
+                if (art.Drawing[i][e] !== "-") {
+                    fill(art.Colors[art.Drawing[i][e]]);
+                    //stroke(art.Colors[art.Drawing[i][e]]);
+                    rect(e * size + x, i * size + y, size, size);
+                }
+            }
+        }
+    };
+
+    //Capture the Crystal
+    background(0, 0, 0, 0);
+    ConvertArt(CrystalString, 0, 0, 96);
+    var CrystalGraphic = snip(0, 0, 96, 96);
+
+    //Load Graphics to images for no lag
+    var Graphics = [];
+    for (var i = 0; i < TileSets.length; i++) {
+        background(0, 0, 0, 0);
+        ConvertArt(TileSets[i].BasicTile, 0, 0, 96);
+        ConvertArt(TileSets[i].BasicFlag, 100, 0, 96);
+        ConvertArt(TileSets[i].B1, 200, 0, 96);
+        ConvertArt(TileSets[i].B2, 300, 0, 96);
+        ConvertArt(TileSets[i].B3, 0, 100, 96);
+        ConvertArt(TileSets[i].B4, 100, 100, 96);
+        ConvertArt(TileSets[i].B5, 200, 100, 96);
+        ConvertArt(TileSets[i].B6, 300, 100, 96);
+        ConvertArt(TileSets[i].B7, 0, 200, 96);
+        ConvertArt(TileSets[i].B8, 100, 200, 96);
+        ConvertArt(TileSets[i].BasicBomb, 200, 200, 96);
+        ConvertArt(TileSets[i].BasicRB, 300, 200, 96);
+        ConvertArt(TileSets[i].BlankTile, 0, 300, 96);
+        ConvertArt(TileSets[i].RedX, 100, 300, 96);
+
+        var TileType = {
+            Tile: snip(0, 0, 96, 96),
+            Flag: snip(100, 0, 96, 96),
+            N1: snip(200, 0, 96, 96),
+            N2: snip(300, 0, 96, 96),
+            N3: snip(0, 100, 96, 96),
+            N4: snip(100, 100, 96, 96),
+            N5: snip(200, 100, 96, 96),
+            N6: snip(300, 100, 96, 96),
+            N7: snip(0, 200, 96, 96),
+            N8: snip(100, 200, 96, 96),
+            Bomb: snip(200, 200, 96, 96),
+            RedBomb: snip(300, 200, 96, 96),
+            BT: snip(0, 300, 96, 96),
+            WrongFlag: snip(100, 300, 96, 96),
+        };
+        Graphics.push(TileType);
+    }
+
+    //}
+    /*********************FANCY BUTTONS***********************/
+    //{
+
+    //No background
+    background(0, 0, 0, 0);
+
+    //Math time
+    var ButtonLines = [];
+    fill(0, 255, 255);
+    noStroke();
+    //Draw moving zig zags and turn them to rects
+
+    for (var n = 0; n < 20; n++) {
+        background(0, 0, 0, 0);
+        for (var i = 0; i < 220; i += 20) {
+            quad(0 + i - 10 - n, 0, 0 + i - n, 0, 0 + 20 + i - n, 120, 0 + 10 + i - n, 120);
+        }
+        var Temp = snip(0, 0, 190, 120);
+        ButtonLines.push(Temp);
+    }
+    var ButtonLines2 = [];
+    //Repeat but faster
+    fill(0, 136, 255);
+    noStroke();
+    for (var n = 0; n < 20; n++) {
+        background(0, 0, 0, 0);
+        for (var i = 0; i < 220; i += 20) {
+            quad(0 + i - 10 - n, 0, 0 + i - n, 0, 0 + 20 + i - n, 120, 0 + 10 + i - n, 120);
+        }
+        if (n % 2 === 0) {
+            var Temp = snip(0, 0, 190, 120);
+            ButtonLines2.push(Temp);
+        }
+    }
+    //}
+    /******COLLISIONS AND OTHER INDEPENDENT FUNCTIONS*********/
+    var Check = function (Place) {
+        if (Place === "B") {
+            return true;
+        } else {
+            return false;
+        }
+    };
+    var eFunc = function (e) {
+        var C;
+        if (e === 0) {
+            C = [e + Game.Size, e + 1, e + Game.Size + 1];
+        } else if (e === Game.Size - 1) {
+            C = [e + Game.Size, e - 1, e + Game.Size - 1];
+        } else if (e === (Game.Size * Game.Size) - Game.Size) {
+            C = [e - Game.Size, e + 1, e - Game.Size + 1];
+        } else if (e === (Game.Size * Game.Size) - 1) {
+            C = [e - Game.Size, e - 1, e - Game.Size - 1];
+        } else if (e % Game.Size === 0) {
+            C = [e - Game.Size, e + Game.Size, e + 1, e - Game.Size + 1, e + Game.Size + 1];
+        } else if (e % Game.Size === Game.Size - 1) {
+            C = [e - Game.Size, e + Game.Size, e - 1, e - Game.Size - 1, e + Game.Size - 1];
+        } else if (e < Game.Size) {
+            C = [e + Game.Size, e - 1, e + 1, e + Game.Size + 1, e + Game.Size - 1];
+        } else if (e > (Game.Size * Game.Size) - Game.Size - 1) {
+            C = [e - Game.Size, e - 1, e + 1, e - Game.Size - 1, e - Game.Size + 1];
+        } else {
+            C = [e - Game.Size, e + Game.Size, e - 1, e + 1, e - Game.Size - 1, e - Game.Size + 1, e + Game.Size + 1, e + Game.Size - 1];
+        }
+        return C;
+    };
+    var pointRect = function (px, py, rx, ry, rw, rh) {
+        if (px > rx && px < rx + rw && py > ry && py < ry + rh) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+    var Button = function (x, y, type, onclick) {
+        fill(219, 219, 219);
+        stroke(102, 102, 102);
+        strokeWeight(5);
+        rect(x, y, 190, 120, 5);
+        if (get.mouseX < x + 190 && get.mouseX > x && get.mouseY > y && get.mouseY < y + 120) {
+            image(ButtonLines2[get.frameCount % 10], x, y);
+            if (clicked === true) {
+                clicked = false;
+                onclick();
+            }
+        } else {
+            image(ButtonLines[get.frameCount % 20], x, y);
+        }
+        noFill();
+        stroke(102, 102, 102);
+        rect(x, y, 190, 120, 5);
+        //Graphics
+        if (type === "Computer") {
+            fill(59, 160, 255);
+            stroke(0, 0, 0);
+            strokeWeight(3);
+            rect(x + 55, y + 10, 80, 50, 5);
+            fill(0, 0, 0);
+            rect(x + 55, y + 55, 80, 5, 5);
+            fill(255, 255, 255);
+            noStroke();
+            ellipse(x + 95, y + 58, 4, 4);
+            fill(0, 0, 0);
+            noStroke();
+            rect(x + 90, y + 63, 10, 10, 3);
+            rect(x + 85, y + 69, 20, 5, 5);
+        }
+        else if (type === "Mobile Device") {
+            fill(59, 160, 255);
+            stroke(0, 0, 0);
+            strokeWeight(3);
+            rect(x + 75, y + 20, 40, 50, 5);
+            fill(0, 0, 0);
+            rect(x + 75, y + 65, 40, 5, 5);
+            fill(255, 255, 255);
+            noStroke();
+            ellipse(x + 95, y + 68, 4, 4);
+            ellipse(x + 90, y + 68, 4, 4);
+            ellipse(x + 100, y + 68, 4, 4);
+        }
+        else if (type === "Continue") {
+            stroke(0, 0, 0);
+            strokeWeight(2);
+            ellipse(x + 95, y + 49, 50, 50);
+            line(x + 86, y + 40, x + 95, y + 49);
+            line(x + 86, y + 58, x + 95, y + 49);
+            line(x + 96, y + 40, x + 105, y + 49);
+            line(x + 96, y + 58, x + 105, y + 49);
+        }
+        textAlign(CENTER, CENTER);
+        textSize(20);
+        fill(0, 0, 0);
+        text(type, x + 95, y + 94);
+    };
+    var SlideDisplay = function (tn, ds, x, y, wh) {
+        switch (ds) {
+            case 0:
+                image(Graphics[tn].N1, x, y, wh, wh);
+                break;
+            case 1:
+                image(Graphics[tn].N2, x, y, wh, wh);
+                break;
+            case 2:
+                image(Graphics[tn].N3, x, y, wh, wh);
+                break;
+            case 3:
+                image(Graphics[tn].N4, x, y, wh, wh);
+                break;
+            case 4:
+                image(Graphics[tn].N5, x, y, wh, wh);
+                break;
+            case 5:
+                image(Graphics[tn].N6, x, y, wh, wh);
+                break;
+            case 6:
+                image(Graphics[tn].N7, x, y, wh, wh);
+                break;
+            case 7:
+                image(Graphics[tn].N8, x, y, wh, wh);
+                break;
+            case 8:
+                image(Graphics[tn].Tile, x, y, wh, wh);
+                break;
+            case 9:
+                image(Graphics[tn].Flag, x, y, wh, wh);
+                break;
+            case 10:
+                image(Graphics[tn].Bomb, x, y, wh, wh);
+                break;
+            case 11:
+                image(Graphics[tn].RedBomb, x, y, wh, wh);
+                break;
+            case 12:
+                image(Graphics[tn].BT, x, y, wh, wh);
+                break;
+            case 13:
+                image(Graphics[tn].WrongFlag, x, y, wh, wh);
+                break;
+        }
+    };
+    /*******************BACKGROUND GRAPHICS*******************/
+    //{
+    var SStatus = [
+        1, 2, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1,
+        2, 1, 2, 1, 1, 1, 1, 2, 1, 1, 1, 2,
+        2, 2, 1, 2, 1, 2, 1, 1, 0, 1, 0, 1,
+        1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 0, 1,
+        1, 2, 1, 1, 1, 1, 0, 1, 1, 0, 1, 0,
+        1, 1, 1, 2, 1, 2, 1, 0, 1, 1, 0, 1,
+        1, 2, 1, 1, 2, 0, 1, 1, 1, 0, 0, 0,
+        1, 1, 2, 1, 0, 1, 1, 0, 0, 1, 0, 0,
+        1, 2, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0,
+        1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0,
+        2, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0,
+        1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0,
+    ];
+    var SPlaces = [
+        0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0,
+        1, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1,
+        1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0,
+        0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0,
+        0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1,
+        0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0,
+        0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1,
+        0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 0,
+        0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0,
+        0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1,
+        1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1,
+        0, 0, 1, 0, 0, 0, 1, 1, 0, 1, 0, 0,
+
+    ];
+
+
+    for (var i = 0; i < SPlaces.length; i++) {
+        if (SPlaces[i] === 1) {
+            SPlaces[i] = "B";
+        }
+    }
+    for (var e = 0; e <= 12 * 12; e++) {
+        if (SPlaces[e] !== "B") {
+            Bombcount = 0;
+            if (e === 0) {
+                Checklist = [SPlaces[e + 12], SPlaces[e + 1], SPlaces[e + 12 + 1]];
+            } else if (e === 12 - 1) {
+                Checklist = [SPlaces[e + 12], SPlaces[e - 1], SPlaces[e + 12 - 1]];
+            } else if (e === (12 * 12) - 12) {
+                Checklist = [SPlaces[e - 12], SPlaces[e + 1], SPlaces[e - 12 + 1]];
+            } else if (e === (12 * 12) - 1) {
+                Checklist = [SPlaces[e - 12], SPlaces[e - 1], SPlaces[e - 12 - 1]];
+            } else if (e % 12 === 0) {
+                Checklist = [SPlaces[e - 12], SPlaces[e + 12], SPlaces[e + 1], SPlaces[e - 12 + 1], SPlaces[e + 12 + 1]];
+            } else if (e % 12 === 12 - 1) {
+                Checklist = [SPlaces[e - 12], SPlaces[e + 12], SPlaces[e - 1], SPlaces[e - 12 - 1], SPlaces[e + 12 - 1]];
+            } else if (e < 12) {
+                Checklist = [SPlaces[e + 12], SPlaces[e - 1], SPlaces[e + 1], SPlaces[e + 12 + 1], SPlaces[e + 12 - 1]];
+            } else if (e > (12 * 12) - 12 - 1) {
+                Checklist = [SPlaces[e - 12], SPlaces[e - 1], SPlaces[e + 1], SPlaces[e - 12 - 1], SPlaces[e - 12 + 1]];
+            } else {
+                Checklist = [SPlaces[e - 12], SPlaces[e + 12], SPlaces[e - 1], SPlaces[e + 1], SPlaces[e - 12 - 1], SPlaces[e - 12 + 1], SPlaces[e + 12 + 1], SPlaces[e + 12 - 1]];
+            }
+            for (var i = 0; i < Checklist.length; i++) {
+                if (Check(Checklist[i]) === true) {
+                    Bombcount++;
+                }
+            }
+            SPlaces[e] = Bombcount;
+        }
+    }
+    //
+    var GenerateBG = function () {
+        for (var t = 0; t < 12; t++) {
+            for (var y = 0; y < 12; y++) {
+                var PlaceNum = SPlaces[(y * 12) + (t)];
+                if (SStatus[(y * 12) + (t)] === 1) {
+                    switch (PlaceNum) {
+                        case 1:
+                            image(Graphics[TileNumber].N1, (t * 50), (y * 50), 50, 50);
+                            break;
+                        case 2:
+                            image(Graphics[TileNumber].N2, (t * 50), (y * 50), 50, 50);
+                            break;
+                        case 3:
+                            image(Graphics[TileNumber].N3, (t * 50), (y * 50), 50, 50);
+                            break;
+                        case 4:
+                            image(Graphics[TileNumber].N4, (t * 50), (y * 50), 50, 50);
+                            break;
+                        case 5:
+                            image(Graphics[TileNumber].N5, (t * 50), (y * 50), 50, 50);
+                            break;
+                        case 6:
+                            image(Graphics[TileNumber].N6, (t * 50), (y * 50), 50, 50);
+                            break;
+                        case 7:
+                            image(Graphics[TileNumber].N7, (t * 50), (y * 50), 50, 50);
+                            break;
+                        case 8:
+                            image(Graphics[TileNumber].N8, (t * 50), (y * 50), 50, 50);
+                            break;
+                        case "B":
+                            image(Graphics[TileNumber].Bomb, (t * 50), (y * 50), 50, 50);
+                            break;
+                        case 0:
+                            image(Graphics[TileNumber].BT, (t * 50), (y * 50), 50, 50);
+                            break;
+                        case "R":
+                            image(Graphics[TileNumber].RedBomb, (t * 50), (y * 50), 50, 50);
+                            break;
+                        case "W":
+                            image(Graphics[TileNumber].WrongFlag, (t * 50), (y * 50), 50, 50);
+                            break;
+                        case -1:
+                            image(Graphics[TileNumber].BT, (t * 50), (y * 50), 50, 50);
+                            break;
+                    }
+                } else if (SStatus[(y * 12) + (t)] === 2) {
+                    image(Graphics[TileNumber].Flag, (t * 50), (y * 50), 50, 50);
+                } else {
+                    image(Graphics[TileNumber].Tile, (t * 50), (y * 50), 50, 50);
+                }
+            }
+        }
+    };
+    //}
+    /**********************EXTRA MATH*************************/
+    var Fractual = function (Num1) {
+        //Fractual
+        var FAnswer = 1;
+        for (var i = 2; i <= Num1; i++) {
+            FAnswer *= i;
+        }
+        return FAnswer;
+    };
+    var BinomialCoefficent = function (n, k) {
+        return Fractual(n) / (Fractual(k) * (Fractual(n - k)));
+    };
+    /*********************GAME FUNCTIONS**********************/
+    var TileVirus = function (num) {
+        Game.Status[num] = 1;
+        Game.Places[num] = -1;
+        Checklist = eFunc(num);
+        for (var i = 0; i < Checklist.length; i++) {
+            if (Game.Places[Checklist[i]] === 0) {
+                Virus.push(Checklist[i]);
+            }
+            Game.Status[Checklist[i]] = 1;
+            //println(Checklist[i]);
+        }
+    };
+    var BeginVirus = function (num) {
+        Virus = [];
+        Virus.push(num);
+        for (var i = 0; i < Infinity; i++) {
+            if (Virus.length === 0) {
+                break;
+            }
+            for (var y = 0; y < Virus.length; y++) {
+                TileVirus(Virus[y]);
+            }
+            Virus = [];
+        }
+    };
+    var SetUp = function (TLBN, TS, Level) {
+
+        //Set Up Level Variables
+        Died = false;
+        Game.Places = [];
+        Game.Status = [];
+        First = true;
+        Game.LBN = TLBN;//25x25
+        Game.Size = TS;
+        Flags = Game.LBN;
+        Game.CurrentLevel = Level;
+
+        //Set up Map and Size
+        for (var i = 0; i < Game.Size * Game.Size; i++) {
+            Game.Places.push(0);
+            Game.Status.push(0);
+        }
+        SizeP = 500 / Game.Size;
+
+        //Switches to game
+        mode = "Play";
+    };
+    var Generate = function (Num) {
+        //0 Bombs
+        NBombs = 0;
+        //Set Up Blank
+        //println(Num);
+        Game.Places[Num] = "A";
+        /*var t = Num;
+        for (var i = 0; i < round(random(15, 30)); i++) {
+            t = "A";
+            Checklist = eFunc(t);
+        }*/
+
+        Checklist = eFunc(Num);
+        //println(Checklist);
+        for (var i = 0; i < Checklist.length; i++) {
+            Game.Places[Checklist[i]] = "A";
+        }
+
+
+        //Set Up BOMBS
+        for (var h = 1; h < Game.LBN; h++) {
+            rdom = floor(random(0, (Game.Size * Game.Size) - 1));
+            if (Game.Places[rdom] !== "B" && Game.Places[rdom] !== "A") {
+                Game.Places[rdom] = "B";
+                NBombs++;
+            } else {
+                Game.LBN++;
+            }
+        }
+        NumBombs = 0;
+        //Set up place bombs
+        Game.Places[floor(random(1, 99.9))] = "B";
+        Bombcount = 0;
+        Checklist.length = 0;
+        for (var e = 0; e <= Game.Size * Game.Size; e++) {
+            if (Game.Places[e] !== "B") {
+                Bombcount = 0;
+                if (e === 0) {
+                    Checklist = [Game.Places[e + Game.Size], Game.Places[e + 1], Game.Places[e + Game.Size + 1]];
+                } else if (e === Game.Size - 1) {
+                    Checklist = [Game.Places[e + Game.Size], Game.Places[e - 1], Game.Places[e + Game.Size - 1]];
+                } else if (e === (Game.Size * Game.Size) - Game.Size) {
+                    Checklist = [Game.Places[e - Game.Size], Game.Places[e + 1], Game.Places[e - Game.Size + 1]];
+                } else if (e === (Game.Size * Game.Size) - 1) {
+                    Checklist = [Game.Places[e - Game.Size], Game.Places[e - 1], Game.Places[e - Game.Size - 1]];
+                } else if (e % Game.Size === 0) {
+                    Checklist = [Game.Places[e - Game.Size], Game.Places[e + Game.Size], Game.Places[e + 1], Game.Places[e - Game.Size + 1], Game.Places[e + Game.Size + 1]];
+                } else if (e % Game.Size === Game.Size - 1) {
+                    Checklist = [Game.Places[e - Game.Size], Game.Places[e + Game.Size], Game.Places[e - 1], Game.Places[e - Game.Size - 1], Game.Places[e + Game.Size - 1]];
+                } else if (e < Game.Size) {
+                    Checklist = [Game.Places[e + Game.Size], Game.Places[e - 1], Game.Places[e + 1], Game.Places[e + Game.Size + 1], Game.Places[e + Game.Size - 1]];
+                } else if (e > (Game.Size * Game.Size) - Game.Size - 1) {
+                    Checklist = [Game.Places[e - Game.Size], Game.Places[e - 1], Game.Places[e + 1], Game.Places[e - Game.Size - 1], Game.Places[e - Game.Size + 1]];
+                } else {
+                    Checklist = [Game.Places[e - Game.Size], Game.Places[e + Game.Size], Game.Places[e - 1], Game.Places[e + 1], Game.Places[e - Game.Size - 1], Game.Places[e - Game.Size + 1], Game.Places[e + Game.Size + 1], Game.Places[e + Game.Size - 1]];
+                }
+                for (var i = 0; i < Checklist.length; i++) {
+                    if (Check(Checklist[i]) === true) {
+                        Bombcount++;
+                    }
+                }
+                Game.Places[e] = Bombcount;
+            } else {
+                NumBombs++;
+            }
+        }
+        Flags = NumBombs;
+    };
+    var Chord = function (Num) {
+        var chordArray = eFunc(Num);
+        var currentChordFlags = 0;
+        for (var i = 0; i < chordArray.length; i++) {
+            if (Game.Status[chordArray[i]] === 2) {
+                currentChordFlags++;
+            }
+        }
+        var flagsNeeded = Game.Places[Num];
+        if (flagsNeeded < 0) {
+            flagsNeeded = 0;
+        }
+        if (currentChordFlags >= flagsNeeded) {
+            for (var i = 0; i < chordArray.length; i++) {
+                if (Game.Status[chordArray[i]] !== 2) {
+                    Game.Status[chordArray[i]] = 1;
+                    if (Game.Places[chordArray[i]] === "B") {
+                        Game.Places[chordArray[i]] = "R";
+                        Died = true;
+                        for (var m = 0; m < Game.Places.length; m++) {
+                            if (Game.Places[m] === "B") {
+                                if (Game.Status[m] !== 2) {
+                                    Game.Status[m] = 1;
+                                }
+                            } else if (Game.Status[m] === 2) {
+                                Game.Places[m] = "W";
+                                Game.Status[m] = 1;
+                            }
+                        }
+                        break;
+                    }
+                    else if (Game.Places[chordArray[i]] === 0) {
+                        BeginVirus(chordArray[i]);
+                    }
+                }
+            }
+        }
+    };
+    var Game = function () {
+
+        //Background
+        background(245, 245, 245);
+
+        //Score, Flags, etc.
+        fill(179, 179, 179);
+        stroke(77, 77, 77);
+        strokeWeight(3);
+        rect(100, 5, 400, 40);
+        if (mobile) {
+            rect(100, 555, 400, 40);
+            fill(0, 0, 0);
+            textAlign(CENTER, CENTER);
+            textSize(20);
+            //println(left);
+            if (left === false) {
+                if (chordClick) {
+                    text("Flagging/Chording", 300, 575);
+                } else {
+                    text("Flagging", 300, 575);
+                }
+                if (pointRect(get.mouseX, get.mouseY, 100, 555, 400, 40) && clicked) {
+                    clicked = false;
+                    left = true;
+                }
+            } else {
+                if (chordClick) {
+                    text("Clearing", 300, 575);
+                } else {
+                    text("Clearing/Chording", 300, 575);
+                }
+                if (pointRect(get.mouseX, get.mouseY, 100, 555, 400, 40) && clicked) {
+                    clicked = false;
+                    left = false;
+                }
+            }
+        }
+        fill(0, 0, 0);
+        textAlign(CENTER);
+        textSize(20);
+        text("Flags Left: " + Flags, 300, 32);
+        noStroke();
+        /*
+        //THIS IS THE CODE FOR SIDE LINES IF NEEDED!!!//
+        fill(128, 128, 128);
+        rect(550, 50, 5, 500);
+        rect(50, 550, 500, 5)*/
+        var Winned = true;
+        for (var z = 0; z < Game.Places.length; z++) {
+            if (Game.Places[z] !== "B" && Game.Status[z] === 0) {
+                Winned = false;
+            }
+        }
+        //Images and Tiles
+        for (var t = 0; t < Game.Size; t++) {
+            for (var y = 0; y < Game.Size; y++) {
+                //Nested loops run through the thingy
+                var PlaceNum = Game.Places[(y * Game.Size) + (t)];
+                // || Status[(y*Size)+(t)] === 0
+                if (Game.Status[(y * Game.Size) + (t)] === 1) {
+                    switch (PlaceNum) {
+                        case 1:
+                            image(Graphics[TileNumber].N1, (t * SizeP) + 50, (y * SizeP) + 50, SizeP + 1, SizeP + 1);
+                            break;
+                        case 2:
+                            image(Graphics[TileNumber].N2, (t * SizeP) + 50, (y * SizeP) + 50, SizeP + 1, SizeP + 1);
+                            break;
+                        case 3:
+                            image(Graphics[TileNumber].N3, (t * SizeP) + 50, (y * SizeP) + 50, SizeP + 1, SizeP + 1);
+                            break;
+                        case 4:
+                            image(Graphics[TileNumber].N4, (t * SizeP) + 50, (y * SizeP) + 50, SizeP + 1, SizeP + 1);
+                            break;
+                        case 5:
+                            image(Graphics[TileNumber].N5, (t * SizeP) + 50, (y * SizeP) + 50, SizeP + 1, SizeP + 1);
+                            break;
+                        case 6:
+                            image(Graphics[TileNumber].N6, (t * SizeP) + 50, (y * SizeP) + 50, SizeP + 1, SizeP + 1);
+                            break;
+                        case 7:
+                            image(Graphics[TileNumber].N7, (t * SizeP) + 50, (y * SizeP) + 50, SizeP + 1, SizeP + 1);
+                            break;
+                        case 8:
+                            image(Graphics[TileNumber].N8, (t * SizeP) + 50, (y * SizeP) + 50, SizeP + 1, SizeP + 1);
+                            break;
+                        case "B":
+                            image(Graphics[TileNumber].Bomb, (t * SizeP) + 50, (y * SizeP) + 50, SizeP + 1, SizeP + 1);
+                            break;
+                        case 0:
+                            image(Graphics[TileNumber].BT, (t * SizeP) + 50, (y * SizeP) + 50, SizeP + 1, SizeP + 1);
+                            break;
+                        case "R":
+                            image(Graphics[TileNumber].RedBomb, (t * SizeP) + 50, (y * SizeP) + 50, SizeP + 1, SizeP + 1);
+                            break;
+                        case "W":
+                            image(Graphics[TileNumber].WrongFlag, (t * SizeP) + 50, (y * SizeP) + 50, SizeP + 1, SizeP + 1);
+                            break;
+                        case -1:
+                            image(Graphics[TileNumber].BT, (t * SizeP) + 50, (y * SizeP) + 50, SizeP + 1, SizeP + 1);
+                            break;
+                    }
+                } else if (Game.Status[(y * Game.Size) + (t)] === 2) {
+                    image(Graphics[TileNumber].Flag, (t * SizeP) + 50, (y * SizeP) + 50, SizeP + 1, SizeP + 1);
+                } else {
+                    image(Graphics[TileNumber].Tile, (t * SizeP) + 50, (y * SizeP) + 50, SizeP + 1, SizeP + 1);
+                }
+            }
+        }
+        //Winned
+        if (Winned === true) {
+            //println("YAY");
+            DiedScene = snip(0, 0, 600, 600);
+            TimeSD = 0;
+            DieText.Text = "You Win!";
+            DieText.Digit = 0;
+            DieText.Current = "";
+            mode = "GameOver";
+        }
+
+
+        /***********************CLICK STUFF************************/
+        if (Died === false) {
+
+            var placeP = (floor((get.mouseY - 50) / SizeP) * Game.Size) + floor((get.mouseX - 50) / SizeP);
+
+            if (clicked === true && get.mouseX < 550 && get.mouseX > 50 && get.mouseY < 550 && get.mouseY > 50) {
+                if (left === true) {
+                    if (Game.Status[placeP] === 0) {
+                        Game.Status[placeP] = 1;
+                        if (First === true) {
+                            First = false;
+                            Generate(placeP);
+                            //println(placeP);
+                        }
+                        if (Game.Places[placeP] === 0) {
+                            BeginVirus(placeP);
+                        }
+                        if (Game.Places[placeP] === "B") {
+                            Game.Places[placeP] = "R";
+                            Died = true;
+                            for (var m = 0; m < Game.Places.length; m++) {
+                                if (Game.Places[m] === "B") {
+                                    if (Game.Status[m] !== 2) {
+                                        Game.Status[m] = 1;
+                                    }
+                                } else if (Game.Status[m] === 2) {
+                                    Game.Places[m] = "W";
+                                    Game.Status[m] = 1;
+                                }
+                            }
+                        }
+                    } else if (Game.Status[placeP] === 1 && !chordClick) {
+                        Chord(placeP);
+                    }
+                } else if (left === false) {
+                    if (Game.Status[placeP] === 0 && Flags !== 0) {
+                        Game.Status[placeP] = 2;
+                        Flags--;
+                    } else if (Game.Status[placeP] === 2) {
+                        Game.Status[placeP] = 0;
+                        Flags++;
+                    } else if (Game.Status[placeP] === 1) {
+                        //Game.Status[placeP] = 1;
+                        if (chordClick) {
+                            Chord(placeP);
+                        }
+                    }
+                }
+                clicked = false;
+            }
+        } else if (clicked === true) {
+            DiedScene = snip(0, 0, 600, 600);
+            TimeSD = 0;
+            DieText.Text = "You Lose";
+            DieText.Digit = 0;
+            DieText.Current = "";
+            mode = "GameOver";
+        }
+
+        /*******************END OF GAME STUFF*****************/
+    };
+    var Lose = function () {
+        image(DiedScene, 0, 0, 600, 600);
+        fill(255, 255, 255, 200);
+        noStroke();
+        if (TimeSD < 60) {
+            rect(600 - (TimeSD * 10), 0, 600, 600);
+        } else {
+            rect(0, 0, 600, 600);
+        }
+        fill(186, 186, 186);
+        if (TimeSD < 102) {
+            rect(80, -1000 + ((TimeSD - 60) * 25), 440, 500, 20);
+        } else {
+            rect(80, 50, 440, 500, 20);
+        }
+        if (TimeSD > 102) {
+            textAlign(CENTER, CENTER);
+            fill(255, 255, 255);
+            textSize(60);
+            text(DieText.Current, 300, 100);
+            if (TimeSD % 10 === 0 && DieText.Digit < DieText.Text.length) {
+                DieText.Current += DieText.Text[DieText.Digit];
+                DieText.Digit++;
+            } else if (DieText.Digit === DieText.Text.length) {
+                DieText.TextFade = (TimeSD * 10) % 510;
+                textSize(20);
+                if (DieText.TextFade > 255) {
+                    DieText.TextFade = DieText.TextFade * -1 + 510;
+                }
+                fill(255, 255, 255, DieText.TextFade);
+                text("Click to Go to Menu", 300, 200);
+                image(DiedScene, 150, 230, 300, 300);
+                if (clicked === true) {
+                    if (DieText.Text === "You Win!") {
+                        if (Game.CurrentLevel !== "C") {
+                            if (Game.CurrentLevel !== 8) {
+                                Levels[Game.CurrentLevel + 1].Locked = false;
+                            }
+                            if (!Levels[Game.CurrentLevel].Beaten) {
+                                Shop.Crystals += Levels[Game.CurrentLevel].Coins;
+                                Levels[Game.CurrentLevel].Beaten = true;
+                            } else {
+                                Shop.Crystals += floor(Levels[Game.CurrentLevel].Coins / 5);
+                            }
+                        }
+                        else {
+                            Shop.Crystals += floor(Custom.findCoinsRelevant(Custom.CustomSize, Custom.CustomBombNumber));
+                        }
+                    }
+                    mode = "Select";
+                }
+            }
+            strokeWeight(5);
+            stroke(255, 255, 255);
+            if (TimeSD < 302) {
+                line(300 - TimeSD + 102, 150, 300 + TimeSD - 102, 150);
+            } else {
+                line(100, 150, 500, 150);
+            }
+
+        }
+        TimeSD++;
+    };
+    /********************SCENE FUNCTIONS**********************/
+    var PC = function () {
+        background(230, 230, 230);
+        GenerateBG();
+        fill(255, 255, 255, 180);
+        noStroke();
+        rect(0, 0, 600, 600);
+        fill(0, 0, 0);
+        textSize(30);
+        textAlign(CENTER, CENTER);
+        text("Select Your Device:", 300, 200);
+        textSize(20);
+        text("Mobile mode will be right-click free.", 300, 450);
+        Button(90, 290, "Computer",
+            function () {
+                mobile = false;
+                mode = "Select";
+            }
+        );
+        Button(320, 290, "Mobile Device",
+            function () {
+                mobile = true;
+                mode = "Select";
+            }
+        );
+
+        image(Pineapple1.Sprite, 520, 480, 60, 100);
+        image(Pineapple2.Sprite, 520, 480, 60, 100);
+    };
+    var FirstScene = function () {
+        background(230, 230, 230);
+        GenerateBG();
+        fill(255, 255, 255, 180);
+        noStroke();
+        rect(0, 0, 600, 600);
+        fill(0, 0, 0);
+        textSize(50);
+        textAlign(CENTER, CENTER);
+        text("MINESWEEPER", 300, 100);
+        textSize(25);
+        text("Made By Pineapples, 2024", 300, 140);
+        //Technically 2023 too, but I redid all the code.
+        image(Pineapple1.Sprite, 520, 480, 60, 100);
+        image(Pineapple2.Sprite, 520, 480, 60, 100);
+        Button(210, 290, "Continue",
+            function () {
+                mode = "PC";
+                //mode = "Select";
+            }
+        );
+    };
+    var MenuGraphics = function () {
+        //Background
+        background(230, 230, 230);
+        GenerateBG();
+
+        //Glaze
+        fill(255, 255, 255, 180);
+        noStroke();
+        rect(0, 0, 600, 600);
+
+        //Minesweeper Name  /Text Setup
+        fill(0, 0, 0);
+        textSize(50);
+        textAlign(CENTER, CENTER);
+        text("MINESWEEPER", 300, 100);
+
+        //PLAY box
+        fill(208, 255, 0);
+        stroke(155, 227, 29);
+        strokeWeight(3);
+        rect(100, 150, 400, 200, 10);
+
+        //SHOP box
+        fill(0, 242, 255);
+        stroke(29, 181, 227);
+        strokeWeight(3);
+        rect(100, 370, 400, 50, 10);
+
+        //How Box
+        fill(255, 145, 0);
+        stroke(161, 91, 0);
+        strokeWeight(3);
+        if (pointRect(get.mouseX, get.mouseY, 100, 440, 400, 50)) {
+            rect(99, 439, 402, 52, 10);
+            if (clicked) {
+                clicked = false;
+                mode = "How";
+            }
+        } else {
+            rect(100, 440, 400, 50, 10);
+        }
+
+        //Setting Box
+        fill(135, 135, 135);
+        stroke(87, 87, 87);
+        strokeWeight(3);
+        if (pointRect(get.mouseX, get.mouseY, 100, 510, 400, 50)) {
+            rect(99, 509, 402, 52, 10);
+            if (clicked) {
+                clicked = false;
+                mode = "Settings";
+            }
+        } else {
+            rect(100, 510, 400, 50, 10);
+        }
+
+        if (pointRect(get.mouseX, get.mouseY, 100, 370, 400, 50)) {
+            //Left Bags
+            Shop.Bags(130, 380, 25, 40, color(255, 0, 0), color(194, 0, 0));
+            Shop.Bags(110, 390, 40, 30, color(0, 255, 30), color(6, 176, 25));
+            Shop.Bags(150, 395, 25, 25, color(30, 0, 255), color(21, 4, 143));
+            Shop.Bags(140, 400, 20, 20, color(255, 255, 0), color(171, 171, 0));
+            //Right Bags
+            Shop.Bags(310, 385, 50, 30, color(0, 26, 255), color(7, 22, 135));
+            Shop.Bags(285, 380, 20, 40, color(255, 255, 0), color(171, 171, 0));
+            Shop.Bags(310, 410, 60, 10, color(204, 0, 255), color(129, 0, 161));
+            Shop.Bags(300, 400, 30, 20, color(10, 102, 0), color(7, 71, 0));
+            if (clicked) {
+                mode = "Shop";
+            }
+        } else {
+            //Left Gifts
+            Shop.Gifts(130, 380, 25, 40, color(255, 0, 0), color(255, 196, 0), 5);
+            Shop.Gifts(110, 390, 40, 30, color(0, 255, 30), color(255, 255, 255), 5);
+            Shop.Gifts(150, 395, 25, 25, color(30, 0, 255), color(0, 230, 255), 3);
+            Shop.Gifts(140, 400, 20, 20, color(255, 255, 0), color(255, 0, 0), 4);
+            //Right Gifts
+            Shop.Gifts(310, 385, 50, 30, color(0, 26, 255), color(221, 237, 220), 5);
+            Shop.Gifts(285, 380, 20, 40, color(255, 255, 0), color(255, 204, 0), 4);
+            Shop.Gifts(310, 410, 60, 10, color(204, 0, 255), color(255, 204, 0), 2);
+            Shop.Gifts(300, 400, 30, 20, color(10, 102, 0), color(225, 255, 0), 2);
+        }
+
+        //Text
+        Menu.Name = 0;
+        if (pointRect(get.mouseX, get.mouseY, 130, 205, 198, 45)) {
+            //println(1);
+            Menu.Name = 1;
+            if (clicked) {
+                mode = "Custom";
+            }
+        } else if (pointRect(get.mouseX, get.mouseY, 130, 250, 198, 45)) {
+            //println(2);
+            Menu.Name = 2;
+            if (clicked) {
+                mode = "Levels";
+            }
+        }
+        fill(0, 0, 0);
+        textSize(15);
+        text(Menu.NameD[Menu.Name], 440, 170);
+        textSize(10);
+        text(Menu.TextD[Menu.Name], 430, 250);
+
+        //Triangle Stuff
+        stroke(155, 227, 29);
+        strokeWeight(3);
+        fill(155, 227, 29);
+        rect(100, 150, 240 + Menu.TriangleOffset, 200, 10);
+        noStroke();
+        triangle(340 + Menu.TriangleOffset, 150, 380 + Menu.TriangleOffset, 150, 340 + Menu.TriangleOffset, 350);
+        fill(255, 255, 255);
+
+        //PLAY box graphical triangle offset
+        if (pointRect(get.mouseX, get.mouseY, 100, 150, 400, 200)) {
+            if (Menu.TriangleOffset > 0) {
+                Menu.TriangleOffset -= 2;
+            }
+        } else if (Menu.TriangleOffset < 70) {
+            Menu.TriangleOffset += 5;
+        } else if (Menu.TriangleOffset > 70) {
+            Menu.TriangleOffset = 70;
+        }
+
+        //"PLAY" name
+        textSize(35);
+        text("PLAY", 229, 177);
+        text("SHOP", 229, 395);
+        text("LEARN TO PLAY", 300, 465);
+        text("SETTINGS", 300, 465 + 70);
+
+        //Buttons
+        //Custom Game
+        fill(255, 174, 0);
+        rect(130, 185 + 20, 198, 45, 5);
+        rect(130, 200 + 35, 198, 15);
+        //Levels
+
+        fill(0, 255, 26);
+        rect(130, 215 + 35, 198, 15);
+        rect(130, 215 + 35, 198, 45, 5);
+        fill(0, 0, 0);
+        textSize(22);
+        text("Custom Game", 229, 226);
+        text("Levels", 229, 271);
+        //text("Level Creator", 229, 280);
+        //End Button Code
+
+        //SHOP box code
+        fill(29, 181, 227);
+        stroke(29, 181, 227);
+        strokeWeight(3);
+        rect(380, 370, 120, 30, 10);
+        rect(380, 370, 10, 10);
+        rect(490, 390, 10, 10);
+        image(CrystalGraphic, 382, 372, 26, 26);
+        textSize(20);
+        fill(255, 255, 255);
+        text(Shop.Crystals, 450, 385);
+        //println(Shop.Crystals);
+
+        //Logo
+        image(Pineapple1.Sprite, 520, 480, 60, 100);
+        image(Pineapple2.Sprite, 520, 480 - Menu.P_I_N_E_A_P_P_L_E, 60, 100);
+        if (pointRect(get.mouseX, get.mouseY, 520, 480, 60, 100) && clicking === true) {
+            if (Menu.P_I_N_E_A_P_P_L_E < 50) {
+                Menu.P_I_N_E_A_P_P_L_E += 5;
+            }
+        } else {
+            Menu.P_I_N_E_A_P_P_L_E = 0;
+        }
+    };
+    var LevelSelect = function () {
+        //Background
+        background(230, 230, 230);
+        GenerateBG();
+
+        //Glaze
+        fill(255, 255, 255, 180);
+        noStroke();
+        rect(0, 0, 600, 600);
+
+        //Text
+        fill(0, 0, 0);
+        textSize(50);
+        text("Levels", 175, 100);
+        //textSize(15);
+        //text("", 175, 300);
+
+        for (var i = 0; i < 8; i++) {
+            noStroke();
+            switch (Levels[i].Difficulty) {
+                case 0:
+                    fill(0, 255, 0);
+                    break;
+                case 1:
+                    fill(255, 255, 0);
+                    break;
+                case 2:
+                    fill(255, 200, 0);
+                    break;
+                case 3:
+                    fill(255, 0, 0);
+                    break;
+            }
+            rect(350, i * 65 + 45, 200, 50, 5);
+            switch (i + 1) {
+                case 1:
+                    image(Graphics[TileNumber].N1, 356, i * 65 + 50, 40, 40);
+                    break;
+                case 2:
+                    image(Graphics[TileNumber].N2, 356, i * 65 + 50, 40, 40);
+                    break;
+                case 3:
+                    image(Graphics[TileNumber].N3, 356, i * 65 + 50, 40, 40);
+                    break;
+                case 4:
+                    image(Graphics[TileNumber].N4, 356, i * 65 + 50, 40, 40);
+                    break;
+                case 5:
+                    image(Graphics[TileNumber].N5, 356, i * 65 + 50, 40, 40);
+                    break;
+                case 6:
+                    image(Graphics[TileNumber].N6, 356, i * 65 + 50, 40, 40);
+                    break;
+                case 7:
+                    image(Graphics[TileNumber].N7, 356, i * 65 + 50, 40, 40);
+                    break;
+                case 8:
+                    image(Graphics[TileNumber].N8, 356, i * 65 + 50, 40, 40);
+                    break;
+            }
+            if (Levels[i].Locked === true) {
+                fill(0, 0, 0, 120);
+                rect(350, i * 65 + 45, 200, 50, 5);
+                fill(0, 0, 0);
+                rect(410, i * 65 + 65, 20, 20);
+                stroke(0, 0, 0);
+                strokeWeight(2);
+                noFill();
+                arc(420, i * 65 + 62, 14, 14, 180, 360);
+                line(427, i * 65 + 62, 427, i * 65 + 73);
+                line(413, i * 65 + 62, 413, i * 65 + 73);
+                switch (Levels[i].Difficulty) {
+                    case 0:
+                        fill(0, 255, 0);
+                        break;
+                    case 1:
+                        fill(255, 255, 0);
+                        break;
+                    case 2:
+                        fill(255, 200, 0);
+                        break;
+                    case 3:
+                        fill(255, 0, 0);
+                        break;
+                }
+                noStroke();
+                triangle(420, i * 65 + 69, 423, i * 65 + 80, 417, i * 65 + 80);
+                fill(0, 0, 0, 120);
+                triangle(420, i * 65 + 69, 423, i * 65 + 80, 417, i * 65 + 80);
+                switch (Levels[i].Difficulty) {
+                    case 0:
+                        fill(0, 255, 0);
+                        break;
+                    case 1:
+                        fill(255, 255, 0);
+                        break;
+                    case 2:
+                        fill(255, 200, 0);
+                        break;
+                    case 3:
+                        fill(255, 0, 0);
+                        break;
+                }
+                ellipse(420, i * 65 + 72, 5, 5);
+                fill(0, 0, 0, 120);
+                ellipse(420, i * 65 + 72, 5, 5);
+            } else if (pointRect(get.mouseX, get.mouseY, 350, i * 65 + 45, 200, 50) && clicked === true) {
+                SetUp(Levels[i].Bombs, Levels[i].Size, i);
+                clicked = false;
+            }
+            //End Game Prize
+            image(CrystalGraphic, 515, i * 65 + 55, 30, 30);
+            fill(255, 255, 255);
+            textSize(20);
+            if (Levels[i].Beaten === false) {
+                text(Levels[i].Coins, 485, i * 65 + 70);
+            } else {
+                text(floor(Levels[i].Coins / 5), 485, i * 65 + 70);
+            }
+        }
+
+        //Back
+        fill(255, 255, 255);
+        stroke(0, 0, 0);
+        strokeWeight(3);
+        rect(75, 530, 200, 50, 5);
+        fill(0, 0, 0);
+        textSize(25);
+        text("BACK", 175, 555);
+        if (pointRect(get.mouseX, get.mouseY, 75, 530, 200, 50) && clicked === true) {
+            mode = "Select";
+            clicked = false;
+        }
+    };
+    var CustomGame = function () {
+        //Background
+        background(230, 230, 230);
+        GenerateBG();
+
+        //Glaze
+        fill(255, 255, 255, 180);
+        noStroke();
+        rect(0, 0, 600, 600);
+
+        //Text
+        fill(0, 0, 0);
+        textSize(50);
+        text("Custom Game", 300, 100);
+        textSize(15);
+        text("Customize the size and speed to make\nthe game easier or harder!", 300, 155);
+
+        //Options
+        fill(255, 255, 255);
+        stroke(0, 0, 0);
+        strokeWeight(3);
+        rect(150, 200, 300, 50, 5);
+        rect(150, 300, 300, 50, 5);
+
+        //Addition Boxes
+        rect(110, 210, 30, 30, 5);
+        rect(460, 210, 30, 30, 5);
+        rect(110, 310, 30, 30, 5);
+        rect(460, 310, 30, 30, 5);
+
+        //Mouse interactivity
+        if (pointRect(get.mouseX, get.mouseY, 110, 210, 30, 30) && clicked === true && Custom.CustomSize < 30) {
+            Custom.CustomSize++;
+            clicked = false;
+        }
+        if (pointRect(get.mouseX, get.mouseY, 460, 210, 30, 30) && clicked === true && Custom.CustomSize > 4) {
+            Custom.CustomSize--;
+            if (Custom.CustomBombNumber > (Custom.CustomSize * Custom.CustomSize) - 12) {
+                Custom.CustomBombNumber = (Custom.CustomSize * Custom.CustomSize) - 12;
+            }
+            clicked = false;
+        }
+        if (pointRect(get.mouseX, get.mouseY, 110, 310, 30, 30) && clicking === true && Custom.CustomBombNumber < (Custom.CustomSize * Custom.CustomSize) - 12) {
+            Custom.CustomBombNumber++;
+            clicked = false;
+        }
+        if (pointRect(get.mouseX, get.mouseY, 460, 310, 30, 30) && clicking === true && Custom.CustomBombNumber > 1) {
+            Custom.CustomBombNumber--;
+            clicked = false;
+        }
+
+        //Pluses
+        line(125, 318, 125, 332);
+        line(118, 325, 132, 325);
+        line(125, 218, 125, 232);
+        line(118, 225, 132, 225);
+
+        //Minuses
+        line(468, 325, 482, 325);
+        line(468, 225, 482, 225);
+
+        //Crystal Reward
+        fill(0, 255, 17);
+        stroke(0, 201, 47);
+        strokeWeight(3);
+        rect(150, 400, 300, 50, 5);
+        image(CrystalGraphic, 405, 405, 40, 40);
+        fill(255, 255, 255);
+        textSize(25);
+        Custom.CrystalGain = Custom.findCoinsRelevant(Custom.CustomSize, Custom.CustomBombNumber);
+        text("Crystal Reward: " + floor(Custom.CrystalGain), 275, 425);
+
+        //Back
+        fill(255, 255, 255);
+        stroke(0, 0, 0);
+        strokeWeight(3);
+        rect(50, 530, 200, 50, 5);
+        fill(255, 255, 0);
+        rect(350, 530, 200, 50, 5);
+        fill(0, 0, 0);
+        textSize(25);
+        text("BACK", 150, 555);
+        text("LOAD", 450, 555);
+        textAlign(LEFT, CENTER);
+        text("Map Size: " + Custom.CustomSize, 170, 225);
+        text("Number of Bombs: " + Custom.CustomBombNumber, 170, 325);
+        textAlign(CENTER, CENTER);
+        if (pointRect(get.mouseX, get.mouseY, 50, 530, 200, 50) && clicked === true) {
+            mode = "Select";
+            clicked = false;
+        }
+        if (pointRect(get.mouseX, get.mouseY, 350, 530, 200, 50) && clicked === true) {
+            SetUp(Custom.CustomBombNumber, Custom.CustomSize, "C");
+            clicked = false;
+        }
+    };
+    var ShopFunc = function () {
+        //Background
+        background(230, 230, 230);
+        GenerateBG();
+
+        //Glaze
+        fill(255, 255, 255, 180);
+        noStroke();
+        rect(0, 0, 600, 600);
+
+        //Shop
+
+
+        //Text
+        fill(255, 255, 255);
+        stroke(0, 0, 0);
+        strokeWeight(3);
+        rect(450, -10, 160, 60, 8);
+        image(CrystalGraphic, 565, 8, 30, 30);
+        fill(0, 0, 0);
+        textSize(50);
+        text("Shop", 300, 80);
+        textSize(30);
+        text(Shop.Crystals, 500, 20);
+
+        for (var i = 0; i < Graphics.length; i++) {
+            fill(255, 255, 255);
+            if (Shop.TileShop[i].Purchased) {
+                fill(247, 255, 138);
+            }
+            stroke(0, 0, 0);
+            strokeWeight(3);
+            rect((i * ((400 / Graphics.length) + 7)) + 100, 150, ((400 - (20 * (Graphics.length - 1))) / Graphics.length), 150, 5);
+            line((i * ((400 / Graphics.length) + 7)) + 100, 260, ((i * ((400 / Graphics.length) + 7)) + 100) + ((400 - (20 * (Graphics.length - 1))) / Graphics.length), 260);
+            image(CrystalGraphic, (i * ((400 / Graphics.length) + 7)) + 185, 265, 30, 30);
+            fill(0, 0, 0);
+            textSize(15);
+            text(Shop.TileShop[i].Name, (i * ((400 / Graphics.length) + 7)) + 160, 165);
+            textSize(25);
+            if (Shop.Crystals < Shop.TileShop[i].Price) {
+                fill(255, 0, 0);
+            }
+            text(Shop.TileShop[i].Price, (i * ((400 / Graphics.length) + 7)) + 145, 280);
+            SlideDisplay(i, Shop.TileSlideNumber, (i * ((400 / Graphics.length) + 7)) + 135, 185, 50);
+            if (pointRect(get.mouseX, get.mouseY, (i * ((400 / Graphics.length) + 7)) + 100, 150, ((400 - (20 * (Graphics.length - 1))) / Graphics.length), 150) && clicked === true) {
+                clicked = false;
+                if (Shop.TileShop[i].Purchased) {
+                    TileNumber = i;
+                } else if (Shop.Crystals >= Shop.TileShop[i].Price) {
+                    Shop.TileShop[i].Purchased = true;
+                    TileNumber = i;
+                    Shop.Crystals -= Shop.TileShop[i].Price;
+                }
+            }
+        }
+        fill(255, 255, 255);
+        rect(200, 400, 200, 50, 5);
+        rect(200, 525, 200, 50, 5);
+        line(230, 400, 230, 450);
+        line(370, 400, 370, 450);
+        line(380, 425, 390, 425);
+        line(220, 425, 210, 425);
+        line(385, 420, 385, 430);
+        fill(0, 0, 0);
+        textSize(30);
+        text(Shop.TileSlideNumber, 300, 425);
+        text("Back to Menu", 300, 550);
+        if (pointRect(get.mouseX, get.mouseY, 200, 525, 200, 50) && clicked === true) {
+            clicked = false;
+            mode = "Select";
+        }
+        if (pointRect(get.mouseX, get.mouseY, 200, 400, 30, 50) && clicked === true) {
+            Shop.TileSlideNumber--;
+            if (Shop.TileSlideNumber === -1) {
+                Shop.TileSlideNumber = 13;
+            }
+        }
+        else if (pointRect(get.mouseX, get.mouseY, 370, 400, 30, 50) && clicked === true) {
+            Shop.TileSlideNumber++;
+            if (Shop.TileSlideNumber === 14) {
+                Shop.TileSlideNumber = 0;
+            }
+        }
+
+    };
+    var DrawGrid = function (x, y, s, grid) {
+        for (var i = 0; i < grid.length; i++) {
+            for (var j = 0; j < grid[i].length; j++) {
+                switch (grid[i][j]) {
+                    case 1:
+                        image(Graphics[TileNumber].N1, (j * s) + x, (i * s) + y, s + 1, s + 1);
+                        break;
+                    case 2:
+                        image(Graphics[TileNumber].N2, (j * s) + x, (i * s) + y, s + 1, s + 1);
+                        break;
+                    case 3:
+                        image(Graphics[TileNumber].N3, (j * s) + x, (i * s) + y, s + 1, s + 1);
+                        break;
+                    case 4:
+                        image(Graphics[TileNumber].N4, (j * s) + x, (i * s) + y, s + 1, s + 1);
+                        break;
+                    case 5:
+                        image(Graphics[TileNumber].N5, (j * s) + x, (i * s) + y, s + 1, s + 1);
+                        break;
+                    case 6:
+                        image(Graphics[TileNumber].N6, (j * s) + x, (i * s) + y, s + 1, s + 1);
+                        break;
+                    case 7:
+                        image(Graphics[TileNumber].N7, (j * s) + x, (i * s) + y, s + 1, s + 1);
+                        break;
+                    case 8:
+                        image(Graphics[TileNumber].N8, (j * s) + x, (i * s) + y, s + 1, s + 1);
+                        break;
+                    case "B":
+                        image(Graphics[TileNumber].Bomb, (j * s) + x, (i * s) + y, s + 1, s + 1);
+                        break;
+                    case 0:
+                        image(Graphics[TileNumber].BT, (j * s) + x, (i * s) + y, s + 1, s + 1);
+                        break;
+                    case "R":
+                        image(Graphics[TileNumber].RedBomb, (j * s) + x, (i * s) + y, s + 1, s + 1);
+                        break;
+                    case "W":
+                        image(Graphics[TileNumber].WrongFlag, (j * s) + x, (i * s) + y, s + 1, s + 1);
+                        break;
+                    case "U":
+                        image(Graphics[TileNumber].Tile, (j * s) + x, (i * s) + y, s + 1, s + 1);
+                        break;
+                    case "F":
+                        image(Graphics[TileNumber].Flag, (j * s) + x, (i * s) + y, s + 1, s + 1);
+                        break;
+                }
+            }
+        }
+    };
+    var How = function () {
+        //Background
+        background(230, 230, 230);
+        GenerateBG();
+
+        //Glaze
+        fill(255, 255, 255, 180);
+        noStroke();
+        rect(0, 0, 600, 600);
+
+        //Box
+        fill(255, 255, 255);
+        stroke(0, 0, 0);
+        strokeWeight(3);
+        rect(150, 500, 300, 50, 5);
+
+        //Text
+        switch (HowScene) {
+            case 0:
+                fill(0, 0, 0);
+                textSize(50);
+                text("How to Play!", 300, 100);
+                textSize(20);
+                text('This guide will take you through the\nmain aspects of minesweeper and show you\nhow to beat the game!', 300, 200);
+                textSize(30);
+                text("Next", 300, 525);
+                if (pointRect(get.mouseX, get.mouseY, 150, 500, 300, 50) && clicked) {
+                    clicked = false;
+                    //mode = "Select";
+                    HowScene++;
+                }
+                break;
+            case 1:
+                fill(0, 0, 0);
+                textSize(40);
+                text("The Basic Aspects [Part 1]", 300, 100);
+                textSize(20);
+                text('In minesweeper, there is a grid of squares.\nSome squares are "mines," you want to avoid clicking on.\nLuckily for you, every square has a number on it\n that tells you how many mines are around that\nsquare.', 300, 200);
+                textSize(30);
+                text("Next", 300, 525);
+                DrawGrid(225, 300, 50, [[1, 2, 'B'], ['B', 3, 2], [1, 2, 'B']]);
+                //image(Graphics[TileNumber].N5, 275, 350, 50, 50);
+                if (pointRect(get.mouseX, get.mouseY, 150, 500, 300, 50) && clicked) {
+                    clicked = false;
+                    //mode = "Select";
+                    HowScene++;
+                }
+                break;
+            case 2:
+                fill(0, 0, 0);
+                textSize(40);
+                text("The Basic Aspects [Part 2]", 300, 100);
+                textSize(20);
+                text('However, in the game the mines will not be uncovered.\nYou will have to use logic to determine which tiles are mines,\nand avoid clicking them.\nWhen you click a mine, you lose.', 300, 200);
+                textSize(30);
+                text("Next", 300, 525);
+                DrawGrid(225, 300, 50, [[1, 2, 'U'], ['U', 3, 2], [1, 2, 'U']]);
+                //image(Graphics[TileNumber].N5, 275, 350, 50, 50);
+                if (pointRect(get.mouseX, get.mouseY, 150, 500, 300, 50) && clicked) {
+                    clicked = false;
+                    //mode = "Select";
+                    HowScene++;
+                }
+                break;
+            case 3:
+                fill(0, 0, 0);
+                textSize(40);
+                text("Flagging", 300, 100);
+                textSize(20);
+                text('To mark a mine as dangerous, you can flag it.\nFlag by right-clicking, or setting the click mode to flag,\n if you\'re on mobile mode.\nTo win, reveal all the tiles except the ones that contain\n mines.', 300, 200);
+                textSize(30);
+                text("Next", 300, 525);
+                DrawGrid(225, 300, 50, [[1, 2, 'F'], ['F', 3, 2], [1, 2, 'F']]);
+                //image(Graphics[TileNumber].N5, 275, 350, 50, 50);
+                if (pointRect(get.mouseX, get.mouseY, 150, 500, 300, 50) && clicked) {
+                    clicked = false;
+                    //mode = "Select";
+                    HowScene++;
+                }
+                break;
+            case 4:
+                fill(0, 0, 0);
+                textSize(40);
+                text("Chording", 300, 100);
+                textSize(20);
+                text('Some advanced players will commonly "chord" a tile.\nChording is done by right-clicking on a numbered tile.\nIf there is enough flags around the tile to match or\nexceed that number, the other tiles that are not flagged around\nit will be cleared.', 300, 200);
+                textSize(30);
+                text("Back to menu", 300, 525);
+                DrawGrid(225, 300, 50, [['U', 'U', 'F'], ['F', 2, 1], ['U', 'U', 'U']]);
+                //image(Graphics[TileNumber].N5, 275, 350, 50, 50);
+                if (pointRect(get.mouseX, get.mouseY, 150, 500, 300, 50) && clicked) {
+                    clicked = false;
+                    mode = "Select";
+                    HowScene = 0;
+                }
+                break;
+        }
+
+
+    };
+    var Settings = function () {
+        //Background
+        background(230, 230, 230);
+        GenerateBG();
+
+        //Glaze
+        fill(255, 255, 255, 180);
+        noStroke();
+        rect(0, 0, 600, 600);
+
+        //Box
+        fill(255, 255, 255);
+        stroke(0, 0, 0);
+        strokeWeight(3);
+        rect(150, 500, 300, 50, 5);
+
+        //Mobile
+        textSize(20);
+        if (!mobile) {
+            fill(255, 0, 0);
+            stroke(179, 0, 0);
+            rect(150, 200, 300, 50, 5);
+            fill(179, 0, 0);
+            text("Mobile Mode: Off", 300, 225);
+        } else {
+            fill(0, 255, 21);
+            stroke(0, 171, 17);
+            rect(150, 200, 300, 50, 5);
+            fill(0, 171, 17);
+            text("Mobile Mode: On", 300, 225);
+        }
+        if (pointRect(get.mouseX, get.mouseY, 150, 200, 300, 50) && clicked === true) {
+            if (mobile) {
+                mobile = false;
+            } else {
+                mobile = true;
+            }
+            clicked = false;
+        }
+
+        //Chord
+        textSize(20);
+        if (chordClick) {
+            fill(255, 0, 0);
+            stroke(179, 0, 0);
+            rect(150, 270, 300, 50, 5);
+            fill(179, 0, 0);
+            text("Chord Click: Right", 300, 295);
+        } else {
+            fill(0, 255, 21);
+            stroke(0, 171, 17);
+            rect(150, 270, 300, 50, 5);
+            fill(0, 171, 17);
+            text("Chord Click: Left", 300, 295);
+        }
+        if (pointRect(get.mouseX, get.mouseY, 150, 270, 300, 50) && clicked === true) {
+            if (chordClick) {
+                chordClick = false;
+            } else {
+                chordClick = true;
+            }
+            clicked = false;
+        }
+
+        //Text
+        fill(0, 0, 0);
+        textSize(40);
+        text("Settings", 300, 100);
+        textSize(30);
+        text("Back to menu", 300, 525);
+        if (pointRect(get.mouseX, get.mouseY, 150, 500, 300, 50) && clicked) {
+            clicked = false;
+            mode = "Select";
+        }
+    };
+    /************************MOUSE****************************/
+    /**dl.mouseClicked = function() {
+        clicked = true;
+        if (!mobile) {    
+            if (mouseButton === LEFT) {
+                left = true;
+            } else {
+                left = false;
+            }
+        }
+    };**///Drawlite broken RIP
+    dl.mousePressed = function () {
+        clicking = true;
+    };
+    dl.mouseReleased = function () {
+        clicking = false;
+        clicked = true;
+        if (!mobile) {
+            if (get.mouseButton === LEFT) {
+                left = true;
+            } else {
+                left = false;
+            }
+        }
+    };
+    /*************************DRAW****************************/
+    dl.draw = function () {
+        if (mode === "Select") {
+            MenuGraphics();
+        }
+        else if (mode === "PC") {
+            PC();
+        }
+        else if (mode === "Levels") {
+            LevelSelect();
+        }
+        else if (mode === "FirstScene") {
+            FirstScene();
+        }
+        else if (mode === "Play") {
+            Game();
+        }
+        else if (mode === "GameOver") {
+            Lose();
+        }
+        else if (mode === "Custom") {
+            CustomGame();
+        }
+        else if (mode === "Shop") {
+            ShopFunc();
+        }
+        else if (mode === "How") {
+            How();
+        }
+        else if (mode === "Settings") {
+            Settings();
+        }
+        clicked = false;
+    };  
+</script>
+<script>
+    let bgChange = document.getElementById("bodyID");
+    let bgNum = Math.floor(Math.random() * 22);
+    bgChange.style.backgroundImage = "url('images/bg-images/img" + bgNum + ".jpg')";
+</script>
+
+</html>
