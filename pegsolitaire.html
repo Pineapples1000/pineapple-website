@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Peg Solitaire</title>
+    <script src="https://cdn.jsdelivr.net/gh/librepaint/drawlite@main/javascript/drawlite.js"></script>
+    <link rel="stylesheet" href="index.css">
+    <link rel="icon" href="images/pappy.png" type="image/png">
+    <link href='https://fonts.googleapis.com/css?family=Rubik' rel='stylesheet' type='text/css'>
+    <style>
+        /******CANVAS STYLES********/
+        #myCanvas {
+            display: block;
+            margin: 0 auto 0 auto;
+            border-radius: 3px;
+            outline: none;
+            max-width: 70vw;
+            max-height: 70vw;
+        }
+    </style>
+</head>
+
+<body id="bodyID">
+    <header id="headerID"></header>
+    <div class="box">
+        <h1 class="center">Peg Solitaire</h1>
+        <canvas id="myCanvas" width="400" height="400"></canvas>
+        <h2>Description</h2>
+        <p>This is a puzzle game based of the game you play when you eat at a specific restaurant.
+            The idea of the game is to get the lowest amount of pegs possible. The lower the score, the better. To
+            eliminate pegs, you have to use other pegs and jump over those pegs when they are right next to each other.
+            For example if you have 3 slots in a row, Slot A, Slot B, and Slot C, and Both Slot A and Slot B are filled,
+            you can click and drag peg A to Slot C to eliminate Peg B and lower your score by one. Pegs must be right
+            next to each other to move.
+
+            Once you eliminate every peg possible, the game will automatically end your game, and you will get your
+            score.
+
+            You can play on THREE different shapes -
+            TRIANGLE,
+            SQUARE,
+            and HEXAGON.
+
+            Click on the shapes above the play button to change shapes. Leaderboards are for that specific shape, not
+            for all the shapes.
+
+            Hit Play to play that shape.
+            Hover over the "Lead" Box to see the Leaderboard.
+
+            Here's another description if you still don't get it: "Okay, so the goal of the game is to get the smallest
+            amount of pegs possible. To do that, you have to use pegs to jump over pegs. The peg will jump over the peg
+            (Click and Drag) and remove the peg you jumped over."</p>
+        <h2>Controls</h2>
+        <p>Use the mouse. =/ <i>Trouble getting
+                the canvas to stay? Try clicking on the canvas
+                and pressing space.</i></p>
+        <h2>Credits</h2>
+        <p>Made April 2025, by Pineapples.</p>
+        <h2>Changelog</h2>
+        <b>V1.0.0 10/2/2024</b><br>
+        - Finished leaderboard top four in-game<br>
+        - Commented entire code<br>
+        - Prepared Game for release<br>
+        <br>
+        <b>V0.0.8 10/1/2024</b><br>
+        - Finished debugging shapes<br>
+        - Finished square<br>
+        - Added Hexagon<br>
+        <br>
+        <b>V0.0.7 9/30/2024</b><br>
+        - Started working on shapes<br>
+        <br>
+        <b>V0.0.6 9/29/2024</b><br>
+        - Added Lead to menu and completed the "Finish" function and graphic<br>
+        <br>
+        <b>V0.0.5 9/25/2024</b><br>
+        - Debugged rest of code and added many comments.<br>
+        - Added Highscore<br>
+        <br>
+        <b>V0.0.4 9/23/2024</b><br>
+        - Started Debugging Release Peg Function<br>
+        - FIXED all release peg bugs<br>
+        <br>
+        <b>V0.0.3 9/20/2024</b><br>
+        - Finished Obtain Peg function<br>
+        - Finished Release Peg Function<br>
+        - Built Debug System<br>
+        <br>
+        <b>V0.0.2 9/19/2024</b><br>
+        - Added equal relative dots using math<br>
+        - Added Peg Base Code<br>
+        - Added "Lost" Peg Detection<br>
+        - Began "Peg Click" detection (See if the mouse is within range of the peg.)<br>
+        <br>
+        <b>V0.0.1 9/18/2024</b><br>
+        - Began Game Structure<br>
+        - Added Equalateral Triangle<br>
+        <br>
+        <b>V0.0.0 9/17/2024</b><br>
+        - Started project<br>
+        - Added Scenes<br>
+        - Added Buttons<br>
+        - Added Background<br>
+    </div>
+    <footer id="footerID"></footer>
+</body>
+<script type>
+    var canvas = document.getElementById("myCanvas");
+    var dl = Drawlite(canvas);
+    var { PI, TWO_PI, EPSILON, CORNER, CORNERS, LEFT, RIGHT, TOP, CENTER, BOTTOM, BASELINE, RADIUS, DEGREES, RADIANS, POINTS, LINES, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN, QUADS, QUAD_STRIP, CLOSE, ROUND, PROJECT, SQUARE, BEVEL, MITER, RGB, HSB, NATIVE, canvas, Color, PerlinNoise, PRNG, vec3, ctx, size, angleMode, noLoop, loop, frameRate, min, max, floor, round, ceil, abs, constrain, sq, sqrt, pow, sin, cos, tan, asin, acos, atan, atan2, log, random, dist, map, lerp, radians, degrees, color, lerpColor, fill, stroke, strokeWeight, strokeCap, strokeJoin, noStroke, noFill, beginShape, vertex, curveVertex, bezierVertex, bezierPoint, bezierTangent, splineTightness, splineVertex, splinePoint, splineTangent, lerpSpline, endShape, spline, snip, getColor, imageMode, image, loadImage, font, textSize, textAlign, textWidth, textAscent, textDescent, textLeading, text, background, point, line, rectMode, rect, triangle, quad, arc, circle, ellipseMode, ellipse, bezier, get, pushMatrix, popMatrix, resetMatrix, scale, translate, rotate, loadPixels, updatePixels, colorMode, enableContextMenu, millis, second, minute, hour, day, month, year, smooth, nosmooth, createGraphics, getProperties } = dl;
+    /**
+                              Peg Solitaire
+                           Game by Pineapples, 
+                              October 2024
+--------------------------------NOTE ON GAME-----------------------------------
+This game is a 2024 Khantober program. [Planned to be released on Oct. 8]
+It had many bugs and issues through the making, but I think I fixed them all. If you happen to find one, PLEASE let me know in the T&T.
+--------------------------------HOW TO PLAY------------------------------------
+This is a puzzle game based of the game you play when you eat at a resturant that rhymes with: *Smacker Darryl*
+
+The idea of the game is to get the lowest amount of pegs possible. The lower the score, the better. To eliminate pegs, you have to use other pegs and jump over those pegs when they are right next to each other. For example if you have 3 slots in a row, Slot A, Slot B, and Slot C, and Both Slot A and Slot B are filled, you can click and drag peg A to Slot C to eliminate Peg B and lower your score by one. Pegs must be right next to each other to move. 
+
+Once you eliminate every peg possible, the game will automatically end your game, and you will get your score.
+
+You can play on THREE different shapes - 
+TRIANGLE
+SQUARE
+and HEXAGON
+
+Click on the shapes above the play button to change shapes. Leaderboards are for that specific shape, not for all the shapes.
+
+Hit Play to play that shape.
+Hover over the "Lead" Box to see the Leaderboard.
+
+Here's another description if you still don't get it: "Okay, so the goal of the game is to get the smallest amount of pegs possible. To do that, you have to use pegs to jump over pegs. The peg will jump over the peg (Click and Drag) and remove the peg you jumped over."
+---------------------------- NOTE ON LEADERBOARD ------------------------------
+I don't require spin-off proof to get on the leaderboard. This is because I go crazy when I have spin-off projects for leaderboards in My Projects. 
+
+That being said, please don't cheat to get on the leaderboard. If I catch you cheating, you will be removed from the leaderboard and any scores you post on this game again will not be added or even considered. Cheating is unexceptable.
+
+WHEN SUBMITTING A SCORE, MAKE SURE YOU SPECIFY WHAT SHAPE YOU ARE ATTEMPTING TO GET ON THE LEADERBOARD FOR. IF NO SHAPE IS SPECIFIED, YOU WILL NOT BE ADDED!!!
+
+You may submit scores for all three shapes.
+
+IF TWO POSTERS HAVE THE SAME SCORE, THE OLDEST WILL BE CONSIDERED FIRST.
+**Unless that involves me, "Pineapples", then you will be considered first.**
+
+And yes, I know you can search on the web how to beat the triangle one, but that kind of defeats the purpose of the game.
+
+Please, Enjoy!  - Pineapples
+
+@CHANGELOG {
+V1.0.0     10/2/2024
+- Finished leaderboard top four in-game
+- Commented entire code
+- Prepared Game for release
+
+V0.0.8     10/1/2024
+- Finished debugging shapes
+- Finished square
+- Added Hexagon
+
+V0.0.7     9/30/2024
+- Started working on shapes
+
+V0.0.6     9/29/2024
+- Added Lead to menu and completed the "Finish" function and graphic
+
+V0.0.5     9/25/2024
+- Debugged rest of code and added many comments.
+- Added Highscore
+
+V0.0.4     9/23/2024
+- Started Debugging Release Peg Function
+- FIXED all release peg bugs
+
+V0.0.3     9/20/2024
+- Finished Obtain Peg function
+- Finished Release Peg Function
+- Built Debug System
+
+V0.0.2     9/19/2024
+- Added equal relative dots using math
+- Added Peg Base Code
+- Added "Lost" Peg Detection
+- Began "Peg Click" detection (See if the mouse is within range of the peg.)
+
+V0.0.1     9/18/2024
+- Began Game Structure
+- Added Equalateral Triangle
+
+
+V0.0.0     9/17/2024
+- Started project
+- Added Scenes
+- Added Button
+
+}
+**/
+    /**************************GLOBAL VARIABLES***********************************/
+    var Debug = false;
+    //If debug is true, debug info will be dis[played throughout the game.
+    var Scene = 0;
+    //Scene controls if you are playing the game or are in the menu.
+    var clicked = false;
+    //If the mouse is clicked
+    /**********************MATH AND COLLISION FUNCTIONS***************************/
+    var pointRect = function (px, py, rx, ry, rw, rh) {
+        if (px > rx && px < rx + rw && py > ry && py < ry + rh) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+    //This function is for buttons. It makes my life easier. I like this function.
+    /*****************VARIABLES AND FUNCTIONS INSIDE OBJECTS************************/
+    var Menu = {
+        TopFour: [
+            [
+                ["Katie", 1],
+                ["Peter", 1],
+                ["windawine", 1],
+                ["pEEKER21", 1],
+            ],
+            [
+                ["Blue Dragon", 2],
+                ["Katie", 2],
+                ["Giraffey", 2],
+                ["Cheesecake Programming", 3],
+            ],
+            [
+                ["windawine", 2],
+                ["Peter", 2],
+                ["Pineapples", 2],
+                ["pEEKER21", 2],
+            ],
+        ],//The Leaderboard per shape.
+        Mode: 0,//The shape being played
+        /**
+        0 - Triangle
+        1 - Square
+        2 - Hexagon
+        **/
+        ShapeData: [
+            {
+                PegHoleLocations: [
+                    //First Row of Five
+                    [111, 106, [[2, 1], [9, 5]]],//0
+                    [155, 106, [[3, 2], [10, 6]]],//1
+                    [200, 106, [[4, 3], [0, 1], [9, 6], [11, 7]]],//2
+                    [244, 106, [[1, 2], [10, 7]]],//3
+                    [288, 106, [[2, 3], [11, 8]]],//4
+                    //Second row of four
+                    [133, 144, [[7, 6], [12, 9]]],//5
+                    [177, 144, [[8, 7], [13, 10]]],//6
+                    [222, 144, [[5, 6], [12, 10]]],//7
+                    [266, 144, [[6, 7], [13, 11]]],//8
+                    //Thrid row of three
+                    [155, 183, [[0, 5], [2, 6], [11, 10], [14, 12]]],//9
+                    [200, 183, [[1, 6], [3, 7]]],//10
+                    [244, 183, [[4, 8], [2, 7], [9, 10], [14, 13]]],//11
+                    //Fourth Row of two
+                    [177, 221, [[5, 9], [7, 10]]],//12
+                    [222, 221, [[6, 10], [8, 11]]],//13
+                    //Last Dot
+                    [200, 259, [[9, 12], [11, 13]]],//14
+                ],
+                Pegs: 14,
+            },
+            {
+                PegHoleLocations: [
+                    //First Row of Five
+                    [111, 86, [[2, 1], [10, 5]]],//0
+                    [155, 86, [[3, 2], [11, 6]]],//1
+                    [200, 86, [[0, 1], [4, 3], [12, 7]]],//2
+                    [244, 86, [[1, 2], [13, 8]]],//3
+                    [288, 86, [[2, 3], [14, 9]]],//4
+                    //Second row of four
+                    [111, 130, [[15, 10], [7, 6]]],//0
+                    [155, 130, [[16, 11], [8, 7]]],//1
+                    [200, 130, [[5, 6], [9, 8], [17, 12]]],//2
+                    [244, 130, [[6, 7], [18, 13]]],//3
+                    [288, 130, [[7, 8], [19, 14]]],//4
+                    //Thrid row of three
+                    [111, 174, [[20, 15], [0, 5], [12, 11]]],//0
+                    [155, 174, [[1, 6], [21, 16], [13, 12]]],//1
+                    [200, 174, [[2, 7], [22, 17], [10, 11], [14, 13]]],//2
+                    [244, 174, [[3, 8], [23, 18], [11, 12]]],//3
+                    [288, 174, [[4, 9], [24, 19], [12, 13]]],//4
+                    //Fourth Row of two
+                    [111, 218, [[5, 10], [17, 16]]],//0
+                    [155, 218, [[6, 11], [18, 17]]],//1
+                    [200, 218, [[7, 12], [19, 18], [15, 16]]],//2
+                    [244, 218, [[8, 13], [16, 17]]],//3
+                    [288, 218, [[9, 14], [17, 18]]],//4
+                    //Last Dot
+                    [111, 262, [[10, 15], [22, 21]]],//0
+                    [155, 262, [[11, 16], [23, 22]]],//1
+                    [200, 262, [[12, 17], [20, 21], [24, 23]]],//2
+                    [244, 262, [[13, 18], [21, 22]]],//3
+                    [288, 262, [[14, 19], [22, 23]]],//4
+                ],
+                Pegs: 24,
+            },
+            {
+                PegHoleLocations: [
+                    //One
+                    [200, 75, [[3, 1], [9, 4], [5, 2]]],
+                    //Two
+                    [154.5, 101.25, [[11, 6], [7, 4]]],
+                    [245.5, 101.25, [[12, 7], [6, 4]]],
+                    //Three
+                    [109, 127.5, [[0, 1], [9, 6], [13, 8]]],
+                    [200, 127.5, [[8, 6], [14, 9], [10, 7]]],
+                    [291, 127.5, [[0, 2], [9, 7], [15, 10]]],
+                    //Four
+                    [154.5, 153.75, [[2, 4], [12, 9], [16, 11]]],
+                    [245.5, 153.75, [[1, 4], [11, 9], [17, 12]]],
+                    //Five
+                    [109, 180, [[4, 6], [14, 11]]],
+                    [200, 180, [[0, 4], [3, 6], [5, 7], [13, 11], [15, 12], [18, 14]]],
+                    [291, 180, [[4, 7], [14, 12]]],
+                    //Six
+                    [154.5, 206.25, [[17, 14], [7, 9], [1, 6]]],
+                    [245.5, 206.25, [[16, 14], [6, 9], [2, 7]]],
+                    //Seven
+                    [109, 232.5, [[3, 8], [9, 11], [18, 16]]],
+                    [200, 232.5, [[8, 11], [4, 9], [10, 12]]],
+                    [291, 232.5, [[5, 10], [9, 12], [18, 17]]],
+                    //Eight
+                    [154.5, 258.75, [[6, 11], [12, 14]]],
+                    [245.5, 258.75, [[11, 14], [7, 12]]],
+                    //Nine
+                    [200, 285, [[13, 16], [9, 14], [15, 17]]],
+                ],
+                Pegs: 18,
+            },
+        ],//The data necessary to play each shape.
+        Highscore: [14, 24, 20],
+        //Your personal highscore.
+        HSA: [false, false, false],
+        //If you have played the game yet.
+        SetGameObjectShapeDataCorrectly: function () { },
+        //This function will be set later on
+        Draw: function () {
+            background(255, 178, 84);
+            fill(97, 53, 0);
+            textSize(30);
+            textAlign(CENTER, CENTER);
+            text("Peg Solitaire", 200, 50);
+            textSize(15);
+            text("A game that's been around for over 300 years", 200, 80);
+            textSize(30);
+            stroke(255, 234, 0);
+            strokeWeight(3);
+            fill(56, 31, 0);
+            if (pointRect(get.mouseX, get.mouseY, 50, 200, 300, 80)) {
+                rect(49, 199, 302, 82);
+                if (clicked === true) {
+                    clicked = false;
+                    Scene = 1;
+                    this.SetGameObjectShapeDataCorrectly();
+                }
+            } else {
+                rect(50, 200, 300, 80);
+            }
+            if (pointRect(get.mouseX, get.mouseY, 50, 300, 300, 80)) {
+                textAlign(LEFT, CENTER);
+                textSize(15);
+                rect(49, 299, 302, 82);
+                fill(255, 234, 0);
+                text("1: " + this.TopFour[this.Mode][0][0], 60, 315);
+                text(this.TopFour[this.Mode][0][1], 330, 315);
+                text("2: " + this.TopFour[this.Mode][1][0], 60, 332);
+                text(this.TopFour[this.Mode][1][1], 330, 332);
+                text("3: " + this.TopFour[this.Mode][2][0], 60, 349);
+                text(this.TopFour[this.Mode][2][1], 330, 349);
+                text("4: " + this.TopFour[this.Mode][3][0], 60, 366);
+                text(this.TopFour[this.Mode][3][1], 330, 366);
+            } else {
+                textAlign(CENTER, CENTER);
+                textSize(30);
+                rect(50, 300, 300, 80);
+                fill(255, 234, 0);
+                text("Lead", 200, 340);
+            }
+            textAlign(CENTER, CENTER);
+            fill(255, 234, 0);
+            textSize(30);
+            if (this.HSA[this.Mode]) {
+                text("Play", 200, 225);
+                textSize(15);
+                text("Highscore: " + this.Highscore[this.Mode], 200, 255);
+            } else {
+                text("Play", 200, 240);
+            }
+            //SHAPES
+            //TRIANGLE {
+            fill(0, 0, 0);
+            switch (this.Mode) {
+                case 0:
+                    stroke(0, 255, 0);
+                    break;
+                case 1:
+                    stroke(255, 0, 0);
+                    break;
+                case 2:
+                    stroke(255, 0, 0);
+                    break;
+            }
+            rect(100, 130, 50, 50);
+            triangle(125, 138, 144, 172, 106, 172);
+            //}
+            //SQUARE {
+            switch (this.Mode) {
+                case 0:
+                    stroke(255, 0, 0);
+                    break;
+                case 1:
+                    stroke(0, 255, 0);
+                    break;
+                case 2:
+                    stroke(255, 0, 0);
+                    break;
+            }
+            rect(175, 130, 50, 50);
+            rect(182, 137, 36, 36);
+            //}
+            //HEXAGON {
+            switch (this.Mode) {
+                case 0:
+                    stroke(255, 0, 0);
+                    break;
+                case 1:
+                    stroke(255, 0, 0);
+                    break;
+                case 2:
+                    stroke(0, 255, 0);
+                    break;
+            }
+            rect(250, 130, 50, 50);
+            strokeWeight(3);
+            pushMatrix();
+            translate(275, 135);
+            rotate(30);
+            for (var i = 0; i < 5; i++) {
+                line(0, 0, 20, 0);
+                translate(20, 0);
+                rotate(60);
+            }
+            line(0, 0, 20, 0);
+            popMatrix();
+            //}
+            if (pointRect(get.mouseX, get.mouseY, 100, 130, 50, 50) && clicked === true) {
+                clicked = false;
+                this.Mode = 0;
+                this.SetGameObjectShapeDataCorrectly();
+            } else if (pointRect(get.mouseX, get.mouseY, 175, 130, 50, 50) && clicked === true) {
+                clicked = false;
+                this.Mode = 1;
+                this.SetGameObjectShapeDataCorrectly();
+            } else if (pointRect(get.mouseX, get.mouseY, 250, 130, 50, 50) && clicked === true) {
+                clicked = false;
+                this.Mode = 2;
+                this.SetGameObjectShapeDataCorrectly();
+            }
+        },
+        //Draw the menu
+    };
+    var Game = {
+        //Obtain Vars
+        PegInUse: null,
+        PegInUseLocation: null,
+        //Release Vars
+        PassingPegLocation: null,
+        PossibleLocation: null,
+        LocationConfirmed: false,
+        PassingHoleFilled: false,
+        IData: null,
+        Finished: false,
+        PegFilled: false,
+        PegsL: 0,
+        TextPlaceholder: null,
+        //Peg Data
+        PegHoleLocations: [],
+        Pegs: [],
+        //Peg Functions
+        ObtainPeg: function () {
+            //Make sure pegs are nulls
+            this.PegInUse = null;
+            this.PegInUseLocation = null;
+            //Run though all pegs
+            for (var i = 0; i < this.Pegs.length; i++) {
+                //See which is clicked
+                if (!this.Pegs[i].dead && dist(get.mouseX, get.mouseY, this.PegHoleLocations[this.Pegs[i].hole][0], this.PegHoleLocations[this.Pegs[i].hole][1]) <= 20) {
+                    //Set peg array identification number
+                    this.PegInUse = i;
+                    //Set peg grid location
+                    this.PegInUseLocation = this.Pegs[i].hole;
+                    //Break through for loop.
+                    break;
+                }
+            }
+            //println(this.PegInUse+", "+this.PegInUseLocation);
+            /**Debug statement: Works Fine**/
+        },
+        ReleaseObtainedPeg: function () {
+            //Set all confirmation vars to what they should be before confirmation.
+            this.PossibleLocation = null;
+            this.PassingPegLocation = null;
+            this.LocationConfirmed = false;
+            this.PassingHoleFilled = false;
+            this.IData = null;
+            //Only call if the peg is valid
+            if (this.PegInUse !== null) {
+                //Make absolute sure the peg location is set.
+                this.PegInUseLocation = this.Pegs[this.PegInUse].hole;
+                //println("Data Processed Up Until PegUse();");
+                for (var i = 0; i < this.PegHoleLocations.length; i++) {
+                    if (dist(get.mouseX, get.mouseY, this.PegHoleLocations[i][0], this.PegHoleLocations[i][1]) <= 20) {
+                        this.PossibleLocation = i;
+                        break;
+                    }
+                }
+                //println(this.PossibleLocation);
+                /**Possible Location Works**/
+                this.LocationConfirmed = true;
+                //Check to see if there is a peg in the spot
+                if (this.PossibleLocation !== null) {
+                    //println("Data Processed Up Until Location();");
+                    for (var j = 0; j < this.Pegs.length; j++) {
+                        if (this.Pegs[j].hole === this.PossibleLocation) {
+                            this.LocationConfirmed = false;
+                        }
+                    }
+                    //println(this.LocationConfirmed);
+                    /**Location Confirmed Works Accurately**/
+                    if (this.LocationConfirmed === true) {
+                        //println("Data Processed Up Until Location 2();");
+                        this.LocationConfirmed = false;
+                        //This checks the second peg you are heading to, makes sure it is filled. =)
+                        //Run through the Possile Pegs per spot
+                        for (var i = 0; i < this.PegHoleLocations[this.PegInUseLocation][2].length; i++) {
+                            //If one of the options matches the clicked location,
+                            if (this.PegHoleLocations[this.PegInUseLocation][2][i][0] === this.PossibleLocation) {
+                                //Set LocationConfirmed to true and break.
+                                this.LocationConfirmed = true;
+                                this.IData = i;
+                                break;
+                            }
+                            //println(this.PegHoleLocations[this.PegInUseLocation][2][i][0]);
+                        }
+                        //println(this.LocationConfirmed);
+                        if (this.LocationConfirmed === true) {
+                            //Run through pegs
+                            //println(this.IData);
+                            for (var j = 0; j < this.Pegs.length; j++) {
+                                //If the peg hole is the one being passed over, 
+                                if (this.Pegs[j].hole === this.PegHoleLocations[this.PegInUseLocation][2][this.IData][1] && this.Pegs[j].dead === false) {
+                                    //Fill the passing peg location
+                                    this.PassingPegLocation = j;
+                                    this.PassingHoleFilled = true;
+                                    break;
+                                }
+                            }
+                            //println(this.PassingPegLocation);
+                            if (this.PassingHoleFilled === true) {
+                                this.Pegs[this.PegInUse].hole = this.PossibleLocation;
+                                this.Pegs[this.PassingPegLocation].dead = true;
+                                this.Pegs[this.PassingPegLocation].hole = null;
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        CheckForFinish: function () {
+            this.Finished = true;
+            this.PegFilled = false;
+            for (var i = 0; i < this.Pegs.length; i++) {
+                if (this.Pegs[i].dead === false) {
+                    for (var j = 0; j < this.PegHoleLocations[this.Pegs[i].hole][2].length; j++) {
+                        for (var w = 0; w < this.Pegs.length; w++) {
+                            if (this.Pegs[w].hole === this.PegHoleLocations[this.Pegs[i].hole][2][j][1]) {
+                                this.PegFilled = false;
+                                for (var t = 0; t < this.Pegs.length; t++) {
+                                    if (this.Pegs[t].hole === this.PegHoleLocations[this.Pegs[i].hole][2][j][0]) {
+                                        this.PegFilled = true;
+                                    }
+                                }
+                                if (this.PegFilled === false) {
+                                    this.Finished = false;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        Reset: function () {
+            //Obtain Vars
+            this.PegInUse = null;
+            this.PegInUseLocation = null;
+            //Release Vars
+            this.PassingPegLocation = null;
+            this.PossibleLocation = null;
+            this.LocationConfirmed = false;
+            this.PassingHoleFilled = false;
+            this.IData = null;
+            this.Finished = false;
+            this.PegFilled = false;
+            //Peg Data
+            Menu.SetGameObjectShapeDataCorrectly();
+        },
+        PegsLeft: function () {
+            this.PegsL = 0;
+            for (var i = 0; i < this.Pegs.length; i++) {
+                if (!this.Pegs[i].dead) {
+                    this.PegsL++;
+                }
+            }
+            return this.PegsL;
+        },
+        Draw: function () {
+            background(255, 178, 84);
+            fill(36, 20, 0);
+            noStroke();
+            switch (Menu.Mode) {
+                case 0:
+                    triangle(50, 72, 200, 400 - 73, 350, 72);
+                    break;
+                case 1:
+                    rect(75, 50, 250, 250);
+                    break;
+                case 2:
+                    pushMatrix();
+                    translate(200, 40);
+                    rotate(30);
+                    for (var i = 0; i < 5; i++) {
+                        rect(0, 0, 140, 140);
+                        translate(140, 0);
+                        rotate(60);
+                    }
+                    rect(0, 0, 140, 140);
+                    popMatrix();
+                    break;
+            }
+            stroke(82, 51, 0);
+            strokeWeight(12);
+            fill(255, 255, 255);
+            for (var i = 0; i < this.PegHoleLocations.length; i++) {
+                point(this.PegHoleLocations[i][0], this.PegHoleLocations[i][1]);
+                if (Debug === true) {
+                    textSize(15);
+                    text(i, this.PegHoleLocations[i][0], this.PegHoleLocations[i][1]);
+                }
+            }
+            stroke(255, 212, 110);
+            strokeWeight(14);
+            fill(0, 0, 0);
+            textSize(12);
+            for (var i = 0; i < this.Pegs.length; i++) {
+                if (!this.Pegs[i].dead) {
+                    stroke(255, 212, 110);
+                    if (dist(get.mouseX, get.mouseY, this.PegHoleLocations[this.Pegs[i].hole][0], this.PegHoleLocations[this.Pegs[i].hole][1]) <= 20) {
+                        stroke(21, 255, 0);
+                    }
+                    point(this.PegHoleLocations[this.Pegs[i].hole][0], this.PegHoleLocations[this.Pegs[i].hole][1]);
+                    if (Debug === true) {
+                        text(i, this.PegHoleLocations[i][0], this.PegHoleLocations[i][1]);
+                    }
+                }
+            }
+            if (Debug === true) {
+                fill(0, 0, 0);
+                textSize(12);
+                text("" + this.PossibleLocation, 20, 10);
+                text("" + this.PassingPegLocation, 20, 22);
+                text("" + this.LocationConfirmed, 20, 34);
+                text("" + this.PassingHoleFilled, 20, 46);
+                text("" + this.IData, 20, 58);
+                text("PegInUse: " + this.PegInUse, 200, 10);
+                text("PegInUse Location: " + this.PegInUseLocation, 200, 25);
+                stroke(0, 0, 0);
+                strokeWeight(1);
+                for (var i = 0; i < this.Pegs.length; i++) {
+                    fill(173, 211, 255);
+                    rect(370, 10 + (i * 25), 40, 20, 5);
+                    fill(0, 0, 0);
+                    text(i, 385, 20 + (i * 25));
+                    if (pointRect(get.mouseX, get.mouseY, 370, 10 + (i * 25), 40, 20)) {
+                        text("Hole: " + this.Pegs[i].hole, 200, 10);
+                        text("Dead: " + this.Pegs[i].dead, 200, 22);
+                    }
+                }
+            }
+            this.CheckForFinish();
+            //println(this.PegsLeft());
+            if (this.Finished) {
+                stroke(255, 234, 0);
+                strokeWeight(3);
+                fill(56, 31, 0);
+                rect(50, 300, 300, 80);
+                rect(60, 340, 135, 30);
+                rect(205, 340, 135, 30);
+                fill(255, 234, 0);
+                textSize(20);
+                textAlign(CENTER, CENTER);
+                this.TextPlaceholder = this.PegsLeft();
+                if (this.TextPlaceholder < Menu.Highscore[Menu.Mode]) {
+                    Menu.Highscore[Menu.Mode] = this.TextPlaceholder;
+                    Menu.HSA[Menu.Mode] = true;
+                }
+                text("Final Score: " + this.TextPlaceholder, 200, 320);
+                textSize(20);
+                text("Menu", 127.5, 355);
+                text("Play Again", 300 - 27.5, 355);
+                if (pointRect(get.mouseX, get.mouseY, 60, 340, 135, 30) && clicked === true) {
+                    this.Reset();
+                    clicked = false;
+                    Scene = 0;
+                } else if (pointRect(get.mouseX, get.mouseY, 205, 340, 135, 30) && clicked === true) {
+                    this.Reset();
+                    clicked = false;
+                }
+            }
+        },
+    };
+    Menu.SetGameObjectShapeDataCorrectly = function () {
+        Game.PegHoleLocations = Menu.ShapeData[Menu.Mode].PegHoleLocations;
+        Game.Pegs = [];
+        for (var i = 0; i < Menu.ShapeData[Menu.Mode].Pegs; i++) {
+            Game.Pegs.push({
+                hole: i,
+                dead: false,
+            });
+        }
+        //println(Menu.ShapeData[Menu.Mode].Pegs);
+        //println(Menu.Mode);
+    };
+    /*******************************DRAW*******************************************/
+    dl.draw = function () {
+        switch (Scene) {
+            case 0:
+                Menu.Draw();
+                break;
+            case 1:
+                Game.Draw();
+                break;
+        }
+        clicked = false;
+        //println(Menu.ShapeData[Menu.Mode].Pegs[1].hole);
+    };
+    /*******************************MOUSE*******************************************/
+    dl.mousePressed = function () {
+        if (Scene === 1) {
+            Game.ObtainPeg();
+        }
+    };
+    dl.mouseReleased = function () {
+        if (Scene === 1) {
+            Game.ReleaseObtainedPeg();
+        }
+        clicked = true;
+        //println("["+get.mouseX+", "+get.mouseY+"],");
+    };
+
+</script>
+<script src="headerFooter.js"></script>
+<script src="bgscript.js"></script>
+
+</html>

@@ -11,25 +11,14 @@
 </head>
 
 <body id="bodyID">
-    <header>
-        <a class="navSection noTextDecoration" href="index.html">
-            <img src="images/pappy.png" id="navImg">
-            <span class="navText">Pineapple Programming</span>
-        </a>
-        <a class="navSection noTextDecoration">
-            <span class="navText">Games</span>
-        </a>
-        <a class="navSection noTextDecoration">
-            <span class="navText">Projects</span>
-        </a>
-    </header>
+    <header id ="headerID"></header>
     <div class="box">
         <h1 class="center">Games</h1>
         <p>Here are some of my games that I made! I hope you enjoy them!</p>
     </div>
     <div class="box" id="latest-release">
         <h2>Latest Release</h2>
-        <a href="thechest.html"><img src="images/game-thumbnails/theChestPng.png"></a>
+        <a href="thechest.html"><img src="images/game-thumbnails/theChestThumbnail.png"></a>
         <div>
             <span><span style="font-size: 20px;">The Chest</span><br>
                 An adventure game where you find a legendary chest! Upgrade and defeat the magic chest!<br>
@@ -37,18 +26,115 @@
                 Released: <b>October 2025</b><br></span>
         </div>
     </div>
-    <div class="box" id="latest-release">
-        <a href="minesweeper.html" class="LinkDesign">Minesweeper</a>
+    <div class="box" id="games-list">
+        
     </div>
-    <footer>
-        <p>&copy;2025, Pineapples. All rights reserved.</p><br>
-        <a href="https://discord.gg/Y3XNzmQpCe"><img class="footerImage"
-                src="https://cdn.prod.website-files.com/6257adef93867e50d84d30e2/66e3d7f4ef6498ac018f2c55_Symbol.svg"></a>
-        <a href="https://github.com/Pineapples1000"><img class="footerImage" src="images/github-mark-white.png"></a>
-        <a href="https://scratch.mit.edu/users/cuddlyscout"><img class="footerImage" src="images/scratch-logo.png"></a>
-        <a href="https://www.khanacademy.org/profile/cuddlyscout"><img class="footerImage" src="images/ka-logo.png"></a>
-    </footer>
+    <footer id="footerID"></footer>
 </body>
+<script>
+    //Get the game array object
+    const gamesObject = document.getElementById('games-list');
+    //Make an array of the games that exist
+    var games = [
+        {
+            title: "Minesweeper",
+            description: "A classic minesweeper game with a twist! Play on different levels, and even create custom maps!",
+            imgSrc: "images/game-thumbnails/minesweeperThumbnail.png",
+            link: "minesweeper.html",
+            madeWith: "JavaScript",
+            released: "September 2024",
+            rating: 86,
+            likes: 0,
+            views: 0,
+        },
+        {
+            title: "The Chest",
+            description: "An adventure game where you find a legendary chest! Upgrade and defeat the magic chest!",
+            imgSrc: "images/game-thumbnails/theChestThumbnail.png",
+            link: "thechest.html",
+            madeWith: "JavaScript",
+            released: "October 2025",
+            rating: 92,
+            likes: 0,
+            views: 0,
+        },
+        {
+            title: "Goat Life",
+            description: "In this game, train and race your goat while collecting coins!",
+            imgSrc: "images/game-thumbnails/goatLifeThumbnail.png",
+            link: "goatlife.html",
+            madeWith: "JavaScript",
+            released: "April 2025",
+            rating: 68,
+            likes: 0,
+            views: 0,
+        },
+        {
+            title: "Fishin' For Delfin",
+            description: "Collect Delfin and sell them at the fish market, upgrade and get more fish!",
+            imgSrc: "images/game-thumbnails/fishinForDelfinThumbnail.png",
+            link: "fishinForDelfin.html",
+            madeWith: "JavaScript",
+            released: "November 2024",
+            rating: 56,
+            likes: 0,
+            views: 0,
+        },
+        {
+            title: "Peg Solitaire",
+            description: "Move the pegs around the board and try to clear as many as possible!",
+            imgSrc: "images/game-thumbnails/pegSolitaireThumbnail.png",
+            link: "pegsolitaire.html",
+            madeWith: "JavaScript",
+            released: "October 2024",
+            rating: 65,
+            likes: 0,
+            views: 0,
+        },
+        {
+            title: "City Creator V1.0",
+            description: "Make and design your own city with buildings, roads, and decorations!",
+            imgSrc: "images/game-thumbnails/cityCreatorV1Thumbnail.png",
+            link: "citycreator1.html",
+            madeWith: "JavaScript",
+            released: "November 2023",
+            rating: 70,
+            likes: 0,
+            views: 0,
+        },
+    ];
+    //Auto sort the games
+    games.sort((a, b) => b.rating - a.rating);
+    //Make the table
+    let setTo = `<table id="gamesTable">`;
+    let elementsPerRow = 4;
+    for (let i = 0; i < games.length; i++) {
+        if (i % elementsPerRow === 0) {
+            setTo += `<tr>`;
+        }
+        setTo += `<td>
+            <a href="${games[i].link}" target="_blank" style="text-decoration: none;"><div class="gameThumb">
+                <span class="thumbHoverTextHeader">${games[i].title}</span><br>
+                <span class="thumbHoverTextDescription">${games[i].description}</span>
+            </div></a>`;
+        if (i % elementsPerRow === elementsPerRow-1 || i === games.length - 1) {
+            setTo += `</tr>`;
+        }
+    }
+    setTo += `</table>`;
+    //console.log(setTo);
+    gamesObject.innerHTML = setTo;
+    //Change the CSS
+    var thumbs = document.getElementsByClassName('gameThumb');
+    let size = Math.floor(50/elementsPerRow);
+    for (let i = 0; i < thumbs.length; i++) {
+        thumbs[i].style.backgroundImage = `url(${games[i].imgSrc})`;
+        //thumbs[i].style.backgroundSize = `${size}vw ${size}vw`;
+        thumbs[i].style.backgroundSize = `cover`;
+        thumbs[i].style.width = `${size}vw`;
+        thumbs[i].style.height = `${size}vw`;
+    }
+</script>
+<script src="headerFooter.js"></script>
 <script src="bgscript.js"></script>
-
 </html>

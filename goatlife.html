@@ -1,0 +1,2485 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Goat Life</title>
+    <script src="https://cdn.jsdelivr.net/gh/librepaint/drawlite@main/javascript/drawlite.js"></script>
+    <link rel="stylesheet" href="index.css">
+    <link rel="icon" href="images/pappy.png" type="image/png">
+    <link href='https://fonts.googleapis.com/css?family=Rubik' rel='stylesheet' type='text/css'>
+    <style>
+        /******CANVAS STYLES********/
+        #myCanvas {
+            display: block;
+            margin: 0 auto 0 auto;
+            border-radius: 3px;
+            outline: none;
+            max-width: 70vw;
+            max-height: 70vw;
+        }
+    </style>
+</head>
+
+<body id="bodyID">
+    <header id="headerID"></header>
+    <div class="box">
+        <h1 class="center">Goat Life</h1>
+        <canvas id="myCanvas" width="600" height="500"></canvas>
+        <h2>Description</h2>
+        <p>Train and race your goat until you win all the races!</p>
+        <h2>Controls</h2>
+        <p>Use arrow keys or WASD to move the player. If you get stuck on the jumping game, press "R"<i>Trouble getting
+                the canvas to stay? Try clicking on the canvas
+                and pressing space.</i></p>
+        <h2>Credits</h2>
+        <p>Made April 2025, by Pineapples. irmirx for coin art design (opengameart)</p>
+    </div>
+    <footer id="footerID"></footer>
+</body>
+
+<script type>
+    var canvas = document.getElementById("myCanvas");
+    var dl = Drawlite(canvas);
+    var { PI, TWO_PI, EPSILON, CORNER, CORNERS, LEFT, RIGHT, TOP, CENTER, BOTTOM, BASELINE, RADIUS, DEGREES, RADIANS, POINTS, LINES, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN, QUADS, QUAD_STRIP, CLOSE, ROUND, PROJECT, SQUARE, BEVEL, MITER, RGB, HSB, NATIVE, canvas, Color, PerlinNoise, PRNG, vec3, ctx, size, angleMode, noLoop, loop, frameRate, min, max, floor, round, ceil, abs, constrain, sq, sqrt, pow, sin, cos, tan, asin, acos, atan, atan2, log, random, dist, map, lerp, radians, degrees, color, lerpColor, fill, stroke, strokeWeight, strokeCap, strokeJoin, noStroke, noFill, beginShape, vertex, curveVertex, bezierVertex, bezierPoint, bezierTangent, splineTightness, splineVertex, splinePoint, splineTangent, lerpSpline, endShape, spline, snip, getColor, imageMode, image, loadImage, font, textSize, textAlign, textWidth, textAscent, textDescent, textLeading, text, background, point, line, rectMode, rect, triangle, quad, arc, circle, ellipseMode, ellipse, bezier, get, pushMatrix, popMatrix, resetMatrix, scale, translate, rotate, loadPixels, updatePixels, colorMode, enableContextMenu, millis, second, minute, hour, day, month, year, smooth, nosmooth, createGraphics, getProperties } = dl;
+    /**
+Goat Life! 
+A game by Pineapples, 2025.
+
+Made for codaru 2025
+
+
+@ReadIfYouAreConcernedWithQuality {
+Hi people.
+This game was rushed. Yay.
+Like most competition programs I will update them after judging. Updates will be listed along with new programs on my subpage. So have fun. And its not bad compared to some *other* programs on the hotlist.
+}
+@Credits {
+    All code by me
+    irmirx for coin art design (opengameart)
+}
+@Judges {
+    "games that showcase their special abilities"
+}
+@ToDo {
+    -Finish Menu [done]
+    -Statistics [done]
+    -Acheivements
+    -Starting training games [done]
+        -Run [done]
+        -Jump [done]
+        -Climb [done]
+    -Do racing [terrible but done]
+    -Prestige
+}
+**/
+    /*********************VARIABLES****************************/
+    var Scene = 0; //Scene
+    var gameScene = 0; //A separate scene used on top of the original for gameplay
+    var clicked = false; //Is mouse pressed?
+    var playIntro = true; //Debug tool or just toggle switch
+    var keys = [];
+    /*******************UTILITY FUNCTIONS**********************/
+    var pointRect = function (px, py, rx, ry, rw, rh) {
+        if (px > rx && px < rx + rw && py > ry && py < ry + rh) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+    var rectRect = function (x1, y1, w1, h1, x2, y2, w2, h2) {
+        if (x1 + w1 > x2 && y1 + h1 > y2 && x1 < x2 + w2 && y1 < y2 + h2) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+    var rectCircle = function (rx, ry, rw, rh, cx, cy, cd) {
+        //Made by Pineapples, 2025
+        if (cx > rx && cx < rx + rw && cy > ry && cy < ry + rh) {
+            return true;
+        } else {
+            this.sideX = null;
+            this.sideY = null;
+            if (cx < rx) {
+                this.sideX = rx;
+            } else if (cx > rx + rw) {
+                this.sideX = rx + rw;
+            } else {
+                this.sideX = cx;
+            }
+            if (cy < ry) {
+                this.sideY = ry;
+            } else if (cy > ry + rh) {
+                this.sideY = ry + rh;
+            } else {
+                this.sideY = cy;
+            }
+            if (pow(cx - this.sideX, 2) + pow(cy - this.sideY, 2) <= pow(cd / 2, 2)) {
+                return true;
+            }
+        }
+    };
+    var interactiveRect = function (x, y, w, h, func) {
+        if (pointRect(get.mouseX, get.mouseY, x, y, w, h)) {
+            rect(x - 1, y - 1, w + 2, h + 2);
+            if (clicked && func !== undefined) {
+                func();
+            }
+        } else {
+            rect(x, y, w, h);
+        }
+    };
+    var getLevelColor = function (lvl) {
+        if (lvl < 10) {
+            return (color(166, 166, 166));
+        } else if (lvl < 20) {
+            return (color(255, 162, 0));
+        } else if (lvl < 25) {
+            return (color(251, 255, 18));
+        } else if (lvl < 30) {
+            return (color(0, 255, 251));
+        } else if (lvl < 50) {
+            return (color(200, 13, 217));
+        } else if (lvl < 80) {
+            return (color(0, 255, 34));
+        } else if (lvl < 100) {
+            return (color(255, 0, 0));
+        } else {
+            return (color(34, 0, 255));
+        }
+    };
+    var getRandomPercentage = function (percentageArray, itemArray) {
+        var percentageNumber = 0;
+        for (var w = 0; w < percentageArray.length; w++) {
+            percentageNumber += percentageArray[w];
+        }
+        percentageNumber = round(random(0, percentageNumber));
+        var checkNumber = 0;
+        for (var w = 0; w < percentageArray.length; w++) {
+            checkNumber += percentageArray[w];
+            if (percentageNumber <= checkNumber) {
+                return itemArray[w];
+            }
+        }
+    };
+    /**********************GRAPHICS****************************/
+    var drawPixelArt = function (x, y, size, pixelArt) {
+        noStroke();
+        for (var i = 0; i < pixelArt.Drawing.length; i++) {
+            for (var e = 0; e < pixelArt.Drawing[i].length; e++) {
+                if (pixelArt.Drawing[i][e] !== "-") {
+                    fill(pixelArt.Colors[pixelArt.Drawing[i][e]]);
+                    rect(e * size + x, i * size + y, size, size);
+                }
+            }
+        }
+    };
+    /*******************GRAPHICS OBJECT************************/
+    var Graphics = {
+        /*Sprites*/
+        Goat: function () {
+            background(0, 0, 0, 0);
+            //GoatPixelArt.Draw(0, 0, 5);
+            drawPixelArt(0, 0, 5, {
+                Drawing: [
+                    "------a--aa--------",
+                    "-----a--a----------",
+                    "----a--a-----------",
+                    "----a--a-----------",
+                    "bbb-bbbb-bbb-------",
+                    "bccbccccbccb-------",
+                    "-bdcccdcccb--------",
+                    "--bccccccb---------",
+                    "abaccccccb---------",
+                    "bacccccbcb---------",
+                    "aaabbbbccb---------",
+                    "bbb-bcccccbbbbbb---",
+                    "----bcccccccccccbbb",
+                    "----bceeccccccccccb",
+                    "----bceeccccccccbbb",
+                    "----bceeccccccccb--",
+                    "----bcbebcbcbcccb--",
+                    "----bcbebcbcbcccb--",
+                    "----bcbbbcbbbbcb---",
+                    "----bcb-bcb--bcb---",
+                    "----bcb-bcb--bcb---",
+                    "----aaa-aaa--aaa---",
+                ],
+                Colors: {
+                    "a": color(111, 111, 111),
+                    "b": color(185, 185, 185),
+                    "c": color(230, 230, 230),
+                    "d": color(0, 0, 0),
+                    "e": color(249, 249, 249),
+                }
+            });
+            return snip(0, 0, 95, 110);
+        },
+        BrownGoat: function () {
+            background(0, 0, 0, 0);
+            //GoatPixelArt.Draw(0, 0, 5);
+            drawPixelArt(0, 0, 5, {
+                Drawing: [
+                    "------a--aa--------",
+                    "-----a--a----------",
+                    "----a--a-----------",
+                    "----a--a-----------",
+                    "bbb-bbbb-bbb-------",
+                    "bccbccccbccb-------",
+                    "-bdcccdcccb--------",
+                    "--bccccccb---------",
+                    "abaccccccb---------",
+                    "bacccccbcb---------",
+                    "aaabbbbccb---------",
+                    "bbb-bcccccbbbbbb---",
+                    "----bcccccccccccbbb",
+                    "----bceeccccccccccb",
+                    "----bceeccccccccbbb",
+                    "----bceeccccccccb--",
+                    "----bcbebcbcbcccb--",
+                    "----bcbebcbcbcccb--",
+                    "----bcbbbcbbbbcb---",
+                    "----bcb-bcb--bcb---",
+                    "----bcb-bcb--bcb---",
+                    "----aaa-aaa--aaa---",
+                ],
+                Colors: {
+                    "a": color(0, 0, 0),
+                    "b": color(69, 31, 0),
+                    "c": color(120, 62, 4),
+                    "d": color(0, 0, 0),
+                    "e": color(204, 181, 133),
+                }
+            });
+            return snip(0, 0, 95, 110);
+        },
+        /*Other Important Graphics*/
+        seedPile0: function () {
+            background(0, 0, 0, 0);
+            drawPixelArt(0, 0, 3, {
+                Drawing: [
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "b------a----------------------",
+                    "abb-a-bcaaa-------------------",
+                ],
+                Colors: {
+                    "a": color(255, 203, 99),
+                    "b": color(255, 252, 99),
+                    "c": color(205, 154, 99),
+                    "d": color(0, 0, 0),
+                }
+            });
+            return snip(0, 0, 90, 60);
+        },
+        seedPile1: function () {
+            background(0, 0, 0, 0);
+            drawPixelArt(0, 0, 3, {
+                Drawing: [
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "ddd---------------------------",
+                    "acadd-------------------------",
+                    "aaabadd-----------------------",
+                    "caaaaaadd---------------------",
+                    "aabaaabaad--------------------",
+                    "aaaaaaaaad--------------------",
+                    "aaacabacaad-------------------",
+                    "baaaaaaaabd-------------------",
+                ],
+                Colors: {
+                    "a": color(255, 203, 99),
+                    "b": color(255, 252, 99),
+                    "c": color(205, 154, 99),
+                    "d": color(0, 0, 0),
+                }
+            });
+            return snip(0, 0, 90, 60);
+        },
+        seedPile2: function () {
+            background(0, 0, 0, 0);
+            drawPixelArt(0, 0, 3, {
+                Drawing: [
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "dddd--------------------------",
+                    "aaaaddd-----------------------",
+                    "aabaaaadd---------------------",
+                    "aaaaacaaadd-------------------",
+                    "acaaaaaaaad-------------------",
+                    "aaabaabaacad------------------",
+                    "caaaaaaabaaadd----------------",
+                    "aabaaabaaaacaad---------------",
+                    "aaaaaaaaabaaaacd--------------",
+                    "aaacabacaaaaaaaad-------------",
+                    "baaaaaaaabaacabad-------------",
+                ],
+                Colors: {
+                    "a": color(255, 203, 99),
+                    "b": color(255, 252, 99),
+                    "c": color(205, 154, 99),
+                    "d": color(0, 0, 0),
+                }
+            });
+            return snip(0, 0, 90, 60);
+        },
+        seedPile3: function () {
+            background(0, 0, 0, 0);
+            drawPixelArt(0, 0, 3, {
+                Drawing: [
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "ddddd-------------------------",
+                    "abaaadddd---------------------",
+                    "abaaaaacaddd------------------",
+                    "aacaaabaaaaadd----------------",
+                    "aaaaaaaaaacaaadd--------------",
+                    "aabaaacaaaaaaaaad-------------",
+                    "aaaabaaaaacaaaaaad------------",
+                    "aabaaaaaaaaaaaaaaad-----------",
+                    "aaaaacaaaabaaacaaad-----------",
+                    "acaaaaaaaaaaaaaabaad----------",
+                    "aaabaabaacaaabaaaaad----------",
+                    "caaaaaaabaaaaaaaacad----------",
+                    "aabaaabaaaacaaaaaaaad---------",
+                    "aaaaaaaaabaaaacaabaad---------",
+                    "aaacabacaaaaaaaaaaacad--------",
+                    "baaaaaaaabaacababaaaaad-------",
+                ],
+                Colors: {
+                    "a": color(255, 203, 99),
+                    "b": color(255, 252, 99),
+                    "c": color(205, 154, 99),
+                    "d": color(0, 0, 0),
+                }
+            });
+            return snip(0, 0, 90, 60);
+        },
+        seedPile4: function () {
+            background(0, 0, 0, 0);
+            drawPixelArt(0, 0, 3, {
+                Drawing: [
+                    "ddddddd-----------------------",
+                    "caaaaaadddd-------------------",
+                    "aaaabaaaaaadd-----------------",
+                    "aaaaaaaaabaaad----------------",
+                    "aacaaaacaaaaaadd--------------",
+                    "abaaaaaaaaabaaaadddd----------",
+                    "abaaaaabaaaaaaacaaaadd--------",
+                    "aacaaabaaaaaabaaaabaaad-------",
+                    "aaaaaaaaaacaaaaaaaaaaaad------",
+                    "aabaaacaaaaabaaaacaaaaaad-----",
+                    "aaaabaaaaacaaaaaaaabaacaad----",
+                    "aabaaaaaaaaaaaaaaaaaaaaaad----",
+                    "aaaaacaaaabaaacaaaaacaaaaad---",
+                    "acaaaaaaaaaaaaaabaaaaaaaaad---",
+                    "aaabaabaacaaabaaaaaacaabaad---",
+                    "caaaaaaabaaaaaaaacaabaaaabd---",
+                    "aabaaabaaaacaaaaaaaaaaaaacad--",
+                    "aaaaaaaaabaaaacaabaaaabaaaad--",
+                    "aaacabacaaaaaaaaaaacaaaabaacd-",
+                    "baaaaaaaabaacababaaaaaaaaaaaad",
+                ],
+                Colors: {
+                    "a": color(255, 203, 99),
+                    "b": color(255, 252, 99),
+                    "c": color(205, 154, 99),
+                    "d": color(0, 0, 0),
+                }
+            });
+            return snip(0, 0, 90, 60);
+        },
+        specialSeedPile0: function () {
+            background(0, 0, 0, 0);
+            drawPixelArt(0, 0, 3, {
+                Drawing: [
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "b------a----------------------",
+                    "abb-a-bcaaa-------------------",
+                ],
+                Colors: {
+                    "a": color(57, 162, 255),
+                    "b": color(0, 72, 178),
+                    "c": color(206, 207, 255),
+                    "d": color(0, 0, 0),
+                }
+            });
+            return snip(0, 0, 90, 60);
+        },
+        specialSeedPile1: function () {
+            background(0, 0, 0, 0);
+            drawPixelArt(0, 0, 3, {
+                Drawing: [
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "ddd---------------------------",
+                    "acadd-------------------------",
+                    "aaabadd-----------------------",
+                    "caaaaaadd---------------------",
+                    "aabaaabaad--------------------",
+                    "aaaaaaaaad--------------------",
+                    "aaacabacaad-------------------",
+                    "baaaaaaaabd-------------------",
+                ],
+                Colors: {
+                    "a": color(57, 162, 255),
+                    "b": color(0, 72, 178),
+                    "c": color(206, 207, 255),
+                    "d": color(0, 0, 0),
+                }
+            });
+            return snip(0, 0, 90, 60);
+        },
+        specialSeedPile2: function () {
+            background(0, 0, 0, 0);
+            drawPixelArt(0, 0, 3, {
+                Drawing: [
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "dddd--------------------------",
+                    "aaaaddd-----------------------",
+                    "aabaaaadd---------------------",
+                    "aaaaacaaadd-------------------",
+                    "acaaaaaaaad-------------------",
+                    "aaabaabaacad------------------",
+                    "caaaaaaabaaadd----------------",
+                    "aabaaabaaaacaad---------------",
+                    "aaaaaaaaabaaaacd--------------",
+                    "aaacabacaaaaaaaad-------------",
+                    "baaaaaaaabaacabad-------------",
+                ],
+                Colors: {
+                    "a": color(57, 162, 255),
+                    "b": color(0, 72, 178),
+                    "c": color(206, 207, 255),
+                    "d": color(0, 0, 0),
+                }
+            });
+            return snip(0, 0, 90, 60);
+        },
+        specialSeedPile3: function () {
+            background(0, 0, 0, 0);
+            drawPixelArt(0, 0, 3, {
+                Drawing: [
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "------------------------------",
+                    "ddddd-------------------------",
+                    "abaaadddd---------------------",
+                    "abaaaaacaddd------------------",
+                    "aacaaabaaaaadd----------------",
+                    "aaaaaaaaaacaaadd--------------",
+                    "aabaaacaaaaaaaaad-------------",
+                    "aaaabaaaaacaaaaaad------------",
+                    "aabaaaaaaaaaaaaaaad-----------",
+                    "aaaaacaaaabaaacaaad-----------",
+                    "acaaaaaaaaaaaaaabaad----------",
+                    "aaabaabaacaaabaaaaad----------",
+                    "caaaaaaabaaaaaaaacad----------",
+                    "aabaaabaaaacaaaaaaaad---------",
+                    "aaaaaaaaabaaaacaabaad---------",
+                    "aaacabacaaaaaaaaaaacad--------",
+                    "baaaaaaaabaacababaaaaad-------",
+                ],
+                Colors: {
+                    "a": color(57, 162, 255),
+                    "b": color(0, 72, 178),
+                    "c": color(206, 207, 255),
+                    "d": color(0, 0, 0),
+                }
+            });
+            return snip(0, 0, 90, 60);
+        },
+        specialSeedPile4: function () {
+            background(0, 0, 0, 0);
+            drawPixelArt(0, 0, 3, {
+                Drawing: [
+                    "ddddddd-----------------------",
+                    "caaaaaadddd-------------------",
+                    "aaaabaaaaaadd-----------------",
+                    "aaaaaaaaabaaad----------------",
+                    "aacaaaacaaaaaadd--------------",
+                    "abaaaaaaaaabaaaadddd----------",
+                    "abaaaaabaaaaaaacaaaadd--------",
+                    "aacaaabaaaaaabaaaabaaad-------",
+                    "aaaaaaaaaacaaaaaaaaaaaad------",
+                    "aabaaacaaaaabaaaacaaaaaad-----",
+                    "aaaabaaaaacaaaaaaaabaacaad----",
+                    "aabaaaaaaaaaaaaaaaaaaaaaad----",
+                    "aaaaacaaaabaaacaaaaacaaaaad---",
+                    "acaaaaaaaaaaaaaabaaaaaaaaad---",
+                    "aaabaabaacaaabaaaaaacaabaad---",
+                    "caaaaaaabaaaaaaaacaabaaaabd---",
+                    "aabaaabaaaacaaaaaaaaaaaaacad--",
+                    "aaaaaaaaabaaaacaabaaaabaaaad--",
+                    "aaacabacaaaaaaaaaaacaaaabaacd-",
+                    "baaaaaaaabaacababaaaaaaaaaaaad",
+                ],
+                Colors: {
+                    "a": color(57, 162, 255),
+                    "b": color(0, 72, 178),
+                    "c": color(206, 207, 255),
+                    "d": color(0, 0, 0),
+                }
+            });
+            return snip(0, 0, 90, 60);
+        },
+        coin: function () {
+            background(0, 0, 0, 0);
+            drawPixelArt(0, 0, 5, {
+                Drawing: [
+                    "--aaaaaa--",
+                    "-abbbbbbb-",
+                    "abbdcccbbb",
+                    "bbdddbbabb",
+                    "bbcdbbbabb",
+                    "bbcbbbbabb",
+                    "bbcbbbbabb",
+                    "bbcbbbbabb",
+                    "bbbaaaabbc",
+                    "-bbbbbbbc-",
+                    "--cccccc--",
+                ],
+                Colors: {
+                    "a": color(255, 240, 0),
+                    "b": color(255, 216, 0),
+                    "c": color(255, 174, 0),
+                    "d": color(255, 255, 255),
+                }
+            });
+            return snip(0, 0, 50, 55);
+        },
+        warning: function () {
+            background(0, 0, 0, 0);
+            drawPixelArt(0, 0, 5, {
+                Drawing: [
+                    "-----aaa-----",
+                    "-----aba-----",
+                    "----aabaa----",
+                    "---aabbbaa---",
+                    "---acbabba---",
+                    "--aacbabbaa--",
+                    "--abcbabbda--",
+                    "-aabcbabddaa-",
+                    "-abbbbbdddda-",
+                    "aabbbdaddddaa",
+                    "addddddddddda",
+                    "aaaaaaaaaaaaa",
+                ],
+                Colors: {
+                    "a": color(33, 57, 121),
+                    "b": color(255, 245, 60),
+                    "c": color(255, 253, 214),
+                    "d": color(255, 213, 43),
+                }
+            });
+            return snip(0, 0, 65, 60);
+        },
+        money: function () {
+            background(0, 0, 0, 0);
+            drawPixelArt(0, 0, 5, {
+                Drawing: [
+                    "----aa----",
+                    "----aa----",
+                    "--aaaaaa--",
+                    "-aaaaaaaa-",
+                    "aaaaaaaaaa",
+                    "aaa-aa-aaa",
+                    "aaaaaa----",
+                    "-aaaaaa---",
+                    "---aaaaaa-",
+                    "----aaaaaa",
+                    "aaa-aa-aaa",
+                    "aaaaaaaaaa",
+                    "-aaaaaaaa-",
+                    "--aaaaaa--",
+                    "----aa----",
+                    "----aa----",
+                ],
+                Colors: {
+                    "a": color(11, 181, 22),
+                }
+            });
+            return snip(0, 0, 50, 80);
+        },
+        crate: function () {
+            background(0, 0, 0, 0);
+            drawPixelArt(0, 0, 5, {
+                Drawing: [
+                    "aaaaaaaaaaaaaaaaaaaaaaaa",
+                    "abbbbbbbbbbbbbbbbbbbbaba",
+                    "aaaaaaaaaaaaaaaaaaaaaaba",
+                    "ababbbbbbbbbbbbbbbbbbaba",
+                    "ababbbbbbbbbbbbbbbbbbaba",
+                    "abaaaaaaaaaaaaaaaaaaaaaa",
+                    "ababbbbbbbbbbbbbbbbbbbba",
+                    "aaaaaaaaaaaaaaaaaaaaaaaa",
+                ],
+                Colors: {
+                    "a": color(54, 33, 0),
+                    "b": color(122, 84, 7),
+                }
+            });
+            return snip(0, 0, 120, 40);
+        },
+        rock: function () {
+            background(0, 0, 0, 0);
+            drawPixelArt(0, 0, 5, {
+                Drawing: [
+                    "--------aaaaaa-------",
+                    "-------acbbbcca------",
+                    "------abccbcbbba-----",
+                    "------aebbcbbbcda----",
+                    "------aecbbbcddda----",
+                    "----aaabccccdddda----",
+                    "---acbeccccddddea----",
+                    "--adccecdcdddddeea---",
+                    "--adddeddceddddeeea--",
+                    "--aeddeeddeeddeccca--",
+                    "--aceeeeddeeeeecbbca-",
+                    "-acbcbbeeeeeeecbbbbca",
+                    "acbbbcbbdddebbbbbbbea",
+                    "acbbbbcbbbdcbbbbbceea",
+                    "accbbbbbbbcdceecceeea",
+                    "adccbbbbcccedddddeeea",
+                    "-adeccdddddededdddea-",
+                    "-aedddeeedddeeedddea-",
+                    "--aedeeeeeddeaaaaaa--",
+                    "---aaaaaaaaaa--------",
+                ],
+                Colors: {
+                    "a": color(30, 30, 30),
+                    "b": color(188, 182, 192),
+                    "c": color(167, 159, 170),
+                    "d": color(113, 110, 127),
+                    "e": color(86, 82, 96),
+                }
+            });
+            return snip(0, 0, 105, 100);
+        },
+        /*Buttons*/
+        seedButton: function () {
+            background(0, 0, 0, 0);
+            drawPixelArt(0, 0, 3, {
+                Drawing: [
+                    "-aaaaaaaaaaaaaaaaaa-",
+                    "aabbbbbbbbbbbbbbbbaa",
+                    "abbbbbbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbbbbbba",
+                    "-aaaaaaaaaaaaaaaaaa-",
+                ],
+                Colors: {
+                    "a": color(3, 10, 214),
+                    "b": color(0, 115, 255),
+                    "c": color(255, 255, 255),
+                }
+            });
+            fill(255, 255, 255);
+            textAlign(CENTER, CENTER);
+            textSize(16);
+            text("$1", 30, 15);
+            return snip(0, 0, 60, 46);
+        },
+        specialSeedButton: function () {
+            background(0, 0, 0, 0);
+            drawPixelArt(0, 0, 3, {
+                Drawing: [
+                    "-aaaaaaaaaaaaaaaaaa-",
+                    "aabbbbbbbbbbbbbbbbaa",
+                    "abbbbbbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbbbbbba",
+                    "abbbbbbbbbbbbbbbbbba",
+                    "-aaaaaaaaaaaaaaaaaa-",
+                ],
+                Colors: {
+                    "a": color(80, 0, 145),
+                    "b": color(162, 0, 255),
+                    "c": color(255, 255, 255),
+                }
+            });
+            fill(255, 255, 255);
+            textAlign(CENTER, CENTER);
+            textSize(16);
+            text("$10", 30, 15);
+            return snip(0, 0, 60, 46);
+        },
+    };
+    var Current = 0;
+    var flipImage = function (img, x, y, w, h) {
+        pushMatrix();
+        scale(-1, 1);
+        image(img, (x * -1) - w, y, w, h);
+        popMatrix();
+    };
+    /***********************INTRO******************************/
+    var Diff = function (num1, num2) {
+        if (num1 > num2) {
+            return num1 - num2;
+        } else {
+            return num2 - num1;
+        }
+    };
+    var Pineapple = {
+        SceneCount: 0,
+        TextFade: 255,
+        frameAmount: 120,
+        Drawing: [
+            "-----B------",
+            "---BBDB-B---",
+            "--BDBDBBDB--",
+            "-BBDCDBDDBB-",
+            "BCBBCDCDBBCB",
+            "BCCBDCCDBCCB",
+            "-BCCDCCDCCB-",
+            "--BCCCCCCB--",
+            "--BACCCCAB--",
+            "-BEAEAEAEAB-",
+            "-BAEAAAEAAB-",
+            "BAEAEAEAEAEB",
+            "BEAAAEAAAEAB",
+            "BAEAEAEAEAEB",
+            "BAAEAAAEAAAB",
+            "BAEAEAEAEAEB",
+            "BEAAAEAAAEAB",
+            "-BEAEAEAEAB-",
+            "--BEAAAEAB--",
+            "---BBBBBB---",
+        ],
+        Colors: {
+            "A": color(255, 255, 0),
+            "B": color(0, 0, 0),
+            "C": color(75, 128, 0),
+            "D": color(182, 245, 142),
+            "E": color(255, 174, 0),
+        },
+        BlockData: [],
+        TextDisplayed: "",
+        TextTBD: "Pineapples Presents...",
+        TextNum: 0,
+        FloatingPineapples: [],
+        RenderBlocksRandomly: function (x, y, size) {
+            this.BlockData = [];
+            for (var i = 0; i < this.Drawing.length; i++) {
+                for (var e = 0; e < this.Drawing[i].length; e++) {
+                    if (this.Drawing[i][e] !== "-") {
+                        this.BlockData.push([e * size + x, i * size + y, round(random(0, get.width - size)), round(random(0, get.height - size)), this.Drawing[i][e], size]);
+                    }
+                }
+            }
+        },
+        ConfigureBlockSpeeds: function () {
+            for (var i = 0; i < this.BlockData.length; i++) {
+                this.BlockData[i].push(Diff(this.BlockData[i][0], this.BlockData[i][2]) / this.frameAmount);
+                this.BlockData[i].push(Diff(this.BlockData[i][1], this.BlockData[i][3]) / this.frameAmount);
+            }
+        },
+        MoveBlocks: function () {
+            noStroke();
+            for (var i = 0; i < this.BlockData.length; i++) {
+                fill(this.Colors[this.BlockData[i][4]]);
+                rect(this.BlockData[i][2], this.BlockData[i][3], this.BlockData[i][5], this.BlockData[i][5]);
+                if (round(this.BlockData[i][2]) === this.BlockData[i][0]) {
+                    this.BlockData[i][2] = this.BlockData[i][0];
+                } else if (this.BlockData[i][2] < this.BlockData[i][0]) {
+                    this.BlockData[i][2] += this.BlockData[i][6];
+                } else if (this.BlockData[i][2] > this.BlockData[i][0]) {
+                    this.BlockData[i][2] -= this.BlockData[i][6];
+                }
+                if (round(this.BlockData[i][3]) === this.BlockData[i][1]) {
+                    this.BlockData[i][3] = this.BlockData[i][1];
+                } else if (this.BlockData[i][3] < this.BlockData[i][1]) {
+                    this.BlockData[i][3] += this.BlockData[i][7];
+                } else if (this.BlockData[i][3] > this.BlockData[i][1]) {
+                    this.BlockData[i][3] -= this.BlockData[i][7];
+                }
+            }
+        },
+        Draw: function (x, y, size) {
+            noStroke();
+            for (var i = 0; i < this.Drawing.length; i++) {
+                for (var e = 0; e < this.Drawing[i].length; e++) {
+                    if (this.Drawing[i][e] !== "-") {
+                        fill(this.Colors[this.Drawing[i][e]]);
+                        rect(e * size + x, i * size + y, size, size);
+                    }
+                }
+            }
+        },
+        Image: 0,
+        ConvertDrawToImage: function () {
+            background(0, 0, 0, 0);
+            this.Draw(0, 0, 20);
+            return snip(0, 0, 240, 400);
+        },
+        SetupFloatingPineapples: function () {
+            for (var i = 0; i < 10; i++) {
+                this.FloatingPineapples.push([round(random(0, 400)), round(random(0, 360)), round(random(6, 10)), round(random(20, 50))]);
+            }
+        },
+        DrawFloaters: function () {
+            for (var i = 0; i < this.FloatingPineapples.length; i++) {
+                pushMatrix();
+                translate(get.width / 2, get.height / 2);
+                rotate(this.FloatingPineapples[i][1]);
+                image(this.Image, this.FloatingPineapples[i][0], 0, this.FloatingPineapples[i][3] * 0.6, this.FloatingPineapples[i][3]);
+                this.FloatingPineapples[i][0] += this.FloatingPineapples[i][2];
+                if (this.FloatingPineapples[i][0] > max(get.width, get.height) - 200) {
+                    this.FloatingPineapples[i][0] = 0;
+                    this.FloatingPineapples[i][1] = round(random(0, 360));
+                    this.FloatingPineapples[i][2] = round(random(6, 10));
+                    this.FloatingPineapples[i][3] = round(random(20, 50));
+                }
+                popMatrix();
+            }
+        },
+        IntroText: function () {
+            textAlign(CENTER, CENTER);
+            fill(0, 0, 0, this.TextFade);
+            textSize((get.width - 100) / 10);
+            text(this.TextDisplayed, get.width / 2, get.height - ((get.height - 200) / 4)); //350 400 500 600
+            if (this.SceneCount % 10 === 0 && this.TextDisplayed.length < this.TextTBD.length) {
+                this.TextDisplayed += this.TextTBD[this.TextNum];
+                this.TextNum++;
+            } else if (this.TextDisplayed.length === this.TextTBD.length) {
+                this.TextFade -= 5;
+            }
+            if (this.TextFade <= 0) {
+                Scene = 2;
+            }
+        },
+        Setup: function () {
+            Pineapple.RenderBlocksRandomly((get.width / 2) - 60, (get.height / 2) - 100, 10);
+            Pineapple.ConfigureBlockSpeeds();
+            Pineapple.Image = Pineapple.ConvertDrawToImage();
+            Pineapple.SetupFloatingPineapples();
+        },
+        Intro: function () {
+            background(255, 255, 50);
+            if (this.SceneCount > this.frameAmount) {
+                this.DrawFloaters();
+                image(this.Image, (get.width / 2) - 60, (get.height / 2) - 100, 120, 200);
+                this.IntroText();
+            } else {
+                this.MoveBlocks();
+            }
+            this.SceneCount++;
+        },
+    };
+    Pineapple.Setup();
+    /******************LOADING FUNCTION************************/
+    var LoadGraphics = function () {
+        var GraphicsInArray = Object.keys(Graphics);
+        Graphics[GraphicsInArray[Current]] = Graphics[GraphicsInArray[Current]]();
+        Current++;
+        if (Current >= GraphicsInArray.length) {
+            if (playIntro) {
+                Scene = 1;
+            } else {
+                Scene = 2;
+            }
+        }
+        pushMatrix();
+        scale(get.width / 400, get.height / 400);
+        background(255, 255, 255);
+        image(Pineapple.Image, 170, 100, 60, 100);
+        fill(255, 238, 0);
+        noStroke();
+        rect(100, 250, (200 / GraphicsInArray.length) * Current, 20, 5);
+        fill(0, 0, 0);
+        textAlign(CENTER, CENTER);
+        textSize(15);
+        text("Loading...", 200, 223);
+        popMatrix();
+    };
+    /********************GAME OBJECT*************************/
+    var Game = {
+        StatisticsType: 0,
+        LastPage: 0,
+        RacingLeague: 0,
+        Climbing: {
+            gameStarted: 0,
+            Stats: {
+                lvl: 1,
+                xp: 0,
+                totalXp: 0,
+                platforms: 0,
+                jumped: 0,
+                totalAscent: 0,
+            },
+            Player: {
+                x: 300,
+                py: 0,
+                y: 240,
+                yv: 0,
+                d: false,
+                speed: 3,
+                jump: true,
+            },
+            Blocks: [
+                [0, 350, 600, 150, true],
+                [200, 150, 200, 40, false],
+            ],
+            Coins: [],
+            BlockY: 0,
+            BlockYSpeed: 0.5,
+            BlockWidth: 200,
+        },
+        Energy: {
+            lvl: 0,
+            xp: 0,
+            totalXp: 0,
+            seed: 0,
+            special: 0,
+        },
+        Money: 50,
+        FeedCenter: {
+            goat: {
+                x: 300,
+                d: false,
+            },
+            seed: 0,
+            specialSeed: 0,
+            framesPerFeed: 40,
+            feedTime: 0,
+        },
+        Jumping: {
+            gameStatus: 0,
+            time: 0,
+            timeSpawn: 300,
+            Stats: {
+                lvl: 1,
+                xp: 0,
+                totalXp: 0,
+                Platforms: 0,
+                Coins: 0,
+                totalAscent: 0,
+            },
+            Player: {
+                px: 200,
+                py: 0,
+                x: 200,
+                y: 0,
+                yv: 0,
+                d: true,
+                jump: true,
+                speed: 3,
+            },
+            Pillars: [0, 0, 0, 0, 0],
+            Warnings: [],
+            Coins: [],
+        },
+        Running: {
+            gameStatus: 0,
+            totalLength: 0,
+            speedTime: 0,
+            time: 200,
+            speed: 2,
+            Stats: {
+                lvl: 1,
+                xp: 0,
+                totalXp: 0,
+                Dodged: 0,
+                Jumped: 0,
+                Distance: 0,
+            },
+            Player: {
+                x: 100,
+                y: 300,
+                yv: 0,
+                d: true,
+                jump: false,
+            },
+            Rocks: [],
+            Coins: [],
+        },
+        Racing: {
+            Victory: false,
+            Player: {
+                x: 0,
+                y: 0,
+                stage: 0,
+                Energy: 0,
+            },
+            Enemy: {
+                x: 0,
+                y: 0,
+                Levels: [20, 50, 80],
+                stage: 0,
+            },
+            Won: [false, false, false],
+            Money: [100, 500, 5000],
+        },
+    };
+    /********************PLAYING SCENES************************/
+    var GameScenes = {
+        trainingCenter: function () {
+            //background
+            background(204, 255, 252);
+            //Ground
+            fill(148, 148, 148);
+            noStroke();
+            rect(0, 400, 600, 100);
+            //Special Seed
+            if (pointRect(get.mouseX, get.mouseY, 60, 260, 60, 46)) {
+                image(Graphics.specialSeedButton, 59, 259, 60 * 1.04, 46 * 1.04);
+                if (clicked && Game.Money >= 10) {
+                    Game.FeedCenter.specialSeed++;
+                    if (Game.FeedCenter.specialSeed <= 4) {
+                        Game.FeedCenter.feedTime = 0;
+                    }
+                    Game.Money -= 10;
+                }
+            } else {
+                image(Graphics.specialSeedButton, 60, 260);
+            }
+            //Regular seed
+            if (pointRect(get.mouseX, get.mouseY, 480, 260, 60, 46)) {
+                image(Graphics.seedButton, 479, 259, 60 * 1.03, 46 * 1.03);
+                if (clicked && Game.Money >= 1) {
+                    Game.FeedCenter.seed++;
+                    if (Game.FeedCenter.seed <= 4) {
+                        Game.FeedCenter.feedTime = 0;
+                    }
+                    Game.Money--;
+                }
+            } else {
+                image(Graphics.seedButton, 480, 260, 60, 46);
+            }
+            //Seed pile
+            switch (Game.FeedCenter.seed) {
+                case 0:
+                    flipImage(Graphics.seedPile0, 510, 340, 90, 60);
+                    break;
+                case 1:
+                    flipImage(Graphics.seedPile1, 510, 340, 90, 60);
+                    break;
+                case 2:
+                    flipImage(Graphics.seedPile2, 510, 340, 90, 60);
+                    break;
+                case 3:
+                    flipImage(Graphics.seedPile3, 510, 340, 90, 60);
+                    break;
+                default:
+                    flipImage(Graphics.seedPile4, 510, 340, 90, 60);
+                    break;
+            }
+            //Special Seed pile
+            switch (Game.FeedCenter.specialSeed) {
+                case 0:
+                    image(Graphics.specialSeedPile0, 0, 340, 90, 60);
+                    break;
+                case 1:
+                    image(Graphics.specialSeedPile1, 0, 340, 90, 60);
+                    break;
+                case 2:
+                    image(Graphics.specialSeedPile2, 0, 340, 90, 60);
+                    break;
+                case 3:
+                    image(Graphics.specialSeedPile3, 0, 340, 90, 60);
+                    break;
+                default:
+                    image(Graphics.specialSeedPile4, 0, 340, 90, 60);
+                    break;
+            }
+            //Goat lol
+            if (Game.FeedCenter.goat.d) {
+                flipImage(Graphics.Goat, Game.FeedCenter.goat.x, 300, 95, 110);
+            } else {
+                image(Graphics.Goat, Game.FeedCenter.goat.x, 300);
+            }
+            //Goat movement
+            if (Game.FeedCenter.specialSeed > 0) {
+                Game.FeedCenter.goat.d = false;
+                if (Game.FeedCenter.goat.x > 50) {
+                    Game.FeedCenter.goat.x -= max(abs(sin(get.frameCount)), 0.5);
+                } else {
+                    if (Game.FeedCenter.feedTime >= Game.FeedCenter.framesPerFeed) {
+                        Game.FeedCenter.specialSeed--;
+                        Game.Energy.xp += 8;
+                        Game.Energy.totalXp += 8;
+                        Game.Energy.special++;
+                        Game.FeedCenter.feedTime = 0;
+                    }
+                }
+            } else if (Game.FeedCenter.seed > 0) {
+                Game.FeedCenter.goat.d = true;
+                if (Game.FeedCenter.goat.x < 455) {
+                    Game.FeedCenter.goat.x += max(abs(sin(get.frameCount)), 0.5);
+                } else {
+                    if (Game.FeedCenter.feedTime >= Game.FeedCenter.framesPerFeed) {
+                        Game.FeedCenter.seed--;
+                        Game.Energy.seed++;
+                        Game.Energy.xp++;
+                        Game.Energy.totalXp++;
+                        Game.FeedCenter.feedTime = 0;
+                    }
+                }
+            }
+            Game.FeedCenter.feedTime++;
+            //Money
+            textAlign(CENTER, CENTER);
+            textSize(20);
+            fill(0, 0, 0);
+            text("$" + Game.Money, 300, 100);
+            //Top buttons
+            noStroke();
+            fill(0, 0, 0, 155);
+            interactiveRect(100, 10, 127, 75, function () {
+                Game.StatisticsType = 0;
+                gameScene = 2;
+                Game.LastPage = 0;
+            });
+            interactiveRect(238, 10, 127, 75, function () {
+                gameScene = 1;
+            });
+            interactiveRect(376, 10, 127, 75, function () {
+                gameScene = 6;
+            });
+            textSize(25);
+            fill(255, 255, 255);
+            text("Train", 300, 47);
+            text("Race", 438, 47);
+            //Energy stuff
+            textSize(20);
+            fill(255, 255, 255);
+            text("Energy", 164, 24);
+            textSize(17);
+            fill(getLevelColor(Game.Energy.lvl));
+            text("Level " + Game.Energy.lvl, 164, 47);
+            fill(0, 74, 1);
+            rect(114, 60, 100, 15);
+            fill(0, 255, 0);
+            if (Game.Energy.xp >= Game.Energy.lvl && Game.Energy.lvl < 100) {
+                Game.Energy.xp -= Game.Energy.lvl;
+                Game.Energy.lvl++;
+                Game.FeedCenter.framesPerFeed = 40 - (Game.Energy.lvl * 0.4);
+            }
+            rect(114, 60, min(Game.Energy.xp * (100 / Game.Energy.lvl), 100), 15);
+            /*strokeWeight(3);
+            stroke(171, 171, 171);
+            fill(153, 153, 153, 200);
+            interactiveRect(490, 440, 100, 50, function() {GetSave();});
+            fill(255, 255, 255);
+            textSize(20);
+            text("Get Save", 540, 465);*/
+        },
+        selectTraining: function () {
+            //Background
+            background(0, 38, 35);
+            //Text
+            fill(255, 255, 255);
+            textSize(50);
+            text("Training", 300, 80);
+            //Back
+            strokeWeight(3);
+            stroke(171, 171, 171);
+            fill(153, 153, 153, 200);
+            interactiveRect(490, 440, 100, 50, function () {
+                gameScene = 0;
+            });
+            fill(255, 255, 255);
+            textSize(20);
+            text("Back", 540, 465);
+            //Buttons
+            noStroke();
+            fill(0, 0, 0, 155);
+            interactiveRect(100, 150, 127, 75, function () {
+                Game.StatisticsType = 1;
+                gameScene = 2;
+                Game.LastPage = 1;
+            });
+            interactiveRect(238, 150, 127, 75, function () {
+                Game.StatisticsType = 2;
+                gameScene = 2;
+                Game.LastPage = 1;
+            });
+            interactiveRect(376, 150, 127, 75, function () {
+                Game.StatisticsType = 3;
+                gameScene = 2;
+                Game.LastPage = 1;
+            });
+            //Buttons to play
+            interactiveRect(100, 235, 127, 40, function () {
+                gameScene = 3;
+            });
+            interactiveRect(238, 235, 127, 40, function () {
+                gameScene = 4;
+            });
+            interactiveRect(376, 235, 127, 40, function () {
+                gameScene = 5;
+            });
+            //Text
+            textSize(20);
+            fill(255, 255, 255);
+            text("Play", 164, 255);
+            text("Play", 301, 255);
+            text("Play", 438, 255);
+            text("Climbing", 164, 164);
+            text("Jumping", 301, 164);
+            text("Running", 438, 164);
+            textSize(17);
+            fill(getLevelColor(Game.Climbing.Stats.lvl));
+            text("Level " + Game.Climbing.Stats.lvl, 164, 187);
+            fill(getLevelColor(Game.Jumping.Stats.lvl));
+            text("Level " + Game.Jumping.Stats.lvl, 301, 187);
+            fill(getLevelColor(Game.Running.Stats.lvl));
+            text("Level " + Game.Running.Stats.lvl, 438, 187);
+            fill(0, 74, 1);
+            rect(114, 200, 100, 15);
+            rect(251, 200, 100, 15);
+            rect(388, 200, 100, 15);
+            fill(0, 255, 0);
+            rect(114, 200, min(Game.Climbing.Stats.xp * (100 / Game.Climbing.Stats.lvl), 100), 15);
+            rect(251, 200, min(Game.Jumping.Stats.xp * (100 / Game.Jumping.Stats.lvl), 100), 15);
+            rect(388, 200, min(Game.Running.Stats.xp * (100 / Game.Running.Stats.lvl), 100), 15);
+            if (Game.Climbing.Stats.xp >= Game.Climbing.Stats.lvl) {
+                Game.Climbing.Stats.xp -= Game.Climbing.Stats.lvl;
+                Game.Climbing.Stats.lvl++;
+            }
+            if (Game.Jumping.Stats.xp >= Game.Jumping.Stats.lvl) {
+                Game.Jumping.Stats.xp -= Game.Jumping.Stats.lvl;
+                Game.Jumping.Stats.lvl++;
+            }
+            if (Game.Running.Stats.xp >= Game.Running.Stats.lvl) {
+                Game.Running.Stats.xp -= Game.Running.Stats.lvl;
+                Game.Running.Stats.lvl++;
+            }
+        },
+        statistics: function () {
+            background(212, 252, 255);
+            fill(0, 0, 0, 200);
+            noStroke();
+            rect(0, 0, 600, 500);
+            switch (Game.StatisticsType) {
+                case 0:
+                    fill(255, 255, 255);
+                    textSize(40);
+                    text("Energy Statistics", 300, 60);
+                    fill(getLevelColor(Game.Energy.lvl));
+                    textSize(25);
+                    text("Level " + Game.Energy.lvl, 300, 100);
+                    fill(0, 74, 1);
+                    rect(200, 130, 200, 20);
+                    fill(0, 255, 0);
+                    rect(200, 130, min(Game.Energy.xp * (200 / Game.Energy.lvl), 200), 20);
+                    textSize(20);
+                    text(min(Game.Energy.xp, 100) + "/" + Game.Energy.lvl + " XP", 300, 165);
+                    fill(255, 255, 255);
+                    textAlign(LEFT, CENTER);
+                    textSize(25);
+                    text("Total XP earned: " + Game.Energy.totalXp, 50, 250);
+                    text("Seed eaten: " + Game.Energy.seed, 50, 300);
+                    text("Special seed eaten: " + Game.Energy.special, 50, 350);
+                    text("Current Eating Time: " + round(Game.FeedCenter.framesPerFeed), 50, 400);
+                    textAlign(CENTER, CENTER);
+                    break;
+                case 1:
+                    fill(255, 255, 255);
+                    textSize(40);
+                    text("Climbing Statistics", 300, 60);
+                    fill(getLevelColor(Game.Climbing.Stats.lvl));
+                    textSize(25);
+                    text("Level " + Game.Climbing.Stats.lvl, 300, 100);
+                    fill(0, 74, 1);
+                    rect(200, 130, 200, 20);
+                    fill(0, 255, 0);
+                    rect(200, 130, min(Game.Climbing.Stats.xp * (200 / Game.Climbing.Stats.lvl), 200), 20);
+                    textSize(20);
+                    text(min(Game.Climbing.Stats.xp, 100) + "/" + Game.Climbing.Stats.lvl + " XP", 300, 165);
+                    fill(255, 255, 255);
+                    textAlign(LEFT, CENTER);
+                    textSize(25);
+                    text("Total XP earned: " + Game.Climbing.Stats.totalXp, 50, 250);
+                    text("Platforms Used: " + Game.Climbing.Stats.platforms, 50, 300);
+                    text("Times jumped: " + Game.Climbing.Stats.jumped, 50, 350);
+                    text("Height Climbed: " + ceil(Game.Climbing.Stats.totalAscent / (100 / 3.5)) + " ft", 50, 400);
+                    //A mountain goats about 3.5 feet tall, 100/3.5 = ~28.5
+                    textAlign(CENTER, CENTER);
+                    break;
+                case 2:
+                    fill(255, 255, 255);
+                    textSize(40);
+                    text("Jumping Statistics", 300, 60);
+                    fill(getLevelColor(Game.Jumping.Stats.lvl));
+                    textSize(25);
+                    text("Level " + Game.Jumping.Stats.lvl, 300, 100);
+                    fill(0, 74, 1);
+                    rect(200, 130, 200, 20);
+                    fill(0, 255, 0);
+                    rect(200, 130, min(Game.Jumping.Stats.xp * (200 / Game.Jumping.Stats.lvl), 200), 20);
+                    textSize(20);
+                    text(min(Game.Jumping.Stats.xp, 100) + "/" + Game.Jumping.Stats.lvl + " XP", 300, 165);
+                    fill(255, 255, 255);
+                    textAlign(LEFT, CENTER);
+                    textSize(25);
+                    text("Total XP earned: " + Game.Jumping.Stats.totalXp, 50, 250);
+                    text("Platforms Used: " + Game.Jumping.Stats.Platforms, 50, 300);
+                    text("Coins Collected: " + Game.Jumping.Stats.Coins, 50, 350);
+                    text("Height Climbed: " + ceil(Game.Jumping.Stats.totalAscent / (100 / 3.5)) + " ft", 50, 400);
+                    textAlign(CENTER, CENTER);
+                    break;
+                case 3:
+                    fill(255, 255, 255);
+                    textSize(40);
+                    text("Running Statistics", 300, 60);
+                    fill(getLevelColor(Game.Running.Stats.lvl));
+                    textSize(25);
+                    text("Level " + Game.Running.Stats.lvl, 300, 100);
+                    fill(0, 74, 1);
+                    rect(200, 130, 200, 20);
+                    fill(0, 255, 0);
+                    rect(200, 130, min(Game.Running.Stats.xp * (200 / Game.Running.Stats.lvl), 200), 20);
+                    textSize(20);
+                    text(min(Game.Running.Stats.xp, 100) + "/" + Game.Running.Stats.lvl + " XP", 300, 165);
+                    fill(255, 255, 255);
+                    textAlign(LEFT, CENTER);
+                    textSize(25);
+                    text("Total XP earned: " + Game.Running.Stats.totalXp, 50, 250);
+                    text("Rocks Avoided: " + Game.Running.Stats.Dodged, 50, 300);
+                    text("Times Jumped: " + Game.Running.Stats.Jumped, 50, 350);
+                    text("Distance Ran: " + ceil(Game.Running.Stats.Distance / (100 / 3.5)) + " ft", 50, 400);
+                    textAlign(CENTER, CENTER);
+                    break;
+            }
+            //Back
+            strokeWeight(3);
+            stroke(171, 171, 171);
+            fill(153, 153, 153, 200);
+            interactiveRect(490, 440, 100, 50, function () {
+                gameScene = Game.LastPage;
+            });
+            fill(255, 255, 255);
+            textSize(20);
+            text("Back", 540, 465);
+        },
+        climbing: function () {
+            //background
+            background(201, 201, 201);
+            //Draw Player
+            if (Game.Climbing.Player.d) {
+                flipImage(Graphics.Goat, Game.Climbing.Player.x, Game.Climbing.Player.y, 95, 110);
+            } else {
+                image(Graphics.Goat, Game.Climbing.Player.x, Game.Climbing.Player.y);
+            }
+            //Draw Blocks
+            fill(92, 92, 92);
+            noStroke();
+            for (var i = 0; i < Game.Climbing.Blocks.length; i++) {
+                rect(Game.Climbing.Blocks[i][0], Game.Climbing.Blocks[i][1] + Game.Climbing.BlockY, Game.Climbing.Blocks[i][2], Game.Climbing.Blocks[i][3]);
+            }
+            if (Game.Climbing.gameStarted === 1) {
+                //Y value gravity etc
+                Game.Climbing.Player.py = Game.Climbing.Player.y;
+                Game.Climbing.Player.yv += 0.32;
+                Game.Climbing.Player.y += Game.Climbing.Player.yv;
+                //Collisions
+                for (var i = 0; i < Game.Climbing.Blocks.length; i++) {
+                    if (rectRect(Game.Climbing.Blocks[i][0], Game.Climbing.Blocks[i][1] + Game.Climbing.BlockY, Game.Climbing.Blocks[i][2], Game.Climbing.Blocks[i][3], Game.Climbing.Player.x, Game.Climbing.Player.y, 95, 110)) {
+                        if (!Game.Climbing.Blocks[i][4]) {
+                            Game.Climbing.Blocks[i][4] = true;
+                            Game.Climbing.Stats.platforms++;
+                            Game.Climbing.Stats.xp += 3;
+                            Game.Climbing.Stats.totalXp += 3;
+                        }
+                        if (Game.Climbing.Player.py <= Game.Climbing.Blocks[i][1] + Game.Climbing.BlockY - 110) {
+                            Game.Climbing.Player.y = Game.Climbing.Blocks[i][1] + Game.Climbing.BlockY - 110;
+                            Game.Climbing.Player.yv = 0;
+                            Game.Climbing.Player.jump = true;
+                        }
+                    }
+                }
+                //Block movement
+                Game.Climbing.BlockY += Game.Climbing.BlockYSpeed;
+                if (Game.Climbing.Blocks[0][1] + Game.Climbing.BlockY > 500) {
+                    Game.Climbing.Blocks.shift();
+                }
+                if (Game.Climbing.Blocks[Game.Climbing.Blocks.length - 1][1] + Game.Climbing.BlockY > 180) {
+                    Game.Climbing.Blocks.push([round(random(0, 600 - max(Game.Climbing.BlockWidth, 50))), -40 - Game.Climbing.BlockY, max(Game.Climbing.BlockWidth, 50), 40, false]);
+                    Game.Climbing.BlockWidth -= 5;
+                    Game.Climbing.BlockYSpeed += 0.1;
+                    Game.Climbing.Player.speed += 0.2;
+                    if (getRandomPercentage([4, 1], [true, false])) {
+                        Game.Climbing.Coins.push([round(random(20, 580)), round(random(-60, -200)) - Game.Climbing.BlockY, true]);
+                    }
+                }
+                //Coins
+                if (Game.Climbing.Coins.length > 0) {
+                    if (Game.Climbing.Coins[0][1] + Game.Climbing.BlockY > 500) {
+                        Game.Climbing.Coins.shift();
+                    }
+                }
+                for (var i = 0; i < Game.Climbing.Coins.length; i++) {
+                    if (Game.Climbing.Coins[i][2]) {
+                        image(Graphics.coin, Game.Climbing.Coins[i][0] - 20, Game.Climbing.Coins[i][1] - 20 + Game.Climbing.BlockY, 40, 40);
+                        if (rectCircle(Game.Climbing.Player.x, Game.Climbing.Player.y, 95, 110, Game.Climbing.Coins[i][0], Game.Climbing.Coins[i][1] + Game.Climbing.BlockY, 40)) {
+                            Game.Climbing.Coins[i][2] = false;
+                            Game.Money += 1;
+                        }
+                    }
+                }
+                //Up
+                if (keys[87] && Game.Climbing.Player.jump || keys[38] && Game.Climbing.Player.jump) {
+                    Game.Climbing.Player.yv = -12;
+                    Game.Climbing.Player.jump = false;
+                    Game.Climbing.Stats.jumped++;
+                    Game.Climbing.Stats.xp++;
+                    Game.Climbing.Stats.totalXp++;
+                }
+                //Left
+                if (keys[65] || keys[37]) {
+                    Game.Climbing.Player.d = false;
+                    if (Game.Climbing.Player.x > 0) {
+                        Game.Climbing.Player.x -= Game.Climbing.Player.speed;
+                    }
+                }
+                //Right
+                if (keys[68] || keys[39]) {
+                    Game.Climbing.Player.d = true;
+                    if (Game.Climbing.Player.x < 505) {
+                        Game.Climbing.Player.x += Game.Climbing.Player.speed;
+                    }
+                }
+                //DEATH
+                if (Game.Climbing.Player.y > 500) {
+                    Game.Climbing.gameStarted = 2;
+                    Game.Climbing.Stats.totalAscent += ceil(Game.Climbing.BlockY);
+                    Game.Climbing.Stats.xp += ceil(Game.Climbing.BlockY / 500);
+                    Game.Climbing.Stats.totalXp += ceil(Game.Climbing.BlockY / 500);
+                }
+            } else if (Game.Climbing.gameStarted === 0) {
+                fill(0, 0, 0, 200);
+                interactiveRect(50, 50, 500, 80);
+                interactiveRect(50, 150, 280, 200);
+                interactiveRect(350, 150, 200, 200);
+                interactiveRect(50, 370, 240, 80, function () {
+                    Game.Climbing.gameStarted = 1;
+                });
+                interactiveRect(310, 370, 240, 80, function () {
+                    gameScene = 1;
+                });
+                fill(255, 255, 255);
+                textAlign(CENTER, CENTER);
+                textSize(30);
+                text("Climbing Training", 300, 90);
+                textSize(40);
+                text("Play", 170, 410);
+                text("Menu", 430, 410);
+                textSize(20);
+                textAlign(CENTER, TOP);
+                text("Use WASD or the arrow keys\nto climb up the rock ledges.\nMake sure not to fall!", 190, 160);
+                textAlign(CENTER, CENTER);
+                fill(getLevelColor(Game.Climbing.Stats.lvl));
+                textSize(25);
+                text("Level " + Game.Climbing.Stats.lvl, 450, 187);
+                fill(0, 74, 1);
+                rect(375, 220, 150, 20);
+                fill(0, 255, 0);
+                rect(375, 220, min(Game.Climbing.Stats.xp * (150 / Game.Climbing.Stats.lvl), 150), 20);
+                strokeWeight(3);
+                stroke(171, 171, 171);
+                fill(153, 153, 153, 200);
+                interactiveRect(400, 280, 100, 50, function () {
+                    Game.StatisticsType = 1;
+                    gameScene = 2;
+                    Game.LastPage = 3;
+                });
+                fill(255, 255, 255);
+                textSize(20);
+                text("Statistics", 450, 305);
+            } else if (Game.Climbing.gameStarted === 2) {
+                fill(0, 0, 0, 200);
+                interactiveRect(50, 50, 500, 80);
+                interactiveRect(50, 150, 280, 200);
+                interactiveRect(350, 150, 200, 200);
+                interactiveRect(50, 370, 240, 80, function () {
+                    Game.Climbing.gameStarted = 1;
+                    Game.Climbing.Player = {
+                        x: 300,
+                        py: 0,
+                        y: 240,
+                        yv: 0,
+                        d: false,
+                        speed: 3,
+                        jump: true,
+                    };
+                    Game.Climbing.Blocks = [
+                        [0, 350, 600, 150],
+                        [200, 150, 200, 40],
+                    ];
+                    Game.Climbing.BlockY = 0;
+                    Game.Climbing.BlockYSpeed = 0.5;
+                    Game.Climbing.BlockWidth = 200;
+                });
+                interactiveRect(310, 370, 240, 80, function () {
+                    Game.Climbing.gameStarted = 0;
+                    gameScene = 1;
+                    Game.Climbing.Player = {
+                        x: 300,
+                        py: 0,
+                        y: 240,
+                        yv: 0,
+                        d: false,
+                        speed: 3,
+                        jump: true,
+                    };
+                    Game.Climbing.Blocks = [
+                        [0, 350, 600, 150],
+                        [200, 150, 200, 40],
+                    ];
+                    Game.Climbing.BlockY = 0;
+                    Game.Climbing.BlockYSpeed = 0.5;
+                    Game.Climbing.BlockWidth = 200;
+                });
+                //Block movement
+                Game.Climbing.BlockY += Game.Climbing.BlockYSpeed;
+                if (Game.Climbing.Blocks[0][1] + Game.Climbing.BlockY > 500) {
+                    Game.Climbing.Blocks.shift();
+                }
+                if (Game.Climbing.Blocks[Game.Climbing.Blocks.length - 1][1] + Game.Climbing.BlockY > 170) {
+                    Game.Climbing.Blocks.push([round(random(0, 600 - max(Game.Climbing.BlockWidth, 50))), -40 - Game.Climbing.BlockY, max(Game.Climbing.BlockWidth, 50), 40]);
+                    Game.Climbing.BlockWidth -= 5;
+                    Game.Climbing.BlockYSpeed += 0.1;
+                    Game.Climbing.Player.speed += 0.2;
+                }
+                fill(255, 255, 255);
+                textAlign(CENTER, CENTER);
+                textSize(30);
+                text("Training Over!", 300, 90);
+                textSize(40);
+                text("Retry", 170, 410);
+                text("Menu", 430, 410);
+                textSize(20);
+                textAlign(CENTER, TOP);
+                text("Use WASD or the arrow keys\nto climb up the rock ledges.\nMake sure not to fall!", 190, 160);
+                textAlign(CENTER, CENTER);
+                fill(getLevelColor(Game.Climbing.Stats.lvl));
+                textSize(25);
+                text("Level " + Game.Climbing.Stats.lvl, 450, 187);
+                fill(0, 74, 1);
+                rect(375, 220, 150, 20);
+                fill(0, 255, 0);
+                rect(375, 220, min(Game.Climbing.Stats.xp * (150 / Game.Climbing.Stats.lvl), 150), 20);
+                strokeWeight(3);
+                stroke(171, 171, 171);
+                fill(153, 153, 153, 200);
+                interactiveRect(400, 280, 100, 50, function () {
+                    Game.StatisticsType = 1;
+                    gameScene = 2;
+                    Game.LastPage = 3;
+                    Game.Climbing.gameStarted = 0;
+                    Game.Climbing.Player = {
+                        x: 300,
+                        py: 0,
+                        y: 240,
+                        yv: 0,
+                        d: false,
+                        speed: 3,
+                        jump: true,
+                    };
+                    Game.Climbing.Blocks = [
+                        [0, 350, 600, 150],
+                        [200, 150, 200, 40],
+                    ];
+                    Game.Climbing.BlockY = 0;
+                    Game.Climbing.BlockYSpeed = 0.5;
+                    Game.Climbing.BlockWidth = 200;
+                });
+                fill(255, 255, 255);
+                textSize(20);
+                text("Statistics", 450, 305);
+            }
+            //Check for new lvls
+            if (Game.Climbing.Stats.xp >= Game.Climbing.Stats.lvl) {
+                Game.Climbing.Stats.xp -= Game.Climbing.Stats.lvl;
+                Game.Climbing.Stats.lvl++;
+            }
+        },
+        jumping: function () {
+            //background
+            background(200, 255, 255);
+            //Draw Player {
+            if (Game.Jumping.Player.d) {
+                flipImage(Graphics.Goat, Game.Jumping.Player.x, 250, 95, 110);
+            } else {
+                image(Graphics.Goat, Game.Jumping.Player.x, 250);
+            }
+            //}
+            //Draw Floor
+            fill(84, 84, 84);
+            noStroke();
+            rect(0, 360 - Game.Jumping.Player.y, 600, 140);
+            //Draw Pillars
+            for (var i = 0; i < 5; i++) {
+                for (var j = 0; j < Game.Jumping.Pillars[i]; j++) {
+
+                    image(Graphics.crate, 120 * i, 360 - (Game.Jumping.Pillars[i] * 40) - Game.Jumping.Player.y + (40 * j));
+                }
+            }
+            //rect(0, 360-Game.Jumping.Player.y, 600, 140);
+            //Scenes
+            if (Game.Jumping.gameStatus === 0) {
+                fill(0, 0, 0, 200);
+                noStroke();
+                interactiveRect(50, 50, 500, 80);
+                interactiveRect(50, 150, 280, 200);
+                interactiveRect(350, 150, 200, 200);
+                interactiveRect(50, 370, 240, 80, function () {
+                    Game.Jumping.gameStatus = 1;
+                });
+                interactiveRect(310, 370, 240, 80, function () {
+                    gameScene = 1;
+                });
+                fill(255, 255, 255);
+                textAlign(CENTER, CENTER);
+                textSize(30);
+                text("Jumping Training", 300, 90);
+                textSize(40);
+                text("Play", 170, 410);
+                text("Menu", 430, 410);
+                textSize(20);
+                textAlign(CENTER, TOP);
+                text("Use the arrow keys to\navoid the falling platforms\nand collect coins.", 190, 160);
+                textAlign(CENTER, CENTER);
+                fill(getLevelColor(Game.Jumping.Stats.lvl));
+                textSize(25);
+                text("Level " + Game.Jumping.Stats.lvl, 450, 187);
+                fill(0, 74, 1);
+                rect(375, 220, 150, 20);
+                fill(0, 255, 0);
+                rect(375, 220, min(Game.Jumping.Stats.xp * (150 / Game.Jumping.Stats.lvl), 150), 20);
+                strokeWeight(3);
+                stroke(171, 171, 171);
+                fill(153, 153, 153, 200);
+                interactiveRect(400, 280, 100, 50, function () {
+                    Game.StatisticsType = 2;
+                    gameScene = 2;
+                    Game.LastPage = 4;
+                });
+                fill(255, 255, 255);
+                textSize(20);
+                text("Statistics", 450, 305);
+            } else if (Game.Jumping.gameStatus === 1) {
+                //Gravity and y stuff
+                Game.Jumping.Player.yv += 0.32;
+                Game.Jumping.Player.y += Game.Jumping.Player.yv;
+                //Floor
+                if (Game.Jumping.Player.y >= 0) {
+                    Game.Jumping.Player.jump = true;
+                    Game.Jumping.Player.yv = 0;
+                    Game.Jumping.Player.y = 0;
+                }
+                //Warnings
+                /***Following code added after deadline***/
+                if (keys[82]) {
+                    Game.Jumping.gameStatus = 2;
+                    Game.Jumping.Stats.totalAscent -= Game.Jumping.Player.y;
+                }
+                /*****STOPS HERE*****/
+                var placeholder = -1;
+                for (var i = 0; i < Game.Jumping.Warnings.length; i++) {
+                    image(Graphics.crate, 120 * Game.Jumping.Warnings[i][0], Game.Jumping.Warnings[i][1] - Game.Jumping.Player.y);
+                    if (Game.Jumping.Warnings[i][1] < 20 - (Game.Jumping.Pillars[Game.Jumping.Warnings[i][0]] * 40)) {
+                        image(Graphics.warning, (120 * Game.Jumping.Warnings[i][0]) + 40, 30, 40, 40);
+                        Game.Jumping.Warnings[i][1] += 3;
+                    } else {
+                        Game.Jumping.Warnings[i][1] += 10;
+                    }
+                    if (Game.Jumping.Warnings[i][1] >= 320 - (Game.Jumping.Pillars[Game.Jumping.Warnings[i][0]] * 40)) {
+                        Game.Jumping.Pillars[Game.Jumping.Warnings[i][0]]++;
+                        placeholder = i;
+                    }
+                    if (rectRect(120 * Game.Jumping.Warnings[i][0], Game.Jumping.Warnings[i][1] - Game.Jumping.Player.y, 120, 40, Game.Jumping.Player.x, 250, 95, 110)) {
+                        Game.Jumping.gameStatus = 2;
+                        Game.Jumping.Stats.totalAscent -= Game.Jumping.Player.y;
+                    }
+                }
+                if (placeholder > -1) {
+                    Game.Jumping.Warnings.splice(placeholder, 1);
+                }
+                //Coins
+                var placeholder = -1;
+                for (var i = 0; i < Game.Jumping.Coins.length; i++) {
+                    Game.Jumping.Coins[i][1] += 3;
+                    if (Game.Jumping.Coins[i][1] > 650) {
+                        placeholder = i;
+                    }
+                    if (Game.Jumping.Coins[i][2]) {
+                        image(Graphics.coin, 120 * Game.Jumping.Coins[i][0] + 40, Game.Jumping.Coins[i][1] - Game.Jumping.Player.y, 40, 40);
+                        if (Game.Jumping.Coins[i][1] < 20 - (Game.Jumping.Pillars[Game.Jumping.Coins[i][0]] * 40)) {
+                            image(Graphics.money, (120 * Game.Jumping.Coins[i][0]) + 40, 30, 40, 64);
+                        }
+                        if (rectCircle(Game.Jumping.Player.x, 250, 95, 110, 120 * Game.Jumping.Coins[i][0] + 40, Game.Jumping.Coins[i][1] - Game.Jumping.Player.y, 40)) {
+                            Game.Jumping.Coins[i][2] = false;
+                            Game.Money += 1;
+                            Game.Jumping.Stats.Coins++;
+                            Game.Jumping.Stats.xp++;
+                            Game.Jumping.Stats.totalXp++;
+                        }
+                    }
+                }
+                if (placeholder > -1) {
+                    if (Game.Jumping.Coins.length <= 1) {
+                        Game.Jumping.Coins = [];
+                    } else {
+                        Game.Jumping.Coins.splice(placeholder, 1);
+                    }
+                }
+                //Collision
+                for (var i = 0; i < 5; i++) {
+                    if (rectRect(120 * i, 360 - (Game.Jumping.Pillars[i] * 40) - Game.Jumping.Player.y, 120, Game.Jumping.Pillars[i] * 40, Game.Jumping.Player.x, 250, 95, 110)) {
+                        if (Game.Jumping.Player.py <= -(Game.Jumping.Pillars[i] * 40)) {
+                            Game.Jumping.Player.jump = true;
+                            Game.Jumping.Player.y = -(Game.Jumping.Pillars[i] * 40);
+                            Game.Jumping.Player.yv = 0;
+                        } else if (Game.Jumping.Player.px <= 120 * i) {
+                            Game.Jumping.Player.x = 120 * i - 95;
+                        } else if (Game.Jumping.Player.px >= (120 * i) + 120) {
+                            Game.Jumping.Player.x = 120 * i + 120;
+                        }
+                    }
+                }
+                //Previous setting
+                Game.Jumping.Player.py = Game.Jumping.Player.y;
+                Game.Jumping.Player.px = Game.Jumping.Player.x;
+                //Up
+                if (keys[87] && Game.Jumping.Player.jump || keys[38] && Game.Jumping.Player.jump) {
+                    Game.Jumping.Player.yv = -8;
+                    Game.Jumping.Player.jump = false;
+                }
+                //Left
+                if (keys[65] || keys[37]) {
+                    Game.Jumping.Player.d = false;
+                    if (Game.Jumping.Player.x > 0) {
+                        Game.Jumping.Player.x -= Game.Jumping.Player.speed;
+                    }
+                }
+                //Right
+                if (keys[68] || keys[39]) {
+                    Game.Jumping.Player.d = true;
+                    if (Game.Jumping.Player.x < 505) {
+                        Game.Jumping.Player.x += Game.Jumping.Player.speed;
+                    }
+                }
+                //Time
+                Game.Jumping.time++;
+                if (Game.Jumping.time % max(Game.Jumping.timeSpawn, 30) === 0) {
+                    Game.Jumping.time = 1;
+                    var placeholder = getRandomPercentage([1, 1, 1, 1, 1], [0, 1, 2, 3, 4]);
+                    Game.Jumping.Warnings.push([placeholder, -400 - (Game.Jumping.Pillars[placeholder] * 40)]);
+                    //Game.Jumping.timeSpawn -= 5;
+                    Game.Jumping.Stats.Platforms++;
+                    Game.Jumping.Stats.xp += 3;
+                    Game.Jumping.Stats.totalXp += 3;
+                    if (getRandomPercentage([3, 1], [true, false])) {
+                        Game.Jumping.Coins.push([(placeholder + round(random(1, 4))) % 5, -400 - (Game.Jumping.Pillars[placeholder] * 40), true]);
+                    }
+                }
+            } else if (Game.Jumping.gameStatus === 2) {
+                fill(0, 0, 0, 200);
+                noStroke();
+                interactiveRect(50, 50, 500, 80);
+                interactiveRect(50, 150, 280, 200);
+                interactiveRect(350, 150, 200, 200);
+                interactiveRect(50, 370, 240, 80, function () {
+                    Game.Jumping.gameStatus = 1;
+                    Game.Jumping.time = 0;
+                    Game.Jumping.timeSpawn = 300;
+                    Game.Jumping.Player = {
+                        px: 200,
+                        py: 0,
+                        x: 200,
+                        y: 0,
+                        yv: 0,
+                        d: true,
+                        jump: true,
+                        speed: 3,
+                    };
+                    Game.Jumping.Pillars = [0, 0, 0, 0, 0];
+                    Game.Jumping.Warnings = [];
+                    Game.Jumping.Coins = [];
+                });
+                interactiveRect(310, 370, 240, 80, function () {
+                    Game.Jumping.gameStatus = 0;
+                    gameScene = 1;
+                    Game.Jumping.time = 0;
+                    Game.Jumping.timeSpawn = 300;
+                    Game.Jumping.Player = {
+                        px: 200,
+                        py: 0,
+                        x: 200,
+                        y: 0,
+                        yv: 0,
+                        d: true,
+                        jump: true,
+                        speed: 3,
+                    };
+                    Game.Jumping.Pillars = [0, 0, 0, 0, 0];
+                    Game.Jumping.Warnings = [];
+                    Game.Jumping.Coins = [];
+                });
+                fill(255, 255, 255);
+                textAlign(CENTER, CENTER);
+                textSize(30);
+                text("Game Over", 300, 90);
+                textSize(40);
+                text("Retry", 170, 410);
+                text("Menu", 430, 410);
+                textSize(20);
+                textAlign(CENTER, TOP);
+                text("Use the arrow keys to\navoid the falling platforms\nand collect coins.", 190, 160);
+                textAlign(CENTER, CENTER);
+                fill(getLevelColor(Game.Jumping.Stats.lvl));
+                textSize(25);
+                text("Level " + Game.Jumping.Stats.lvl, 450, 187);
+                fill(0, 74, 1);
+                rect(375, 220, 150, 20);
+                fill(0, 255, 0);
+                rect(375, 220, min(Game.Jumping.Stats.xp * (150 / Game.Jumping.Stats.lvl), 150), 20);
+                strokeWeight(3);
+                stroke(171, 171, 171);
+                fill(153, 153, 153, 200);
+                interactiveRect(400, 280, 100, 50, function () {
+                    Game.StatisticsType = 2;
+                    gameScene = 2;
+                    Game.LastPage = 4;
+                    Game.Jumping.time = 0;
+                    Game.Jumping.timeSpawn = 300;
+                    Game.Jumping.Player = {
+                        px: 200,
+                        py: 0,
+                        x: 200,
+                        y: 0,
+                        yv: 0,
+                        d: true,
+                        jump: true,
+                        speed: 3,
+                    };
+                    Game.Jumping.Pillars = [0, 0, 0, 0, 0];
+                    Game.Jumping.Warnings = [];
+                    Game.Jumping.Coins = [];
+                });
+                fill(255, 255, 255);
+                textSize(20);
+                text("Statistics", 450, 305);
+            }
+            //Check for new lvls
+            if (Game.Jumping.Stats.xp >= Game.Jumping.Stats.lvl) {
+                Game.Jumping.Stats.xp -= Game.Jumping.Stats.lvl;
+                Game.Jumping.Stats.lvl++;
+            }
+        },
+        running: function () {
+            //background
+            background(200, 255, 255);
+            //Draw Player {
+            if (Game.Running.Player.d) {
+                flipImage(Graphics.Goat, Game.Running.Player.x, Game.Running.Player.y, 95, 110);
+            } else {
+                image(Graphics.Goat, Game.Running.Player.x, Game.Running.Player.y);
+            }
+            //}
+            //Draw Floor
+            fill(84, 84, 84);
+            noStroke();
+            rect(0, 410, 600, 140);
+            //Draw rocks
+            for (var i = 0; i < Game.Running.Rocks.length; i++) {
+                image(Graphics.rock, Game.Running.Rocks[i], 365, 53, 50);
+                Game.Running.Rocks[i] -= Game.Running.speed;
+            }
+            if (Game.Running.Rocks[0] < -60) {
+                Game.Running.Rocks.shift();
+                if (Game.Running.gameStatus === 1) {
+                    Game.Running.Stats.Dodged++;
+                    Game.Running.Stats.xp += 3;
+                    Game.Running.Stats.totalXp += 3;
+                }
+            }
+            //Scenes
+            if (Game.Running.gameStatus === 0) {
+                fill(0, 0, 0, 200);
+                noStroke();
+                interactiveRect(50, 50, 500, 80);
+                interactiveRect(50, 150, 280, 200);
+                interactiveRect(350, 150, 200, 200);
+                interactiveRect(50, 370, 240, 80, function () {
+                    Game.Running.gameStatus = 1;
+                });
+                interactiveRect(310, 370, 240, 80, function () {
+                    gameScene = 1;
+                });
+                fill(255, 255, 255);
+                textAlign(CENTER, CENTER);
+                textSize(30);
+                text("Running Training", 300, 90);
+                textSize(40);
+                text("Play", 170, 410);
+                text("Menu", 430, 410);
+                textSize(20);
+                textAlign(CENTER, TOP);
+                text("Use the up arrow or W\nto jump over the rocks.", 190, 160);
+                textAlign(CENTER, CENTER);
+                fill(getLevelColor(Game.Running.Stats.lvl));
+                textSize(25);
+                text("Level " + Game.Running.Stats.lvl, 450, 187);
+                fill(0, 74, 1);
+                rect(375, 220, 150, 20);
+                fill(0, 255, 0);
+                rect(375, 220, min(Game.Running.Stats.xp * (150 / Game.Running.Stats.lvl), 150), 20);
+                strokeWeight(3);
+                stroke(171, 171, 171);
+                fill(153, 153, 153, 200);
+                interactiveRect(400, 280, 100, 50, function () {
+                    Game.StatisticsType = 3;
+                    gameScene = 2;
+                    Game.LastPage = 5;
+                });
+                fill(255, 255, 255);
+                textSize(20);
+                text("Statistics", 450, 305);
+            } else if (Game.Running.gameStatus === 1) {
+                Game.Running.totalLength += Game.Running.speed;
+                Game.Running.Stats.Distance += Game.Running.speed;
+                //Coins
+                var placeholder = -1;
+                for (var i = 0; i < Game.Running.Coins.length; i++) {
+                    image(Graphics.coin, Game.Running.Coins[i], 300, 40, 40);
+                    Game.Running.Coins[i] -= Game.Running.speed;
+                    if (rectCircle(Game.Running.Player.x + 15, Game.Running.Player.y, 60, 110, Game.Running.Coins[i], 300, 40)) {
+                        Game.Money++;
+                        placeholder = i;
+                    }
+                }
+                if (placeholder !== -1) {
+                    if (Game.Running.Coins.length <= 1) {
+                        Game.Running.Coins = [];
+                    } else {
+                        Game.Running.Coins.splice(placeholder, 1);
+                    }
+                }
+                if (Game.Running.Coins[0] < -40) {
+                    Game.Running.Coins.shift();
+                }
+                //Gravity and y stuff
+                Game.Running.Player.yv += 0.32;
+                Game.Running.Player.y += Game.Running.Player.yv;
+                //Floor
+                if (Game.Running.Player.y >= 300) {
+                    Game.Running.Player.jump = true;
+                    Game.Running.Player.yv = 0;
+                    Game.Running.Player.y = 300;
+                }
+                //Up
+                if (keys[87] && Game.Running.Player.jump || keys[38] && Game.Running.Player.jump) {
+                    Game.Running.Player.yv = -10;
+                    Game.Running.Player.jump = false;
+                    Game.Running.Stats.Jumped++;
+                    Game.Running.Stats.xp++;
+                    Game.Running.Stats.totalXp++;
+                }
+                //Time
+                if (Game.Running.time <= 0) {
+                    Game.Running.Rocks.push(600);
+                    Game.Running.time = round(random(70 / Game.Running.speed * 3, 180 / Game.Running.speed * 3));
+                }
+                Game.Running.time--;
+                Game.Running.speedTime--;
+                if (Game.Running.speedTime % 100 === 0) {
+                    Game.Running.speed += 0.1;
+                    if (getRandomPercentage([2, 3], [true, false])) {
+                        Game.Running.Coins.push(600);
+                    }
+                }
+                /*stroke(255, 0, 0);
+                noFill();
+                rect(Game.Running.Player.x+15, Game.Running.Player.y+20, 60, 90);*/
+                for (var i = 0; i < Game.Running.Rocks.length; i++) {
+                    //ellipse(Game.Running.Rocks[i]+28, 390, 45, 45);
+                    if (rectCircle(Game.Running.Player.x + 15, Game.Running.Player.y + 20, 60, 90, Game.Running.Rocks[i] + 28, 390, 45)) {
+                        Game.Running.gameStatus = 2;
+                        Game.Running.Stats.xp += ceil(Game.Running.totalLength / 1000);
+                        Game.Running.Stats.totalXp += ceil(Game.Running.totalLength / 1000);
+                    }
+                }
+            } else if (Game.Running.gameStatus === 2) {
+                fill(0, 0, 0, 200);
+                noStroke();
+                interactiveRect(50, 50, 500, 80);
+                interactiveRect(50, 150, 280, 200);
+                interactiveRect(350, 150, 200, 200);
+                interactiveRect(50, 370, 240, 80, function () {
+                    Game.Running.gameStatus = 1;
+                    Game.Running.speedTime = 0;
+                    Game.Running.time = 200;
+                    Game.Running.speed = 2;
+                    Game.Running.Player = {
+                        x: 100,
+                        y: 300,
+                        yv: 0,
+                        d: true,
+                        jump: false,
+                    };
+                    Game.Running.Rocks = [];
+                    Game.Running.totalLength = 0;
+                    Game.Coins = [];
+                });
+                interactiveRect(310, 370, 240, 80, function () {
+                    Game.Running.gameStatus = 0;
+                    gameScene = 1;
+                    Game.Running.speedTime = 0;
+                    Game.Running.time = 200;
+                    Game.Running.speed = 2;
+                    Game.Running.Player = {
+                        x: 100,
+                        y: 300,
+                        yv: 0,
+                        d: true,
+                        jump: false,
+                    };
+                    Game.Running.Rocks = [];
+                    Game.Running.totalLength = 0;
+                    Game.Coins = [];
+                });
+                fill(255, 255, 255);
+                textAlign(CENTER, CENTER);
+                textSize(30);
+                text("Game Over", 300, 90);
+                textSize(40);
+                text("Retry", 170, 410);
+                text("Menu", 430, 410);
+                textSize(20);
+                textAlign(CENTER, TOP);
+                text("Use the up arrow or W\nto jump over the rocks.", 190, 160);
+                textAlign(CENTER, CENTER);
+                fill(getLevelColor(Game.Running.Stats.lvl));
+                textSize(25);
+                text("Level " + Game.Running.Stats.lvl, 450, 187);
+                fill(0, 74, 1);
+                rect(375, 220, 150, 20);
+                fill(0, 255, 0);
+                rect(375, 220, min(Game.Running.Stats.xp * (150 / Game.Running.Stats.lvl), 150), 20);
+                strokeWeight(3);
+                stroke(171, 171, 171);
+                fill(153, 153, 153, 200);
+                interactiveRect(400, 280, 100, 50, function () {
+                    Game.Running.gameStatus = 0;
+                    Game.StatisticsType = 3;
+                    gameScene = 2;
+                    Game.LastPage = 4;
+                    Game.Running.speedTime = 0;
+                    Game.Running.time = 200;
+                    Game.Running.speed = 2;
+                    Game.Running.Player = {
+                        x: 100,
+                        y: 300,
+                        yv: 0,
+                        d: true,
+                        jump: false,
+                    };
+                    Game.Running.Rocks = [];
+                    Game.Running.totalLength = 0;
+                    Game.Coins = [];
+                });
+                fill(255, 255, 255);
+                textSize(20);
+                text("Statistics", 450, 305);
+            }
+            //Check for new lvls
+            if (Game.Running.Stats.xp >= Game.Running.Stats.lvl) {
+                Game.Running.Stats.xp -= Game.Running.Stats.lvl;
+                Game.Running.Stats.lvl++;
+            }
+        },
+        RacingSelect: function () {
+            //Background
+            background(0, 38, 35);
+            //Text
+            fill(255, 255, 255);
+            textSize(50);
+            text("Racing", 300, 80);
+            //Back
+            strokeWeight(3);
+            stroke(171, 171, 171);
+            fill(153, 153, 153, 200);
+            interactiveRect(490, 440, 100, 50, function () {
+                gameScene = 0;
+            });
+            fill(255, 255, 255);
+            textSize(20);
+            text("Back", 540, 465);
+            //Buttons
+            noStroke();
+            fill(0, 0, 0, 155);
+            interactiveRect(100, 150, 127, 75);
+            interactiveRect(238, 150, 127, 75);
+            interactiveRect(376, 150, 127, 75);
+            //Buttons to play
+            interactiveRect(100, 235, 127, 40, function () {
+                gameScene = 7;
+                Game.RacingLeague = 0;
+                Game.Racing.Player.Energy = Game.Energy.lvl;
+            });
+            interactiveRect(238, 235, 127, 40, function () {
+                gameScene = 7;
+                Game.RacingLeague = 1;
+                Game.Racing.Player.Energy = Game.Energy.lvl;
+            });
+            interactiveRect(376, 235, 127, 40, function () {
+                gameScene = 7;
+                Game.RacingLeague = 2;
+                Game.Racing.Player.Energy = Game.Energy.lvl;
+            });
+            //Text
+            textSize(20);
+            fill(255, 255, 255);
+            text("Play", 164, 255);
+            text("Play", 301, 255);
+            text("Play", 438, 255);
+            textAlign(CENTER, TOP);
+            text("Beginner\nLeague", 164, 164);
+            text("Advanced\nLeague", 301, 164);
+            text("Professional\nLeague", 438, 164);
+            textAlign(CENTER, CENTER);
+        },
+        racing: function () {
+            //Background
+            background(200, 255, 255);
+            //Draw bad goat goat
+            flipImage(Graphics.BrownGoat, 252 + Game.Racing.Enemy.x - Game.Racing.Player.x, 195 + Game.Racing.Enemy.y - Game.Racing.Player.y, 95, 110);
+            //Draw good goat
+            flipImage(Graphics.Goat, 252, 195, 95, 110);
+            //Graphics
+            pushMatrix();
+            translate(300 - Game.Racing.Player.x, 250 - Game.Racing.Player.y);
+            //translate(300-Game.Racing.Enemy.x, 250-Game.Racing.Enemy.y);
+            fill(110, 110, 110);
+            noStroke();
+            rect(-300, 55, 1000, 300);
+            rect(700, -300, 500, 800);
+            popMatrix();
+            //Stages
+            switch (Game.Racing.Player.stage) {
+                case 0:
+                    Game.Racing.Player.x += max((Game.Running.Stats.lvl / 10), 1);
+                    if (Game.Racing.Player.x >= 665) {
+                        Game.Racing.Player.stage = 1;
+                    }
+                    break;
+                case 1:
+                    Game.Racing.Player.y -= max((Game.Climbing.Stats.lvl / 10), 1);
+                    if (Game.Racing.Player.y <= -355) {
+                        Game.Racing.Player.stage = 2;
+                        Game.Racing.Player.y = -355;
+                    }
+                    break;
+                case 2:
+                    Game.Racing.Player.x += max((Game.Jumping.Stats.lvl / 10), 1);
+                    if (Game.Racing.Player.x >= 1000) {
+                        //println("hmm");
+                        Game.Racing.Player = {
+                            x: 0,
+                            y: 0,
+                            stage: 0,
+                        };
+                        Game.Racing.Enemy = {
+                            x: 0,
+                            y: 0,
+                            Levels: [20, 50, 80],
+                            stage: 0,
+                        };
+                        Game.Racing.Victory = true;
+                        gameScene = 8;
+                    }
+                    break;
+            }
+            switch (Game.Racing.Enemy.stage) {
+                case 0:
+                    Game.Racing.Enemy.x += max(Game.Racing.Enemy.Levels[Game.RacingLeague] / 10, 1);
+                    if (Game.Racing.Enemy.x >= 665) {
+                        Game.Racing.Enemy.stage = 1;
+                    }
+                    break;
+                case 1:
+                    Game.Racing.Enemy.y -= max(Game.Racing.Enemy.Levels[Game.RacingLeague] / 10, 1);
+                    if (Game.Racing.Enemy.y <= -355) {
+                        Game.Racing.Enemy.stage = 2;
+                        Game.Racing.Enemy.y = -355;
+                    }
+                    break;
+                case 2:
+                    Game.Racing.Enemy.x += max(Game.Racing.Enemy.Levels[Game.RacingLeague] / 10, 1);
+                    if (Game.Racing.Enemy.x >= 1000) {
+                        Game.Racing.Player = {
+                            x: 0,
+                            y: 0,
+                            stage: 0,
+                        };
+                        Game.Racing.Enemy = {
+                            x: 0,
+                            y: 0,
+                            Levels: [20, 50, 80],
+                            stage: 0,
+                        };
+                        Game.Racing.Victory = false;
+                        gameScene = 8;
+                    }
+                    break;
+            }
+            //Energy
+            fill(161, 161, 161);
+            interactiveRect(470, 10, 120, 50);
+            fill(0, 54, 1);
+            rect(480, 35, 100, 15);
+            fill(0, 255, 4);
+            rect(480, 35, Game.Racing.Player.Energy * (100 / Game.Energy.lvl), 15);
+            Game.Racing.Player.Energy -= 0.01;
+            if (Game.Racing.Player.Energy < 0) {
+                Game.Racing.Player = {
+                    x: 0,
+                    y: 0,
+                    stage: 0,
+                };
+                Game.Racing.Enemy = {
+                    x: 0,
+                    y: 0,
+                    Levels: [20, 50, 80],
+                    stage: 0,
+                };
+                Game.Racing.Victory = false;
+                gameScene = 8;
+            }
+        },
+        afterRace: function () {
+            //Background
+            background(0, 38, 35);
+            //Text
+            fill(255, 255, 255);
+            textSize(50);
+            if (Game.Racing.Victory) {
+                if (!Game.Racing.Won[Game.RacingLeague]) {
+                    Game.Money += Game.Racing.Money[Game.RacingLeague];
+                    Game.Racing.Won[Game.RacingLeague] = true;
+                }
+                text("You Won!", 300, 80);
+                textSize(20);
+                switch (Game.RacingLeague) {
+                    case 0:
+                        text("Congrats on winning the beginner league race!\nKeep training and play in the advanced league next!", 300, 250);
+                        break;
+                    case 1:
+                        text("Wow, you're really good! Keep it up!", 300, 250);
+                        break;
+                    case 2:
+                        text("You have officially beaten the game. Great job!", 300, 250);
+                        break;
+                }
+            } else {
+                text("You Lost...", 300, 80);
+                textSize(20);
+                text("You'll win it next time!", 300, 250);
+                //text("Congrats on winning the beginner league race!\nKeep training and play in the advanced league next!", 300, 250);
+            }
+            //Back
+            strokeWeight(3);
+            stroke(171, 171, 171);
+            fill(153, 153, 153, 200);
+            interactiveRect(490, 440, 100, 50, function () {
+                gameScene = 0;
+            });
+            fill(255, 255, 255);
+            textSize(20);
+            text("Menu", 540, 465);
+        },
+    };
+    /**********************SCENES******************************/
+    var Menu = function () {
+        //Background
+        background(204, 255, 252);
+        //Text
+        textAlign(CENTER, CENTER);
+        fill(0, 0, 0);
+        textSize(50);
+        text("Goat Life", 300, 50);
+        //Buttons
+        stroke(110, 110, 110);
+        strokeWeight(3);
+        if (pointRect(get.mouseX, get.mouseY, 150, 200, 300, 80)) {
+            fill(212, 212, 212);
+            rect(149, 199, 302, 82);
+            if (clicked) {
+                Scene = 3;
+            }
+        } else {
+            fill(186, 186, 186);
+            rect(150, 200, 300, 80);
+        }
+        /*if (pointRect(get.mouseX, get.mouseY, 150, 300, 300, 80)) {
+            fill(212, 212, 212);
+            rect(149, 299, 302, 82);
+            if (clicked) {
+                println("Friendly reminder to implement save =D");
+            }
+        } else {
+            fill(186, 186, 186);
+            rect(150, 300, 300, 80);
+        }*/
+        fill(59, 59, 59);
+        textSize(35);
+        text("Play New Game", 300, 240);
+        //text("Load Save", 300, 340);
+    };
+    var runGame = function () {
+        switch (gameScene) {
+            case 0:
+                GameScenes.trainingCenter();
+                break;
+            case 1:
+                GameScenes.selectTraining();
+                break;
+            case 2:
+                GameScenes.statistics();
+                break;
+            case 3:
+                GameScenes.climbing();
+                break;
+            case 4:
+                GameScenes.jumping();
+                break;
+            case 5:
+                GameScenes.running();
+                break;
+            case 6:
+                GameScenes.RacingSelect();
+                break;
+            case 7:
+                GameScenes.racing();
+                break;
+            case 8:
+                GameScenes.afterRace();
+        }
+    };
+    /***********************DRAW*******************************/
+    dl.draw = function () {
+        switch (Scene) {
+            case 0:
+                LoadGraphics();
+                break;
+            case 1:
+                Pineapple.Intro();
+                break;
+            case 2:
+                Menu();
+                break;
+            case 3:
+                runGame();
+                break;
+        }
+        clicked = false;
+    };
+    /***********************MOUSE******************************/
+    dl.mouseReleased = function () {
+        clicked = true;
+    };
+    /***********************KEYS************************/
+    dl.keyPressed = function (e) {
+        keys[e.keyCode] = true;
+    };
+    dl.keyReleased = function (e) {
+        delete keys[e.keyCode];
+    };
+    // <-- Line count
+</script>
+<script src="headerFooter.js"></script>
+<script src="bgscript.js"></script>
+
+</html>

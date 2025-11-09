@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>The Chest</title>
+    <title>Minesweeper</title>
     <script src="https://cdn.jsdelivr.net/gh/librepaint/drawlite@main/javascript/drawlite.js"></script>
     <link rel="stylesheet" href="index.css">
     <link rel="icon" href="images/pappy.png" type="image/png">
@@ -22,18 +22,7 @@
 </head>
 
 <body id="bodyID">
-    <header>
-        <a class="navSection noTextDecoration" href="index.html">
-            <img src="images/pappy.png" id="navImg">
-            <span class="navText">Pineapple Programming</span>
-        </a>
-        <a class="navSection noTextDecoration" href="games.html">
-            <span class="navText">Games</span>
-        </a>
-        <a class="navSection noTextDecoration">
-            <span class="navText">Projects</span>
-        </a>
-    </header>
+    <header id="headerID"></header>
     <div class="box">
         <h1 class="center">Minesweeper</h1>
         <canvas id="myCanvas" width="600" height="600"></canvas>
@@ -49,132 +38,125 @@
             Minesweeper for FREE at their website. HOWEVER, the code containing the pixel sprites does not belong to
             them, and was reprogrammed by me.</p>
         <h2>Changelog</h2>
-            <b>V2.6.0 12/27/2024</b>
-            -Added in-game settings<br>
+        <b>V2.6.0 12/27/2024</b><br>
+        -Added in-game settings<br><br>
 
-            <b>V2.5.2 12/26/2024</b>
-            - Updated how-to page
-            - Added DrawGrid() function
-            - Added Chording<br>
+        <b>V2.5.2 12/26/2024</b><br>
+        - Updated how-to page<br>
+        - Added DrawGrid() function<br>
+        - Added Chording<br><br>
 
-            <b>V2.5.1 12/5/2024</b>
-            - Added Save code
-            - Added mobile mode<br>
+        <b>V2.5.1 12/5/2024</b><br>
+        - Added Save code<br>
+        - Added mobile mode<br><br>
 
-            <b>RELEASED 9/6/2024</b><br>
+        <b>RELEASED 9/6/2024</b><br><br>
 
-            <b>V2.5.0 9/5/2024</b>
-            - Finished Shop
-            - Tidied up game
-            - Removed "Level creator"
-            - Added How Page<br>
+        <b>V2.5.0 9/5/2024</b><br>
+        - Finished Shop<br>
+        - Tidied up game<br>
+        - Removed "Level creator"<br>
+        - Added How Page<br><br>
 
-            <b>V2.4.2 8/29/2024</b>
-            - Modified Level Five to make it possible.
-            - COMPLETELY tidied and cleaned code up.
-            - Added Tileset Under The Sea<br>
+        <b>V2.4.2 8/29/2024</b><br>
+        - Modified Level Five to make it possible.<br>
+        - COMPLETELY tidied and cleaned code up.<br>
+        - Added Tileset Under The Sea<br><br>
 
-            <b>V2.4.1 8/28/2024</b>
-            - Added TileSet "Flower Field"<br>
+        <b>V2.4.1 8/28/2024</b><br>
+        - Added TileSet "Flower Field"<br><br>
 
-            <b>V2.4.0 8/27/2024</b>
-            - Made Working Shop Buttons
-            - Cleaned up Graphic Code Nicely<br>
+        <b>V2.4.0 8/27/2024</b><br>
+        - Made Working Shop Buttons<br>
+        - Cleaned up Graphic Code Nicely<br><br>
 
-            <b>V2.3.6 8/19/2024</b>
-            - Fixed Shop Object function
-            - Began Shop<br>
+        <b>V2.3.6 8/19/2024</b><br>
+        - Fixed Shop Object function<br>
+        - Began Shop<br><br>
 
-            <b>V2.3.5 8/12/2024</b>
-            - Added Shop Button Graphics, the Gift boxes and bags.<br>
+        <b>V2.3.5 8/12/2024</b><br>
+        - Added Shop Button Graphics, the Gift boxes and bags.<br><br>
 
-            <b>V2.3.4 8/8/2024</b>
-            - Added Hash function from my other WIP project, "Pineapple Bank Systems"<br>
+        <b>V2.3.4 8/8/2024</b><br>
+        - Added Hash function from my other WIP project, "Pineapple Bank Systems"<br><br>
 
-            <b>V2.3.3 7/11/2024</b>
-            - Implemented Custom Game Feature
-            - Updated SetUp() function to better suit Custom Mode
-            - Added Crystal weigher function...
-            - Started Shop<br>
+        <b>V2.3.3 7/11/2024</b><br>
+        - Implemented Custom Game Feature<br>
+        - Updated SetUp() function to better suit Custom Mode<br>
+        - Added Crystal weigher function...<br>
+        - Started Shop<br><br>
 
-            <b>V2.3.2 7/10/2024</b>
-            - Put some variables into objects
-            - Started the crystal/shop feature
-            - Updated Levels slightly
-            - Added Pineapple logo
-            - Finished Unlocking Levels
-            - Added Crystal Gain per each level
-            - Stopped image rendering stroke issue to make graphics clearer<br>
+        <b>V2.3.2 7/10/2024</b><br>
+        - Put some variables into objects<br>
+        - Started the crystal/shop feature<br>
+        - Updated Levels slightly<br>
+        - Added Pineapple logo<br>
+        - Finished Unlocking Levels<br>
+        - Added Crystal Gain per each level<br>
+        - Stopped image rendering stroke issue to make graphics clearer<br><br>
 
-            <b>V2.3.1 7/9/2024</b>
-            - Added Menu
-            - Added Levels
-            - Added Play Graphic
-            - Add Lock Feature<br>
+        <b>V2.3.1 7/9/2024</b><br>
+        - Added Menu<br>
+        - Added Levels<br>
+        - Added Play Graphic<br>
+        - Add Lock Feature<br><br>
 
-            <b>V2.3.0 6/22/2024</b>
-            - Added Mobile Option
-            - Added Background
-            - Added Glazy Blue Background Button Design<br>
+        <b>V2.3.0 6/22/2024</b><br>
+        - Added Mobile Option<br>
+        - Added Background<br>
+        - Added Glazy Blue Background Button Design<br><br>
 
-            <b>V2.2.4 6/16/2024</b>
-            - Added Win scene<br>
+        <b>V2.2.4 6/16/2024</b><br>
+        - Added Win scene<br><br>
 
-            <b>V2.2.3 5/15/2024</b>
-            - Finished Death Animation
-            - Implemented Death Reset<br>
+        <b>V2.2.3 5/15/2024</b><br>
+        - Finished Death Animation<br>
+        - Implemented Death Reset<br><br>
 
-            <b>V2.2.2 5/14/2024</b>
-            - Added Red Bomb
-            - Implemented X graphic
-            - Clears bombs when dead
-            - Started Death Animation<br>
+        <b>V2.2.2 5/14/2024</b><br>
+        - Added Red Bomb<br>
+        - Implemented X graphic<br>
+        - Clears bombs when dead<br>
+        - Started Death Animation<br><br>
 
-            <b>V2.2.1 5/10/2024</b>
-            - Added X graphic
-            - Began end Game Scene<br>
+        <b>V2.2.1 5/10/2024</b><br>
+        - Added X graphic<br>
+        - Began end Game Scene<br><br>
 
-            <b>V2.2.0 5/3/2024</b>
-            - Added binomial coefficent function
-            - Added Fractuals
-            - Added Safe First Click
-            - Now you can't click while flagged<br>
+        <b>V2.2.0 5/3/2024</b><br>
+        - Added binomial coefficent function<br>
+        - Added Fractuals<br>
+        - Added Safe First Click<br>
+        - Now you can't click while flagged<br><br>
 
-            <b>V2.1.3 4/28/2024</b>
-            - Fixed Auto-Clearing bug, split into two functions.<br>
+        <b>V2.1.3 4/28/2024</b><br>
+        - Fixed Auto-Clearing bug, split into two functions.<br><br>
 
-            <b>V2.1.2 4/25/2024</b>
-            - Finished Clicking
-            - Introduced Status Array
-            - Inplemented Flagging<br>
+        <b>V2.1.2 4/25/2024</b><br>
+        - Finished Clicking<br>
+        - Introduced Status Array<br>
+        - Inplemented Flagging<br><br>
 
-            <b>V2.1.1 4/23/2024</b>
-            - Added semi-working clicking
-            - Started Auto-Clearing, Recurring Function Bug?<br>
+        <b>V2.1.1 4/23/2024</b><br>
+        - Added semi-working clicking<br>
+        - Started Auto-Clearing, Recurring Function Bug?<br><br>
 
-            <b>V2.1.0 4/21/2024</b>
-            - Added Good Pixel Graphics<br>
+        <b>V2.1.0 4/21/2024</b><br>
+        - Added Good Pixel Graphics<br><br>
 
-            <b>V2.0.1 4/20/2024</b>
-            - Set up tile generation<br>
+        <b>V2.0.1 4/20/2024</b><br>
+        - Set up tile generation<br><br>
 
-            <b>V2.0.0 4/19/2024</b>
-            - Redid entire project
-            - Finished Generation
-            - Fixed Warping Tile Bug<br>
+        <b>V2.0.0 4/19/2024</b><br>
+        - Redid entire project<br>
+        - Finished Generation<br>
+        - Fixed Warping Tile Bug<br><br>
 
-            <b>V1.0.0 5/26/2023</b>
-            - Started project
-            - Made Base Code for game
+        <b>V1.0.0 5/26/2023</b><br>
+        - Started project<br>
+        - Made Base Code for game<br><br>
     </div>
-    <footer>
-        <p>&copy;2025, Pineapples. All rights reserved.</p><br>
-        <a href="https://discord.gg/Y3XNzmQpCe"><img class="footerImage"
-                src="https://cdn.prod.website-files.com/6257adef93867e50d84d30e2/66e3d7f4ef6498ac018f2c55_Symbol.svg"></a>
-        <a href="https://github.com/Pineapples1000"><img class="footerImage" src="images/github-mark-white.png"></a>
-        <a href="https://scratch.mit.edu/users/cuddlyscout"><img class="footerImage" src="images/scratch-logo.png"></a>
-        <a href="https://www.khanacademy.org/profile/cuddlyscout"><img class="footerImage" src="images/ka-logo.png"></a>
-    </footer>
+    <footer id="footerID"></footer>
 </body>
 
 <script type>
@@ -3375,10 +3357,7 @@
         clicked = false;
     };  
 </script>
-<script>
-    let bgChange = document.getElementById("bodyID");
-    let bgNum = Math.floor(Math.random() * 22);
-    bgChange.style.backgroundImage = "url('images/bg-images/img" + bgNum + ".jpg')";
-</script>
+<script src="headerFooter.js"></script>
+<script src="bgscript.js"></script>
 
 </html>

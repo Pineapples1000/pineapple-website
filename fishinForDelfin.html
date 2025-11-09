@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Fishin' For Delfin</title>
+    <script src="https://cdn.jsdelivr.net/gh/librepaint/drawlite@main/javascript/drawlite.js"></script>
+    <link rel="stylesheet" href="index.css">
+    <link rel="icon" href="images/pappy.png" type="image/png">
+    <link href='https://fonts.googleapis.com/css?family=Rubik' rel='stylesheet' type='text/css'>
+    <style>
+        /******CANVAS STYLES********/
+        #myCanvas {
+            display: block;
+            margin: 0 auto 0 auto;
+            border-radius: 3px;
+            outline: none;
+            max-width: 70vw;
+            max-height: 70vw;
+        }
+    </style>
+</head>
+
+<body id="bodyID">
+    <header id="headerID"></header>
+    <div class="box">
+        <h1 class="center">Fishin' For Delfin</h1>
+        <canvas id="myCanvas" width="600" height="600"></canvas>
+        <h2>Save</h2>
+        <input type="text" id="getSave" placeholder="Put your save code here!"><button onclick="importSave();">Load Save</button>
+        <br><span id="saveCodeInput"></span>
+        <h2>Description</h2>
+        <p>Fish up the delfin and sell them at the fish market! =)</p>
+        <h2>Controls</h2>
+        <p>Use the mouse to control the fishing rod. Sell the fish =) <i>Trouble getting
+                the canvas to stay? Try clicking on the canvas
+                and pressing space.</i></p>
+        <h2>Credits</h2>
+        <p>Made April 2025, by Pineapples. Ace Rogers for Delfin images.</p>
+    </div>
+    <footer id="footerID"></footer>
+</body>
+<script type>
+    var canvas = document.getElementById("myCanvas");
+    var dl = Drawlite(canvas);
+    var { PI, TWO_PI, EPSILON, CORNER, CORNERS, LEFT, RIGHT, TOP, CENTER, BOTTOM, BASELINE, RADIUS, DEGREES, RADIANS, POINTS, LINES, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN, QUADS, QUAD_STRIP, CLOSE, ROUND, PROJECT, SQUARE, BEVEL, MITER, RGB, HSB, NATIVE, canvas, Color, PerlinNoise, PRNG, vec3, ctx, size, angleMode, noLoop, loop, frameRate, min, max, floor, round, ceil, abs, constrain, sq, sqrt, pow, sin, cos, tan, asin, acos, atan, atan2, log, random, dist, map, lerp, radians, degrees, color, lerpColor, fill, stroke, strokeWeight, strokeCap, strokeJoin, noStroke, noFill, beginShape, vertex, curveVertex, bezierVertex, bezierPoint, bezierTangent, splineTightness, splineVertex, splinePoint, splineTangent, lerpSpline, endShape, spline, snip, getColor, imageMode, image, loadImage, font, textSize, textAlign, textWidth, textAscent, textDescent, textLeading, text, background, point, line, rectMode, rect, triangle, quad, arc, circle, ellipseMode, ellipse, bezier, get, pushMatrix, popMatrix, resetMatrix, scale, translate, rotate, loadPixels, updatePixels, colorMode, enableContextMenu, millis, second, minute, hour, day, month, year, smooth, nosmooth, createGraphics, getProperties } = dl;
+    /**SAVE FEATURE!!!**/
+    /**
+    Delfin fishing game
+    Thanks to Ace Rogers for the Delfin images!
+    https://www.khanacademy.org/cs/i/6628701832658944
+    
+    750 lines exactly! Yay!
+    **/
+    /******************PLACEHOLDER VAR*********************/
+    var fishDepthpercentageVar;
+    /******************MATH FUNCTIONS*********************/
+    var pointRect = function (px, py, rx, ry, rw, rh) {
+        if (px > rx && px < rx + rw && py > ry && py < ry + rh) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+    var rectRect = function (x1, y1, w1, h1, x2, y2, w2, h2) {
+        if (x1 + w1 > x2 && y1 + h1 > y2 && x1 < x2 + w2 && y1 < y2 + h2) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+    var Flip = function (value, flip) {
+        if (flip === undefined) {
+            flip = 90;
+        }
+        return ((value - flip) * -1) + flip;
+    };
+    var getTrueOrFalse = function (filler) {
+        filler = round(random(0, 1));
+        if (filler === 0) {
+            return true;
+        } else {
+            return false;
+        }
+    };
+    /******************VARIABLES********************/
+    var pressed = false;
+    var Game = {
+        price: [10,10,10],
+        fishCaughtInMotion: true,
+        money: 0,
+        moneyGiven: false,
+        currentScene: 0,
+        depth: 1,
+        depthUpgrade: 1,
+        fish: [],
+        currentFishArrayPos: 0,
+        fishByDepth: [
+            [98, 1, 0, 0, 0, 1],
+            [97, 3, 0, 0, 0, 0],
+            [89, 10, 1, 0, 0, 0],
+            [75, 20, 4, 0, 0, 1],
+            [70, 20, 9, 1, 0, 0],//5
+            [60, 27, 12, 1, 0, 0],
+            [50, 32, 17, 1, 0, 0],
+            [50, 50, 0, 0, 0, 0],
+            [40, 50, 9, 0, 0, 1],
+            [30, 60, 8, 2, 0, 0],//10
+            [20, 60, 15, 5, 0, 0],
+            [10, 70, 15, 5, 0, 0],
+            [5, 80, 15, 0, 0, 0],
+            [1, 90, 8, 1, 0, 0],
+            [1, 80, 14, 5, 0, 0],//15
+            [0, 97, 1, 1, 0, 1],
+            [2, 90, 8, 0, 0, 0],
+            [0, 80, 15, 5, 0, 0],
+            [0, 78, 20, 2, 0, 0],
+            [0, 60, 20, 20, 0, 0],//20
+            [0, 50, 50, 0, 0, 0],
+            [0, 40, 55, 5, 0, 0],
+            [0, 30, 70, 0, 0, 0],
+            [0, 20, 80, 0, 0, 0],
+            [0, 9, 80, 10, 0, 1],//25
+            [0, 5, 85, 10, 0, 0],
+            [0, 1, 90, 9, 0, 0],
+            [0, 0, 98, 1, 0, 0],
+            [0, 0, 95, 5, 0, 0],
+            [0, 1, 90, 9, 0, 0],//30
+            [0, 0, 80, 20, 0, 0],
+            [0, 0, 70, 30, 0, 0],
+            [0, 5, 60, 35, 0, 0],
+            [3, 7, 50, 40, 0, 0],
+            [0, 10, 40, 50, 0, 0],//35
+            [0, 5, 30, 64, 0, 1],
+            [0, 0, 20, 80, 0, 0],
+            [0, 0, 10, 90, 0, 0],
+            [0, 1, 1, 98, 0, 0],
+            [0, 0, 0, 90, 10, 0],//40
+            [0, 0, 0, 80, 20, 0],
+            [0, 0, 5, 70, 25, 0],
+            [0, 0, 1, 60, 39, 0],
+            [0, 0, 0, 50, 50, 0],
+            [0, 1, 1, 45, 53, 0],//45
+            [0, 0, 2, 30, 68, 0],
+            [0, 0, 0, 20, 80, 0],
+            [0, 0, 0, 10, 90, 0],
+            [1, 1, 1, 1, 95, 1],
+            [0, 0, 0, 0, 100, 0],//50
+            [0, 0, 0, 0, 100, 0],
+            [0, 0, 0, 0, 100, 0],
+            [0, 0, 0, 0, 100, 0],
+            [0, 0, 0, 0, 100, 0],
+            [0, 0, 0, 0, 100, 0],//55
+            [0, 0, 0, 0, 100, 0],
+            [0, 0, 0, 0, 100, 0],
+            [0, 0, 0, 0, 100, 0],
+            [0, 0, 0, 0, 100, 0],
+            [0, 0, 0, 0, 100, 0],//60
+            [0, 0, 0, 0, 100, 0],
+            [0, 0, 0, 0, 100, 0],
+            [0, 0, 0, 0, 100, 0],
+            [0, 0, 0, 0, 75, 25],
+            [0, 0, 0, 0, 100, 0],//65
+        ],
+        amount: [0, 0, 0, 0, 0, 0],
+        loadingFish: true,
+        fishLoadNum: 0,
+        maxFish: 1,
+        fishData: [],
+        fishTotal: 0,
+        speed: 3,
+        fishingHookX: 300,
+        currentFlooredArrayLocation: 0,
+    };
+    var importSave = function () {
+        let saveString = document.getElementById('getSave').value;
+        document.getElementById('getSave').value = "";
+        var Save = saveString.split('-');
+        if (Save.length === 7) {
+        Reset();
+        Game.price= [Number(Save[0]), Number(Save[1]), Number(Save[2])];
+        Game.money= Number(Save[3]);
+        Game.depthUpgrade= Number(Save[4]);
+        Game.maxFish= Number(Save[5]);
+        Game.speed=  Number(Save[6]);
+        } else {
+            document.getElementById('saveCodeInput').innerHTML = `<span style="color:rgb(255, 0, 0);">Error: save code not valid</span>`
+        }
+    };
+    /******************GRAPHICS*********************/
+    function Delfin(obj) {
+        pushMatrix();
+        translate(obj.x, obj.y); // For the translation
+        scale(obj.size[0], obj.size[1]); // For the size
+
+        // The different stages
+        switch (obj.stage) {
+            // Seed stage
+            case 1: {
+
+                noStroke();
+
+                // Main body
+                fill(0, 170, 255);
+                beginShape();
+                vertex(8, -60);
+                bezierVertex(-3, -52, -3, -38, 0, -35);
+                bezierVertex(1, -30, 14, -27, 24, -20);
+                bezierVertex(39, -11, 48, 15, 28, 39);
+                bezierVertex(9, 52, -10, 50, -30, 39);
+                bezierVertex(-46, 28, -52, 1, -28, -19);
+                bezierVertex(-14, -31, -9, -37, -5, -54);
+                bezierVertex(-9, -63, -3, -72, -1, -53);
+                bezierVertex(3, -63, 12, -69, 14, -63);
+                bezierVertex(16, -62, 12, -55, 8, -60);
+                endShape();
+
+                // Drops
+                beginShape();
+                vertex(1, -40);
+                bezierVertex(1, -48, 6, -54, 11, -50);
+                bezierVertex(11, -41, 6, -51, 1, -40);
+                endShape();
+
+                beginShape();
+                vertex(0, -65);
+                bezierVertex(3, -68, 2, -76, -3, -75);
+                bezierVertex(-5, -70, -1, -74, 0, -65);
+                endShape();
+
+                // Shading
+                fill(0, 40);
+                beginShape();
+                vertex(0, -35);
+                bezierVertex(1, -30, 14, -27, 24, -20);
+                bezierVertex(39, -11, 48, 15, 28, 39);
+                bezierVertex(9, 54, -24, 50, -38, 31);
+                bezierVertex(-19, 45, 15, 50, 29, 16);
+                bezierVertex(42, -19, 4, -17, 0, -35);
+                endShape();
+
+                // Eyes
+                fill(30, 120, 220);
+                ellipse(7, 22, 6, 6); // Right
+                ellipse(-20, 26, 6, 6); // Left
+
+                // Light in eyes
+                fill(255, 150);
+                ellipse(6.5, 21.5, 3, 3); // Right
+                ellipse(-19.5, 25.5, 3, 3); // Left
+
+            } break;
+            // Seedling stage
+            case 2: {
+
+                noStroke();
+
+                // Main body
+                fill(0, 170, 255);
+                beginShape();
+                vertex(38, -94);
+                bezierVertex(39, -93, 48, -97, 43, -79);
+                bezierVertex(40, -74, 35, -71, 25, -63);
+                bezierVertex(5, -48, -14, -22, -13, 15);
+                bezierVertex(5, 15, 14, 26, 16, 34);
+                bezierVertex(19, 49, 14, 60, 5, 67);
+                bezierVertex(-5, 75, -22, 70, -26, 67);
+                bezierVertex(-36, 61, -38, 50, -36, 41);
+                bezierVertex(-35, 31, -28, 19, -18, 15);
+                bezierVertex(-31, -11, -28, -47, 29, -73);
+                bezierVertex(37, -76, 38, -78, 39, -81);
+                bezierVertex(41, -88, 31, -86, 38, -94);
+                endShape();
+
+                // Drops
+                beginShape();
+                vertex(28, -77);
+                bezierVertex(32, -81, 29, -92, 21, -89);
+                bezierVertex(19, -79, 27, -90, 28, -77);
+                endShape();
+
+                beginShape();
+                vertex(-6, 13);
+                bezierVertex(3, -1, 10, 7, 6, 12);
+                bezierVertex(4, 15, 1, 7, -6, 13);
+                endShape();
+
+                beginShape();
+                vertex(-25, 14);
+                bezierVertex(-22, -1, -33, 0, -33, 4);
+                bezierVertex(-31, 8, -27, 7, -25, 14);
+                endShape();
+
+                // Leaf
+                fill(0, 100, 255);
+                beginShape();
+                vertex(37, -72);
+                bezierVertex(1, -47, -14, -26, -13, 12);
+                bezierVertex(1, -8, 10, 14, 26, -18);
+                bezierVertex(34, -43, 20, -49, 37, -72);
+                endShape();
+
+                fill(0, 130, 255);
+                beginShape();
+                vertex(-7, 5);
+                bezierVertex(-11, -8, -10, -26, 8, -47);
+                bezierVertex(19, -54, 28, -50, 28, -39);
+                bezierVertex(28, -30, 31, -24, 20, -8);
+                bezierVertex(3, 8, 13, -3, -7, 5);
+                endShape();
+
+                // Shading
+                fill(0, 40);
+                beginShape();
+                vertex(-13, 15);
+                bezierVertex(1, 14, 10, 22, 14, 29);
+                bezierVertex(21, 48, 14, 65, -1, 70);
+                bezierVertex(-17, 72, -19, 70, -30, 65);
+                bezierVertex(-7, 70, 4, 61, 8, 53);
+                bezierVertex(13, 40, 10, 20, -13, 15);
+                endShape();
+
+                // Eyes
+                fill(30, 120, 220);
+                ellipse(-6, 50, 6, 6); // Right
+                ellipse(-23, 54, 6, 6); // Left
+
+                // Light in eyes
+                fill(255, 150);
+                ellipse(-7, 49.5, 3, 3); // Right
+                ellipse(-23.5, 53.5, 3, 3); // Left
+
+                // Left foot
+                pushMatrix();
+                translate(-27, 74);
+
+                // Lighter part
+                fill(0, 170, 255);
+                ellipse(0, 0, 18, 9);
+
+                // Shading
+                fill(0, 150, 230);
+                ellipse(0, 1, 16, 6);
+
+                popMatrix();
+
+                // Right foot
+                pushMatrix();
+                translate(7, 67);
+                rotate(-30);
+
+                // Lighter part
+                fill(0, 170, 255);
+                ellipse(0, 0, 22, 12);
+
+                // Shading
+                fill(0, 150, 230);
+                ellipse(-2, 1, 17, 8);
+
+                popMatrix();
+
+            } break;
+            // Sapling stage
+            case 3: {
+
+                noStroke();
+
+                // Belly and back fin
+                fill(0, 130, 255);
+                beginShape();
+                vertex(-42, 9);
+                bezierVertex(-20, -13, 5, -16, 21, -12);
+                bezierVertex(38, -6, 56, 8, 57, 33);
+                bezierVertex(54, 40, 56, 45, 57, 51);
+                bezierVertex(59, 56, 57, 56, 52, 53);
+                bezierVertex(46, 49, 43, 36, 45, 24);
+                bezierVertex(46, 35, 43, 0, 19, -3);
+                bezierVertex(5, -8, -11, -4, -42, 9);
+                endShape();
+
+                // Back fin
+                beginShape();
+                vertex(-24, -37);
+                bezierVertex(-20, -52, -26, -53, -1, -64);
+                bezierVertex(-13, -55, -7, -53, -13, -43);
+                bezierVertex(-15, -40, -17, -38, -12, -37);
+                endShape();
+
+                // Main body
+                fill(0, 170, 255);
+                beginShape();
+                vertex(45, 24);
+                bezierVertex(43, 6, 32, -19, -2, -10);
+                bezierVertex(-51, 6, -31, 8, -54, 14);
+                bezierVertex(-61, 16, -60, 17, -69, 21);
+                bezierVertex(-74, 22, -74, 15, -63, 6);
+                bezierVertex(-66, -7, -56, -22, -31, -36);
+                bezierVertex(-24, -47, -22, -60, -1, -64);
+                bezierVertex(-17, -58, -22, -49, -24, -37);
+                bezierVertex(-4, -38, 10, -39, 34, -22);
+                bezierVertex(50, -8, 55, 5, 57, 23);
+                bezierVertex(62, 38, 49, 35, 44, 54);
+                bezierVertex(41, 56, 40, 56, 37, 45);
+                bezierVertex(37, 35, 37, 32, 44, 25);
+                endShape();
+
+                // Drops
+                beginShape();
+                vertex(30, 39);
+                bezierVertex(26, 19, 5, 14, 5, 23);
+                bezierVertex(12, 34, 19, 19, 30, 39);
+                endShape();
+
+                beginShape();
+                vertex(69, 48);
+                bezierVertex(61, 19, 88, 12, 86, 23);
+                bezierVertex(83, 34, 73, 18, 69, 48);
+                endShape();
+
+                beginShape();
+                vertex(63, 30);
+                bezierVertex(59, 15, 73, 12, 73, 16);
+                bezierVertex(72, 22, 64, 15, 63, 30);
+                endShape();
+
+                // Fin
+                stroke(0, 130, 255);
+                strokeWeight(1);
+                beginShape();
+                vertex(-27, -9);
+                bezierVertex(-28, -9, -21, 5, -15, 4);
+                bezierVertex(-10, 4, -4, -8, -4, -15);
+                endShape();
+
+                noStroke();
+
+                // Eye
+                fill(30, 120, 220);
+                ellipse(-53, -3, 6, 6);
+
+                // Light in eye
+                fill(255, 150);
+                ellipse(-54, -3, 3, 3);
+
+            } break;
+            // Tree stage
+            case 4: {
+
+                noStroke();
+
+                // Back fin
+                fill(0, 130, 255);
+                beginShape();
+                vertex(-45, -30);
+                bezierVertex(-60, -34, -69, -15, -70, -7);
+                bezierVertex(-62, -13, -65, -5, -54, -13);
+                bezierVertex(-47, -20, -47, -18, -45, -15);
+                endShape();
+
+                // Main body
+                fill(0, 170, 255);
+                beginShape();
+                vertex(-3, -41);
+                bezierVertex(8, -49, 12, -56, 9, -59);
+                bezierVertex(8, -65, -5, -49, -12, -51);
+                bezierVertex(-23, -52, -32, -47, -44, -39);
+                bezierVertex(-51, -32, -65, -30, -70, -7);
+                bezierVertex(-56, -32, -50, -30, -48, -26);
+                bezierVertex(-42, -13, -53, -13, -49, 7);
+                bezierVertex(-47, 18, -28, 51, -2, 54);
+                bezierVertex(28, 60, 52, 36, 60, 6);
+                bezierVertex(70, 0, 78, -10, 83, -23);
+                bezierVertex(85, -31, 78, -26, 78, -26);
+                bezierVertex(68, -20, 65, -23, 58, -11);
+                bezierVertex(59, -23, 54, -23, 52, -32);
+                bezierVertex(52, -34, 50, -39, 47, -32);
+                bezierVertex(41, -17, 43, -13, 46, 3);
+                bezierVertex(27, 33, 16, 30, 6, 23);
+                bezierVertex(-4, 14, -11, -5, -7, -16);
+                bezierVertex(-4, -26, 0, -31, -3, -41);
+                endShape();
+
+                // Drops
+                beginShape();
+                vertex(-36, -48);
+                bezierVertex(-43, -57, -50, -57, -50, -54);
+                bezierVertex(-50, -50, -44, -53, -36, -48);
+                endShape();
+
+                beginShape();
+                vertex(-35, -51);
+                bezierVertex(-39, -57, -38, -68, -35, -65);
+                bezierVertex(-32, -62, -38, -61, -35, -51);
+                endShape();
+
+                beginShape();
+                vertex(-32, -51);
+                bezierVertex(-34, -57, -25, -62, -24, -57);
+                bezierVertex(-27, -51, -31, -59, -32, -51);
+                endShape();
+
+                // Eye
+                fill(30, 120, 220);
+                ellipse(-19, -43, 6, 6);
+
+                // Light in eye
+                fill(255, 150);
+                ellipse(-19, -44, 3, 3);
+
+                // Belly
+                noStroke();
+                fill(0, 130, 255);
+                beginShape();
+                vertex(-3, -41);
+                bezierVertex(3, -28, -16, -15, -10, 5);
+                bezierVertex(-4, 34, 12, 37, 23, 31);
+                bezierVertex(35, 24, 38, 21, 50, 5);
+                bezierVertex(53, 0, 59, -6, 56, 17);
+                bezierVertex(48, 40, 30, 50, 18, 54);
+                bezierVertex(-6, 58, -16, 50, -21, 46);
+                bezierVertex(-30, 29, -29, 8, -23, -7);
+                bezierVertex(-19, -17, -16, -16, -3, -41);
+                endShape();
+
+                // Plow hole
+                bezier(-36, -44, -33, -42, -30, -46, -30, -47);
+
+                // Fin
+                fill(0, 170, 255);
+                stroke(0, 130, 255);
+                strokeWeight(1);
+                beginShape();
+                vertex(-35, 8);
+                bezierVertex(-28, 5, -27, 13, -18, 7);
+                bezierVertex(-14, 4, -21, -8, -21, -17);
+                endShape();
+
+                noFill();
+                bezier(9, -58, 8, -53, -1, -47, -6, -45);
+
+                // Lines
+                noFill();
+                stroke(0, 210, 210);
+                strokeWeight(1);
+                beginShape();
+                vertex(-10, -50);
+                bezierVertex(-15, -47, -1, -37, -21, -29);
+                bezierVertex(-31, -26, -37, -21, -37, -16);
+                bezierVertex(-37, -11, -32, -8, -27, -18);
+                endShape();
+
+                beginShape();
+                vertex(-20, -38);
+                bezierVertex(-27, -37, -27, -51, -17, -47);
+                bezierVertex(-12, -45, -10, -39, -17, -34);
+                bezierVertex(-25, -28, -33, -30, -38, -42);
+                endShape();
+
+                beginShape();
+                vertex(-23, -31);
+                bezierVertex(-33, -27, -40, -22, -39, -14);
+                bezierVertex(-40, -6, -44, -9, -49, -2);
+                endShape();
+
+                beginShape();
+                vertex(-36, -12);
+                bezierVertex(-33, -2, -40, -3, -39, 10);
+                bezierVertex(-36, 23, -24, 21, -32, 12);
+                endShape();
+
+                bezier(-13, -25, -22, -18, -27, -28, -32, -17);
+
+                beginShape();
+                vertex(-27, 32);
+                bezierVertex(-38, 26, -44, 18, -44, 7);
+                bezierVertex(-44, 1, -46, -4, -49, 4);
+                endShape();
+
+                bezier(-20, -22, -27, -14, -28, -6, -21, 0);
+
+                bezier(-25, -6, -23, 11, -43, 4, -29, -8);
+
+                bezier(-17, -34, -23, -32, -32, -37, -30, -43);
+
+                beginShape();
+                vertex(-43, -39);
+                bezierVertex(-29, -32, -40, -15, -45, -27);
+                bezierVertex(-48, -32, -44, -42, -41, -29);
+                endShape();
+
+                bezier(-6, 6, -2, 23, 4, 32, 16, 28);
+
+                bezier(45, 6, 56, 1, 47, -11, 57, -16);
+
+                bezier(51, -6, 44, -9, 50, -20, 45, -22);
+
+                bezier(48, -15, 58, -21, 43, -29, 51, -32);
+
+                bezier(62, 4, 64, -2, 49, -3, 61, -8);
+
+                bezier(62, -16, 65, -13, 65, -3, 60, -4);
+
+                bezier(64, -12, 65, -13, 71, -3, 79, -19);
+
+            } break;
+            // Ultimate stage
+            case 5: {
+
+                noStroke();
+
+                // Back fin
+                fill(0, 130, 255);
+                beginShape();
+                vertex(-45, -30);
+                bezierVertex(-60, -34, -69, -15, -77, 8);
+                bezierVertex(-70, -2, -65, 0, -60, -5);
+                bezierVertex(-47, -20, -47, -18, -45, -15);
+                endShape();
+
+                // Tail fins
+                beginShape();
+                vertex(32, -17);
+                bezierVertex(36, -5, 42, -15, 49, 3);
+                vertex(61, 4);
+                bezierVertex(75, 2, 71, 10, 86, 8);
+                bezierVertex(79, 15, 54, 15, 47, 19);
+                bezierVertex(53, 15, 27, 4, 32, -17);
+                endShape();
+
+                // Spikes
+                bezier(-17, -50, -32, -56, -22, -50, -25, -48);
+                bezier(-40, -41, -62, -45, -43, -40, -47, -36);
+                bezier(-48, 5, -53, -7, -71, 6, -45, -12);
+                bezier(-40, 21, -47, 15, -54, 31, -48, 9);
+                bezier(-31, 35, -37, 33, -38, 44, -38, 28);
+
+                // Main body
+                fill(0, 170, 255);
+                beginShape();
+                vertex(-3, -41);
+                bezierVertex(8, -42, 18, -47, 14, -50);
+                bezierVertex(8, -47, 5, -46, -6, -45);
+                bezierVertex(-3, -49, 11, -56, 9, -59);
+                bezierVertex(8, -65, -5, -49, -12, -51);
+                bezierVertex(-23, -52, -32, -47, -44, -39);
+                bezierVertex(-51, -32, -65, -30, -77, 8);
+                bezierVertex(-56, -32, -50, -30, -48, -26);
+                bezierVertex(-42, -13, -53, -13, -49, 7);
+                bezierVertex(-47, 18, -28, 51, -2, 54);
+                bezierVertex(28, 60, 52, 36, 55, 25);
+                bezierVertex(61, 16, 74, 20, 86, 8);
+                bezierVertex(66, 19, 57, 10, 60, 6);
+                bezierVertex(70, 0, 78, -10, 83, -23);
+                bezierVertex(85, -31, 78, -26, 78, -26);
+                bezierVertex(68, -20, 65, -23, 58, -11);
+                bezierVertex(59, -23, 54, -23, 52, -32);
+                bezierVertex(52, -34, 50, -39, 47, -32);
+                bezierVertex(41, -17, 43, -13, 46, 3);
+                bezierVertex(41, 8, 32, 3, 32, -18);
+                bezierVertex(28, -8, 36, 8, 34, 15);
+                bezierVertex(27, 27, 16, 30, 6, 23);
+                bezierVertex(-4, 14, -11, -5, -7, -16);
+                bezierVertex(-4, -26, 0, -31, -3, -41);
+                endShape();
+
+                // Drops
+                beginShape();
+                vertex(-36, -48);
+                bezierVertex(-43, -57, -50, -57, -50, -54);
+                bezierVertex(-50, -50, -44, -53, -36, -48);
+                endShape();
+
+                beginShape();
+                vertex(-35, -51);
+                bezierVertex(-39, -57, -38, -68, -35, -65);
+                bezierVertex(-32, -62, -38, -61, -35, -51);
+                endShape();
+
+                beginShape();
+                vertex(-32, -51);
+                bezierVertex(-34, -57, -25, -62, -24, -57);
+                bezierVertex(-27, -51, -31, -59, -32, -51);
+                endShape();
+
+                // Eye
+                fill(30, 120, 220);
+                ellipse(-19, -43, 6, 6);
+
+                // Light in eye
+                fill(255, 150);
+                ellipse(-19, -44, 3, 3);
+
+                // Belly
+                noStroke();
+                fill(0, 130, 255);
+                beginShape();
+                vertex(-3, -41);
+                bezierVertex(3, -28, -16, -15, -10, 5);
+                bezierVertex(-4, 34, 12, 37, 23, 31);
+                bezierVertex(35, 24, 38, 21, 50, 5);
+                bezierVertex(53, 0, 59, -6, 56, 17);
+                bezierVertex(48, 40, 30, 50, 18, 54);
+                bezierVertex(-6, 58, -16, 50, -21, 46);
+                bezierVertex(-30, 29, -29, 8, -23, -7);
+                bezierVertex(-19, -17, -16, -16, -3, -41);
+                endShape();
+
+                // Plow hole
+                bezier(-36, -44, -33, -42, -30, -46, -30, -47);
+
+                // Fin
+                fill(0, 170, 255);
+                stroke(0, 130, 255);
+                strokeWeight(1);
+                beginShape();
+                vertex(-35, 8);
+                bezierVertex(-28, 5, -27, 13, -18, 7);
+                bezierVertex(-14, 4, -21, -8, -21, -17);
+                endShape();
+
+                // Lines
+                noFill();
+                stroke(0, 220, 235);
+                strokeWeight(1);
+                beginShape();
+                vertex(-10, -50);
+                bezierVertex(-15, -47, -1, -37, -21, -29);
+                bezierVertex(-31, -26, -37, -21, -37, -16);
+                bezierVertex(-37, -11, -32, -8, -27, -18);
+                endShape();
+
+                beginShape();
+                vertex(-20, -38);
+                bezierVertex(-27, -37, -27, -51, -17, -47);
+                bezierVertex(-12, -45, -10, -39, -17, -34);
+                bezierVertex(-25, -28, -33, -30, -38, -42);
+                endShape();
+
+                beginShape();
+                vertex(-23, -31);
+                bezierVertex(-33, -27, -40, -22, -39, -14);
+                bezierVertex(-40, -6, -44, -9, -49, -2);
+                endShape();
+
+                beginShape();
+                vertex(-36, -12);
+                bezierVertex(-33, -2, -40, -3, -39, 10);
+                bezierVertex(-36, 23, -24, 21, -32, 12);
+                endShape();
+
+                bezier(-13, -25, -22, -18, -27, -28, -32, -17);
+
+                beginShape();
+                vertex(-27, 32);
+                bezierVertex(-38, 26, -44, 18, -44, 7);
+                bezierVertex(-44, 1, -46, -4, -49, 4);
+                endShape();
+
+                bezier(-20, -22, -27, -14, -28, -6, -21, 0);
+
+                bezier(-25, -6, -23, 11, -43, 4, -29, -8);
+
+                bezier(-17, -34, -23, -32, -32, -37, -30, -43);
+
+                beginShape();
+                vertex(-43, -39);
+                bezierVertex(-29, -32, -40, -15, -45, -27);
+                bezierVertex(-48, -32, -44, -42, -41, -29);
+                endShape();
+
+                bezier(-6, 6, -2, 23, 4, 32, 16, 28);
+
+                bezier(45, 6, 56, 1, 47, -11, 57, -16);
+
+                bezier(51, -6, 44, -9, 50, -20, 45, -22);
+
+                bezier(48, -15, 58, -21, 43, -29, 51, -32);
+
+                bezier(62, 4, 64, -2, 49, -3, 61, -8);
+
+                bezier(62, -16, 65, -13, 65, -3, 60, -4);
+
+                bezier(64, -12, 65, -13, 71, -3, 79, -19);
+
+                // Line glows
+                noFill();
+                stroke(0, 220, 235, 100);
+                strokeWeight(3);
+                beginShape();
+                vertex(-10, -50);
+                bezierVertex(-15, -47, -1, -37, -21, -29);
+                bezierVertex(-31, -26, -37, -21, -37, -16);
+                bezierVertex(-37, -11, -32, -8, -27, -18);
+                endShape();
+
+                beginShape();
+                vertex(-20, -38);
+                bezierVertex(-27, -37, -27, -51, -17, -47);
+                bezierVertex(-12, -45, -10, -39, -17, -34);
+                bezierVertex(-25, -28, -33, -30, -38, -42);
+                endShape();
+
+                beginShape();
+                vertex(-23, -31);
+                bezierVertex(-33, -27, -40, -22, -39, -14);
+                bezierVertex(-40, -6, -44, -9, -49, -2);
+                endShape();
+
+                beginShape();
+                vertex(-36, -12);
+                bezierVertex(-33, -2, -40, -3, -39, 10);
+                bezierVertex(-36, 23, -24, 21, -32, 12);
+                endShape();
+
+                bezier(-13, -25, -22, -18, -27, -28, -32, -17);
+
+                beginShape();
+                vertex(-27, 32);
+                bezierVertex(-38, 26, -44, 18, -44, 7);
+                bezierVertex(-44, 1, -46, -4, -49, 4);
+                endShape();
+
+                bezier(-20, -22, -27, -14, -28, -6, -21, 0);
+
+                bezier(-25, -6, -23, 11, -43, 4, -29, -8);
+
+                bezier(-17, -34, -23, -32, -32, -37, -30, -43);
+
+                beginShape();
+                vertex(-43, -39);
+                bezierVertex(-29, -32, -40, -15, -45, -27);
+                bezierVertex(-48, -32, -44, -42, -41, -29);
+                endShape();
+
+                bezier(-6, 6, -2, 23, 4, 32, 16, 28);
+
+                bezier(45, 6, 56, 1, 47, -11, 57, -16);
+
+                bezier(51, -6, 44, -9, 50, -20, 45, -22);
+
+                bezier(48, -15, 58, -21, 43, -29, 51, -32);
+
+                bezier(62, 4, 64, -2, 49, -3, 61, -8);
+
+                bezier(62, -16, 65, -13, 65, -3, 60, -4);
+
+                bezier(64, -12, 65, -13, 71, -3, 79, -19);
+
+            } break;
+        }
+
+        popMatrix();
+    }
+    var Pineapple = {//We store all the art in an single unique object
+        //Next Define an array that stores our drawing:
+        Drawing: [
+            "-----B------",//Each String is 12 digits long
+            "---BBDB-B---",//There are 20 strings
+            "--BDBDBBDB--",//The image will be 12x20 pixels!
+            "-BBDCDBDDBB-",//If you look closely, you might be able to see a pineapple
+            "BCBBCDCDBBCB",//I typically use numbers, but you can use ANY digit 
+            "BCCBDCCDBCCB",/**NEVER USE EMOJIS, HOWEVER**/
+            "-BCCDCCDCCB-",//ᶕ <-- Weird
+            "--BCCCCCCB--",//If you backspace a weird character and it pops up into a diamond
+            "--BACCCCAB--",//Shaped Question mark, IT WILL NOT WORK!!
+            "-BEAEAEAEAB-",
+            "-BAEAAAEAAB-",//Yoou can use " and ' even, just put them as \"
+            "BAEAEAEAEAEB",//I highly reccommend not to do this unless you are 
+            "BEAAAEAAAEAB",//desparate for characters.
+            "BAEAEAEAEAEB",
+            "BAAEAAAEAAAB",
+            "BAEAEAEAEAEB",
+            "BEAAAEAAAEAB",
+            "-BEAEAEAEAB-",
+            "--BEAAAEAB--",
+            "---BBBBBB---",
+        ],
+        Colors: {//Now let's define our pallete.
+            "A": color(255, 255, 0),//This is the color of all the "A"s in the bitmap above.
+            "B": color(0, 0, 0),//Same, for "B"s
+            "C": color(75, 128, 0),//I use the color() function for this, it's very useful!
+            "D": color(182, 245, 142),//Make sure to put a comma after every color!
+            "E": color(255, 174, 0),
+        },
+        Draw: function (x, y, size) {
+            noStroke();//You want no stroke on your pineapple XD
+            //Nested Loops!
+            //I ALWAYS use for loops for this job, they are much more useful and keep the code at a nice length.
+            //Keep in mind that you can use this code!
+            for (var i = 0; i < this.Drawing.length; i++) {
+                //i is our y value
+                for (var e = 0; e < this.Drawing[i].length; e++) {
+                    //e is our x
+                    //I use this.Drawing instead of Pineapple.Drawing so I don't have to change it when I make a new sprite.
+                    if (this.Drawing[i][e] !== "-") {
+                        //The line above helps to reduce lag, which is helpful in games like ours! This is acheived by NOT drawing the background lines!
+                        /**IMPORTANT:
+                        Usually Character Notation Doesn't Work in KA, So you COULD... theoretically comment out the next line if there were issues.**/
+                        //var Character = Pineapple.Drawing[i][e];
+                        //Then set the fill color to
+                        fill(this.Colors[this.Drawing[i][e]]);
+                        //Draw the pixel!
+                        rect(e * size + x, i * size + y, size, size);
+                    }
+                }
+            }
+        }
+    };
+    var Load = false;
+    var StickCoords = function (LA, RA, LL, RL, L, B, HW, x, y) {
+        //Head
+        fill(0, 0, 0);
+        noStroke();
+        ellipse(x, y, HW, HW);
+        //Back
+        stroke(0, 0, 0);
+        strokeWeight(5);
+        line(x, y, x - B.x, y + B.y);
+        //Left Arm
+        pushMatrix();
+        translate(x, y + (HW / 2));
+        rotate(Flip(LA.e));
+        line(0, 0, L.ua, 0);
+        translate(L.ua, 0);
+        rotate(Flip(LA.h) - Flip(LA.e));
+        line(0, 0, L.la, 0);
+        popMatrix();
+        //Right Arm
+        pushMatrix();
+        translate(x, y + (HW / 2));
+        rotate(Flip(RA.e));
+        line(0, 0, L.ua, 0);
+        translate(L.ua, 0);
+        rotate(Flip(RA.h) - Flip(RA.e));
+        line(0, 0, L.la, 0);
+        popMatrix();
+        //Left Leg
+        pushMatrix();
+        translate(x - B.x, y + B.y);
+        rotate(Flip(LL.e));
+        line(0, 0, L.ul, 0);
+        translate(L.ul, 0);
+        rotate(Flip(LL.h) - Flip(LL.e));
+        line(0, 0, L.ll, 0);
+        popMatrix();
+        //Right Leg
+        pushMatrix();
+        translate(x - B.x, y + B.y);
+        rotate(Flip(RL.e));
+        line(0, 0, L.ul, 0);
+        translate(L.ul, 0);
+        rotate(Flip(RL.h) - Flip(RL.e));
+        line(0, 0, L.ll, 0);
+        popMatrix();
+    };
+    var Graphics = {
+        Delfin0: function () {
+            background(0, 0, 0, 0);
+            Delfin({ x: 100, y: 100, size: [1, 1], stage: 1 });
+            return snip(0, 0, 200, 200);
+        },
+        Delfin1: function () {
+            background(0, 0, 0, 0);
+            Delfin({ x: 100, y: 100, size: [1, 1], stage: 2 });
+            return snip(0, 0, 200, 200);
+        },
+        Delfin2: function () {
+            background(0, 0, 0, 0);
+            Delfin({ x: 100, y: 100, size: [1, 1], stage: 3 });
+            return snip(0, 0, 200, 200);
+        },
+        Delfin3: function () {
+            background(0, 0, 0, 0);
+            Delfin({ x: 100, y: 100, size: [1, 1], stage: 4 });
+            return snip(0, 0, 200, 200);
+        },
+        Delfin4: function () {
+            background(0, 0, 0, 0);
+            Delfin({ x: 100, y: 100, size: [1, 1], stage: 5 });
+            return snip(0, 0, 200, 200);
+        },
+        FishingHook: function () {
+            background(0, 0, 0, 0);
+            stroke(64, 64, 64);
+            strokeWeight(3);
+            noFill();
+            ellipse(200, 205, 10, 10);
+            line(200, 210, 200, 230);
+            arc(190, 232, 20, 20, 0, 180);
+            line(179, 232, 179, 225);
+            line(183, 231, 179, 225);
+            line(176, 231, 179, 225);
+            stroke(255, 0, 0);
+            strokeWeight(1);
+            return snip(173, 196, 35, 49);
+        },
+        Stickman: function () {
+            background(0, 0, 0, 0);
+            StickCoords({ e: 126, h: 104 }, { e: 73, h: 40 }, { e: 110, h: 110 }, { e: 66, h: 82 }, { ua: 15, la: 20, ul: 20, ll: 20 }, { x: -3, y: 55 }, 25, 50, 15);
+            return snip(0, 0, 100, 120);
+        },
+        Pineapple: function () {
+            background(0, 0, 0, 0);
+            Pineapple.Draw(20, 0, 5);
+            return snip(0, 0, 100, 100);
+        },
+    };
+    var Current = 0;
+    var Waves = function (y, waveX, br, bg, bb) {
+        waveX = waveX % 40;
+        waveX -= 80;
+        fill(176, 248, 255);
+        noStroke();
+        for (var i = 0; i < 18; i++) {
+            fill(176, 248, 255);
+            ellipse(((i * 40) + 10) + waveX, y, 20, 20);
+            fill(br, bg, bb);
+            ellipse(((i * 40) + 20) + waveX, y, 20, 20);
+            ellipse(((i * 40) + 29) + waveX, y, 20, 20);
+            rect(((i * 40) + 20) + waveX, y, 10, 10);
+        }
+    };
+    var LoadGraphics = function () {
+        var GraphicsInArray = Object.keys(Graphics);
+        Graphics[GraphicsInArray[Current]] = Graphics[GraphicsInArray[Current]]();
+        Current++;
+        if (Current >= GraphicsInArray.length) {
+            Load = true;
+        }
+        pushMatrix();
+        scale(get.width / 400, get.height / 400);
+        background(255, 255, 255);
+        Delfin({ x: 200, y: 150, size: [1, 1], stage: 5 });
+        //image(getImage("avatars/orange-juice-squid"), 150, 100, 100, 100);
+        fill(0, 179, 255);
+        noStroke();
+        rect(100, 250, (200 / GraphicsInArray.length) * Current, 20, 5);
+        fill(0, 0, 0);
+        textAlign(CENTER, CENTER);
+        textSize(15);
+        text("Loading Graphics", 200, 223);
+        popMatrix();
+    };
+    /******************RENDERING FUNCTIONS*******************/
+    var DrawBackground = function () {
+        if (Game.depth < 500) {
+            background(200, 255, 255);
+            Waves(420 - Game.depth, get.frameCount, 200, 255, 255);
+            fill(176, 248, 255);
+            noStroke();
+            rect(0, 426 - Game.depth, 600, 800);
+            fill(51, 26, 0);
+            noStroke();
+            rect(0, 400 - Game.depth, 150, 1000);
+            rect(450, 400 - Game.depth, 150, 1000);
+            stroke(0, 255, 0);
+            strokeWeight(10);
+            line(0, 400 - Game.depth, 150, 400 - Game.depth);
+            line(450, 400 - Game.depth, 600, 400 - Game.depth);
+        } else {
+            background(176, 248, 255);
+            fill(51, 26, 0);
+            noStroke();
+            rect(0, 0, 150, 600);
+            rect(450, 0, 150, 600);
+        }
+        fill(255, 255, 255);
+        textAlign(CENTER, CENTER);
+        textSize(15);
+        //floor(Game.depth/400)
+        //(((floor(Game.depth/400))*400)+200)
+        var textVar = floor(Game.depth / 400);
+        //println(200+(floor(Game.depth/400)*400)-Game.depth);
+        if (floor(Game.depth / 400) > 0) {
+            text(floor(Game.depth / 400), 460, (((floor(Game.depth / 400)) * 400) + 400) - Game.depth);
+        }
+        text(floor(Game.depth / 400) + 1, 460, (((floor(Game.depth / 400) + 1) * 400) + 400) - Game.depth);
+        text(floor(Game.depth / 400) - 1, 460, (((floor(Game.depth / 400) - 1) * 400) + 400) - Game.depth);
+    };
+    var RenderFishingHook = function (move) {
+        if (move) {
+            Game.fishingHookX = get.mouseX - 17;
+            if (Game.fishingHookX > 416) {
+                Game.fishingHookX = 416;
+            } else if (Game.fishingHookX < 150) {
+                Game.fishingHookX = 150;
+            }
+        }
+        image(Graphics.FishingHook, Game.fishingHookX, 400);
+        stroke(0, 0, 0);
+        strokeWeight(2);
+        line(Game.fishingHookX + 27, 403, 350, 250 - Game.depth);
+        stroke(64, 37, 3);
+        strokeWeight(10);
+        line(480, 340 - Game.depth, 350, 250 - Game.depth);
+        image(Graphics.Stickman, 448, 285 - Game.depth, 100, 120);
+    };
+    var RenderDelfin = function (arrayLocation, y) {
+        if (arrayLocation >= 0 && arrayLocation < Game.fishData.length) {
+            if (!Game.fishData[arrayLocation][4]) {
+                switch (Game.fishData[arrayLocation][0]) {
+                    case 0:
+                        //{
+                        if (Game.fishData[arrayLocation][2]) {
+                            image(Graphics.Delfin0, 150 + Game.fishData[arrayLocation][1], (arrayLocation * 400) + 400 + y - Game.depth, 100, 100);
+                            Game.fishData[arrayLocation][1] += Game.fishData[arrayLocation][3];
+                        } else {
+                            pushMatrix();
+                            translate(250 + Game.fishData[arrayLocation][1], (arrayLocation * 400) + 400 + y - Game.depth);
+                            scale(-1, 1);
+                            image(Graphics.Delfin0, 0, 0, 100, 100);
+                            popMatrix();
+                            Game.fishData[arrayLocation][1] -= Game.fishData[arrayLocation][3];
+                        }
+                        if (rectRect(Game.fishingHookX, 400, 35, 49, 150 + Game.fishData[arrayLocation][1] + 20, (arrayLocation * 400) + 600 - Game.depth + 10, 60, 70) && Game.currentScene === 2 && Game.fishCaughtInMotion) {
+                            Game.fishData[arrayLocation][4] = true;
+                            Game.fish.push(0);
+                            Game.fishTotal++;
+                        }
+                        break;
+                    //}
+                    case 1:
+                        //{
+                        if (Game.fishData[arrayLocation][2]) {
+                            image(Graphics.Delfin1, 150 + Game.fishData[arrayLocation][1], (arrayLocation * 400) + 400 + y - Game.depth, 100, 100);
+                            Game.fishData[arrayLocation][1] += Game.fishData[arrayLocation][3];
+                        } else {
+                            pushMatrix();
+                            translate(250 + Game.fishData[arrayLocation][1], (arrayLocation * 400) + 400 + y - Game.depth);
+                            scale(-1, 1);
+                            image(Graphics.Delfin1, 0, 0, 100, 100);
+                            popMatrix();
+                            Game.fishData[arrayLocation][1] -= Game.fishData[arrayLocation][3];
+                        }
+                        if (rectRect(Game.fishingHookX, 400, 35, 49, 150 + Game.fishData[arrayLocation][1] + 20, (arrayLocation * 400) + 600 - Game.depth, 60, 90) && Game.currentScene === 2 && Game.fishCaughtInMotion) {
+                            Game.fishData[arrayLocation][4] = true;
+                            Game.fish.push(1);
+                            Game.fishTotal++;
+                        }
+                        break;
+                    //}
+                    case 2:
+                        //{
+                        if (Game.fishData[arrayLocation][2]) {
+                            pushMatrix();
+                            translate(250 + Game.fishData[arrayLocation][1], (arrayLocation * 400) + 400 + y - Game.depth);
+                            scale(-1, 1);
+                            image(Graphics.Delfin2, 0, 0, 100, 100);
+                            popMatrix();
+                            Game.fishData[arrayLocation][1] += Game.fishData[arrayLocation][3];
+                        } else {
+                            image(Graphics.Delfin2, 150 + Game.fishData[arrayLocation][1], (arrayLocation * 400) + 400 + y - Game.depth, 100, 100);
+                            Game.fishData[arrayLocation][1] -= Game.fishData[arrayLocation][3];
+                        }
+                        if (rectRect(Game.fishingHookX, 400, 35, 49, 150 + Game.fishData[arrayLocation][1] + 10, (arrayLocation * 400) + 600 - Game.depth + 20, 80, 60) && Game.currentScene === 2 && Game.fishCaughtInMotion) {
+                            Game.fishData[arrayLocation][4] = true;
+                            Game.fish.push(2);
+                            Game.fishTotal++;
+                        }
+                        break;
+                    //}
+                    case 3:
+                        //{
+                        if (Game.fishData[arrayLocation][2]) {
+                            image(Graphics.Delfin3, 150 + Game.fishData[arrayLocation][1], (arrayLocation * 400) + 400 + y - Game.depth, 100, 100);
+                            Game.fishData[arrayLocation][1] += Game.fishData[arrayLocation][3];
+                        } else {
+                            pushMatrix();
+                            translate(250 + Game.fishData[arrayLocation][1], (arrayLocation * 400) + 400 + y - Game.depth);
+                            scale(-1, 1);
+                            image(Graphics.Delfin3, 0, 0, 100, 100);
+                            popMatrix();
+                            Game.fishData[arrayLocation][1] -= Game.fishData[arrayLocation][3];
+                        }
+                        if (rectRect(Game.fishingHookX, 400, 35, 49, 150 + Game.fishData[arrayLocation][1] + 10, (arrayLocation * 400) + 600 - Game.depth + 20, 80, 60) && Game.currentScene === 2 && Game.fishCaughtInMotion) {
+                            Game.fishData[arrayLocation][4] = true;
+                            Game.fish.push(3);
+                            Game.fishTotal++;
+                        }
+                        break;
+                    //}
+                    case 4:
+                        //{
+                        if (Game.fishData[arrayLocation][2]) {
+                            image(Graphics.Delfin4, 150 + Game.fishData[arrayLocation][1], (arrayLocation * 400) + 400 + y - Game.depth, 100, 100);
+                            Game.fishData[arrayLocation][1] += Game.fishData[arrayLocation][3];
+                        } else {
+                            pushMatrix();
+                            translate(250 + Game.fishData[arrayLocation][1], (arrayLocation * 400) + 400 + y - Game.depth);
+                            scale(-1, 1);
+                            image(Graphics.Delfin4, 0, 0, 100, 100);
+                            popMatrix();
+                            Game.fishData[arrayLocation][1] -= Game.fishData[arrayLocation][3];
+                        }
+                        if (rectRect(Game.fishingHookX, 400, 35, 49, 150 + Game.fishData[arrayLocation][1] + 10, (arrayLocation * 400) + 600 - Game.depth + 20, 80, 60) && Game.currentScene === 2 && Game.fishCaughtInMotion) {
+                            Game.fishData[arrayLocation][4] = true;
+                            Game.fish.push(4);
+                            Game.fishTotal++;
+                        }
+                        break;
+                    //}
+                    case 5:
+                        //{
+                        if (Game.fishData[arrayLocation][2]) {
+                            image(Graphics.Pineapple, 150 + Game.fishData[arrayLocation][1], (arrayLocation * 400) + 400 + y - Game.depth, 100, 100);
+                            Game.fishData[arrayLocation][1] += Game.fishData[arrayLocation][3];
+                        } else {
+                            pushMatrix();
+                            translate(250 + Game.fishData[arrayLocation][1], (arrayLocation * 400) + 400 + y - Game.depth);
+                            scale(-1, 1);
+                            image(Graphics.Pineapple, 0, 0, 100, 100);
+                            popMatrix();
+                            Game.fishData[arrayLocation][1] -= Game.fishData[arrayLocation][3];
+                        }
+                        if (rectRect(Game.fishingHookX, 400, 35, 49, 150 + Game.fishData[arrayLocation][1] + 20, (arrayLocation * 400) + 600 - Game.depth, 60, 100) && Game.currentScene === 2 && Game.fishCaughtInMotion) {
+                            Game.fishData[arrayLocation][4] = true;
+                            Game.fish.push(5);
+                            Game.fishTotal++;
+                        }
+                        break;
+                    //}
+                }
+                if (Game.fishData[arrayLocation][1] >= 200) {
+                    Game.fishData[arrayLocation][1] = 200;
+                    Game.fishData[arrayLocation][2] = false;
+                }
+                if (Game.fishData[arrayLocation][1] <= 0) {
+                    Game.fishData[arrayLocation][1] = 0;
+                    Game.fishData[arrayLocation][2] = true;
+                }
+            }
+        }
+    };
+    /**************GAME RESET AND LOAD FISH****************/
+    var Reset = function () {
+        Game.moneyGiven = false;
+        Game.depth = 0;
+        Game.fish = [];
+        Game.currentFishArrayPos = 0;
+        Game.amount = [0, 0, 0, 0, 0, 0];
+        Game.loadingFish = true;
+        Game.fishLoadNum = 0;
+        Game.fishData = [];
+        Game.fishTotal = 0;
+        Game.fishingHookX = 300;
+        Game.currentFlooredArrayLocation = 0;
+        Game.fishCaughtInMotion = true;
+    };
+    var LoadFish = function () {
+        background(255, 255, 255);
+        pushMatrix();
+        scale(get.width / 400, get.height / 400);
+        background(255, 255, 255);
+        Delfin({ x: 200, y: 150, size: [1, 1], stage: 5 });
+        //image(getImage("avatars/orange-juice-squid"), 150, 100, 100, 100);
+        fill(0, 179, 255);
+        noStroke();
+        rect(100, 250, (200 / Game.depthUpgrade) * Game.fishLoadNum, 20, 5);
+        fill(0, 0, 0);
+        textAlign(CENTER, CENTER);
+        textSize(15);
+        text("Loading Fish Positions", 200, 223);
+        popMatrix();
+        if (Game.fishLoadNum >= Game.fishByDepth.length) {
+            fishDepthpercentageVar = Game.fishByDepth.length - 1;
+        } else {
+            fishDepthpercentageVar = Game.fishLoadNum;
+        }
+        var luckFactor = round(random(0, 100));
+        var Duck = [];
+        for (var j = 0; j < Game.fishByDepth[fishDepthpercentageVar][0]; j++) {
+            Duck.push(0);
+        }
+        for (var j = 0; j < Game.fishByDepth[fishDepthpercentageVar][1]; j++) {
+            Duck.push(1);
+        }
+        for (var j = 0; j < Game.fishByDepth[fishDepthpercentageVar][2]; j++) {
+            Duck.push(2);
+        }
+        for (var j = 0; j < Game.fishByDepth[fishDepthpercentageVar][3]; j++) {
+            Duck.push(3);
+        }
+        for (var j = 0; j < Game.fishByDepth[fishDepthpercentageVar][4]; j++) {
+            Duck.push(4);
+        }
+        for (var j = 0; j < Game.fishByDepth[fishDepthpercentageVar][5]; j++) {
+            Duck.push(5);
+        }
+        Game.fishLoadNum++;
+        if (Game.fishLoadNum >= Game.depthUpgrade) {
+            Game.loadingFish = false;
+        }
+        Game.fishData.push([Duck[luckFactor], random(0, 200), getTrueOrFalse(), round(random(2, 4)), false]);
+    };
+    /******************SCENE FUNCTIONS*********************/
+    var Menu = function () {
+        RenderFishingHook(false);
+        fill(0, 221, 255);
+        stroke(82, 255, 235);
+        strokeWeight(5);
+        rect(200, 250, 200, 100, 5);
+        rect(200, 400, 200, 100, 5);
+        fill(82, 255, 235);
+        textAlign(CENTER, CENTER);
+        textSize(45);
+        text("Play", 300, 300);
+        text("Save", 300, 450);
+        textSize(45);
+        fill(0, 0, 0);
+        text("Fishing For Delfin", 300, 100);
+        if (pointRect(get.mouseX, get.mouseY, 200, 250, 200, 100) && pressed) {
+            Game.currentScene = 1;
+            pressed = false;
+        }
+        if (pointRect(get.mouseX, get.mouseY, 200, 400, 200, 100) && pressed) {
+            document.getElementById('saveCodeInput').innerHTML = "SAVE CODE: "+Game.price[0] + "-" + Game.price[1] + "-" + Game.price[2] + "-" + Game.money + "-" + Game.depthUpgrade + "-" + Game.maxFish + "-" + Game.speed;
+            pressed = false;
+        }
+    };
+    var Lower = function () {
+        Game.currentFlooredArrayLocation = floor(Game.depth / 400);
+        if (Game.depth < Game.depthUpgrade * 400) {
+            Game.depth += ((Game.depthUpgrade - Game.currentFlooredArrayLocation) * 10);
+        } else {
+            Game.currentScene = 2;
+        }
+        RenderFishingHook(true);
+        RenderDelfin(Game.currentFlooredArrayLocation - 1, 200);
+        RenderDelfin(Game.currentFlooredArrayLocation, 200);
+        RenderDelfin(Game.currentFlooredArrayLocation + 1, 200);
+    };
+    var Upwards = function () {
+        if (Game.depth < 0) {
+            Game.depth = 0;
+            Game.currentScene = 3;
+        } else {
+            Game.currentScene = 2;
+            if (Game.fishTotal >= Game.maxFish) {
+                Game.fishCaughtInMotion = false;
+            }
+            Game.depth -= Game.speed;
+
+        }
+        if (Game.fishCaughtInMotion === false) {
+            Game.depth -= ((Game.depth / 40) + 5);
+        }
+        RenderFishingHook(true);
+        Game.currentFlooredArrayLocation = floor(Game.depth / 400);
+        RenderDelfin(Game.currentFlooredArrayLocation - 1, 200);
+        RenderDelfin(Game.currentFlooredArrayLocation, 200);
+        RenderDelfin(Game.currentFlooredArrayLocation + 1, 200);
+        fill(0, 221, 255);
+        stroke(82, 255, 235);
+        strokeWeight(5);
+        rect(460, 450, 130, 80, 5);
+        fill(0, 0, 0);
+        textSize(20);
+        text("Reel in\nmanually", 525, 490);
+        if (pointRect(get.mouseX, get.mouseY, 460, 450, 130, 80) && pressed) {
+            Game.fishCaughtInMotion = false;
+        }
+    };
+    var FishDisplay = function () {
+        RenderFishingHook(false);
+        image(Graphics.Delfin0, 0, 0, 100, 100);
+        image(Graphics.Delfin1, 100, 0, 100, 100);
+        image(Graphics.Delfin2, 200, 0, 100, 100);
+        image(Graphics.Delfin3, 300, 0, 100, 100);
+        image(Graphics.Delfin4, 400, 0, 100, 100);
+        image(Graphics.Pineapple, 500, 0, 100, 100);
+        fill(0, 0, 0);
+        textSize(20);
+        textAlign(CENTER, CENTER);
+        text("$10", 50, 110);
+        text("$50", 150, 110);
+        text("$200", 250, 110);
+        text("$1000", 350, 110);
+        text("$10000", 450, 110);
+        text("$6400", 550, 110);
+        text("x" + Game.amount[0], 50, 130);
+        text("x" + Game.amount[1], 150, 130);
+        text("x" + Game.amount[2], 250, 130);
+        text("x" + Game.amount[3], 350, 130);
+        text("x" + Game.amount[4], 450, 130);
+        text("x" + Game.amount[5], 550, 130);
+        if (Game.currentFishArrayPos < Game.fish.length) {
+            Game.amount[Game.fish[Game.currentFishArrayPos]]++;
+            Game.currentFishArrayPos++;
+        } else {
+            if (Game.moneyGiven === false) {
+                Game.moneyGiven = true;
+                Game.money += (Game.amount[0] * 10) + (Game.amount[1] * 50) + (Game.amount[2] * 200) + (Game.amount[3] * 1000) + (Game.amount[4] * 10000) + (Game.amount[5] * 6400);
+            }
+            fill(0, 221, 255);
+            stroke(82, 255, 235);
+            strokeWeight(5);
+            rect(200, 450, 200, 100, 5);
+            rect(100, 220, 100, 150, 5);
+            rect(250, 220, 100, 150, 5);
+            rect(400, 220, 100, 150, 5);
+            fill(82, 255, 235);
+            textAlign(CENTER, CENTER);
+            textSize(45);
+            text("Claim", 300, 500);
+            fill(0, 0, 0);
+            textSize(25);
+            text("You have " + Game.money + " dollars.", 300, 180);
+            textSize(15);
+            text("Max. Depth", 150, 250);
+            text("Auto-reel\nSpeed", 300, 250);
+            text("Max. Fish", 450, 250);
+            text("Lvl " + Game.depthUpgrade, 150, 300);
+            fishDepthpercentageVar = Game.speed - 2;
+            text("Lvl " + fishDepthpercentageVar, 300, 300);
+            text("Lvl " + Game.maxFish, 450, 300);
+            text("$" + Game.price[0], 150, 344);
+            text("$" + Game.price[1], 300, 344);
+            text("$" + Game.price[2], 450, 344);
+            if (pointRect(get.mouseX, get.mouseY, 100, 220, 100, 150) && pressed && Game.money >= Game.price[0]) {
+                Game.depthUpgrade++;
+                Game.money -= Game.price[0];
+                Game.price[0] = ceil(Game.price[0] * 1.5);
+                pressed = false;
+            }
+            else if (pointRect(get.mouseX, get.mouseY, 250, 220, 100, 150) && pressed && Game.money >= Game.price[1]) {
+                Game.speed++;
+                Game.money -= Game.price[1];
+                Game.price[1] = ceil(Game.price[1] * 1.5);
+                pressed = false;
+            }
+            else if (pointRect(get.mouseX, get.mouseY, 400, 220, 100, 150) && pressed && Game.money >= Game.price[2]) {
+                Game.maxFish++;
+                Game.money -= Game.price[2];
+                Game.price[2] = ceil(Game.price[2] * 1.5);
+                pressed = false;
+            }
+            line(100, 280, 200, 280);
+            line(250, 280, 350, 280);
+            line(400, 280, 500, 280);
+            line(100, 320, 200, 320);
+            line(250, 320, 350, 320);
+            line(400, 320, 500, 320);
+            if (pointRect(get.mouseX, get.mouseY, 200, 450, 200, 100) && pressed) {
+                Game.currentScene = 0;
+                pressed = false;
+                Reset();
+            }
+        }
+    };
+    /******************DRAW FUNCTION********************/
+    dl.draw = function () {
+        if (Load) {
+            if (Game.loadingFish) {
+                LoadFish();
+            }
+            else {
+                DrawBackground();
+                switch (Game.currentScene) {
+                    case 0:
+                        Menu();
+                        break;
+                    case 1:
+                        Lower();
+                        break;
+                    case 2:
+                        Upwards();
+                        break;
+                    case 3:
+                        FishDisplay();
+                        break;
+                }
+            }
+        } else {
+            LoadGraphics();
+        }
+        pressed = false;
+    };
+    /******************MOUSE*********************/
+    dl.mousePressed = function () {
+        pressed = true;
+    };
+</script>
+<script src="headerFooter.js"></script>
+<script src="bgscript.js"></script>
+
+</html>

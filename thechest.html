@@ -22,18 +22,7 @@
 </head>
 
 <body id="bodyID">
-    <header>
-        <a class="navSection noTextDecoration" href="index.html">
-            <img src="images/pappy.png" id="navImg">
-            <span class="navText">Pineapple Programming</span>
-        </a>
-        <a class="navSection noTextDecoration" href="games.html">
-            <span class="navText">Games</span>
-        </a>
-        <a class="navSection noTextDecoration">
-            <span class="navText">Projects</span>
-        </a>
-    </header>
+    <header id ="headerID"></header>
     <div class="box">
         <h1 class="center">The Chest</h1>
         <canvas id="myCanvas" width="600" height="600"></canvas>
@@ -48,14 +37,7 @@
             same graphics but reprogrammed, and it runs faster and is in JS, Also added a lot of content that isnt there
             in the original, like the boss fight.</p>
     </div>
-    <footer>
-        <p>&copy;2025, Pineapples. All rights reserved.</p><br>
-        <a href="https://discord.gg/Y3XNzmQpCe"><img class="footerImage"
-                src="https://cdn.prod.website-files.com/6257adef93867e50d84d30e2/66e3d7f4ef6498ac018f2c55_Symbol.svg"></a>
-        <a href="https://github.com/Pineapples1000"><img class="footerImage" src="images/github-mark-white.png"></a>
-        <a href="https://scratch.mit.edu/users/cuddlyscout"><img class="footerImage" src="images/scratch-logo.png"></a>
-        <a href="https://www.khanacademy.org/profile/cuddlyscout"><img class="footerImage" src="images/ka-logo.png"></a>
-    </footer>
+    <footer id="footerID"></footer>
 </body>
 
 <script type>
@@ -2275,10 +2257,6 @@
         delete keys[e.keyCode];
     };
 </script>
-<script>
-    let bgChange = document.getElementById("bodyID");
-    let bgNum = Math.floor(Math.random() * 22);
-    bgChange.style.backgroundImage = "url('images/bg-images/img" + bgNum + ".jpg')";
-</script>
-
+<script src="headerFooter.js"></script>
+<script src="bgscript.js"></script>
 </html>

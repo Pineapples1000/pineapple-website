@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>City Creator V1.0</title>
+    <script src="https://cdn.jsdelivr.net/gh/librepaint/drawlite@main/javascript/drawlite.js"></script>
+    <link rel="stylesheet" href="index.css">
+    <link rel="icon" href="images/pappy.png" type="image/png">
+    <link href='https://fonts.googleapis.com/css?family=Rubik' rel='stylesheet' type='text/css'>
+    <style>
+        /******CANVAS STYLES********/
+        #myCanvas {
+            display: block;
+            margin: 0 auto 0 auto;
+            border-radius: 3px;
+            outline: none;
+            max-width: 70vw;
+            max-height: 70vw;
+        }
+
+        #saveCodeInput {
+            text-indent: 0px;
+            padding: 10px;
+            margin-top: 5px;
+            background-color: #444444;
+            border-radius: 10px;
+            width: 30vw;
+            overflow: auto;
+            color: white;
+        }
+    </style>
+</head>
+
+<body id="bodyID">
+    <header id="headerID"></header>
+    <div class="box">
+        <h1 class="center">City Creator V1.0</h1>
+        <canvas id="myCanvas" width="600" height="600"></canvas>
+        <h2>Save</h2>
+        <input type="text" id="getSave" placeholder="Put your save code here!"><button onclick="importSave();">Load
+            Save</button>
+        <br>
+        <p id="saveCodeInput">Generated Save Codes go here when made.</p>
+        <h2>Description</h2>
+        <p>Build a city and share with friends!</p>
+        <h2>Controls</h2>
+        <p>Use the mouse. =/ Drag and press special keys to kay down multiple of the same block. Keys: R-road T-tree
+            E-erase <i>Trouble getting
+                the canvas to stay? Try clicking on the canvas
+                and pressing space.</i></p>
+        <h2>Credits</h2>
+        <p>Made November 2023, by Pineapples.</p>
+    </div>
+    <footer id="footerID"></footer>
+</body>
+<script type>
+    var canvas = document.getElementById("myCanvas");
+    var dl = Drawlite(canvas);
+    var { PI, TWO_PI, EPSILON, CORNER, CORNERS, LEFT, RIGHT, TOP, CENTER, BOTTOM, BASELINE, RADIUS, DEGREES, RADIANS, POINTS, LINES, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN, QUADS, QUAD_STRIP, CLOSE, ROUND, PROJECT, SQUARE, BEVEL, MITER, RGB, HSB, NATIVE, canvas, Color, PerlinNoise, PRNG, vec3, ctx, size, angleMode, noLoop, loop, frameRate, min, max, floor, round, ceil, abs, constrain, sq, sqrt, pow, sin, cos, tan, asin, acos, atan, atan2, log, random, dist, map, lerp, radians, degrees, color, lerpColor, fill, stroke, strokeWeight, strokeCap, strokeJoin, noStroke, noFill, beginShape, vertex, curveVertex, bezierVertex, bezierPoint, bezierTangent, splineTightness, splineVertex, splinePoint, splineTangent, lerpSpline, endShape, spline, snip, getColor, imageMode, image, loadImage, font, textSize, textAlign, textWidth, textAscent, textDescent, textLeading, text, background, point, line, rectMode, rect, triangle, quad, arc, circle, ellipseMode, ellipse, bezier, get, pushMatrix, popMatrix, resetMatrix, scale, translate, rotate, loadPixels, updatePixels, colorMode, enableContextMenu, millis, second, minute, hour, day, month, year, smooth, nosmooth, createGraphics, getProperties } = dl;
+    /*ATTENTION!!!!!!!!*/
+    /**Replace the line below with your save code!**/
+    var Save = [false];
+    var MouseMode = true;
+    //This is so when I'm dragging, if I release the mouse I don't have to select a block.
+    var LastX;
+    //See comment below
+    var LastY;
+    //Used for block selection, I have to define them here so I don't use them "Out of scope"
+    var Biome = "Meadow";
+    //Biome, or amount of trees, basically.
+    var BG = "Grassy";
+    //Summer, Winter, or desert.
+    var Boundary = 1600;
+    //How many pixels from the starting x and y the boundary is. Note that grids are 40x40 pixels.
+    var Scene = "Menu";
+    //The scene. Usally Play.
+    var keys = [];
+    //Code for keys, will be set to true when key is pressed
+    var Maps = [];
+    //The 2D array that runs literally everything.
+    var Money;
+    //Used for management mode, which I didn't get too.
+    var PlayScene = "Tutorial";
+    //Scenes while playing.
+    var GameMode = "Creative";
+    //Gamemode
+    //Code for all 6400 possible building placements
+    //Define more map variables here.
+    //[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], <--Array for maps if I ever need it.
+    var SnowflakeX = [];
+    var SnowflakeY = [];
+    //var SnowflakeS = [];// <-- Size of snowflake
+    //Used for snowflakes while it's snowy. =]
+    var Speed = 5;
+    //Speed at which player moves, I just set it to 5  for now.
+    var x = 0;
+    //X of camera
+    var y = 0;
+    //{
+    for (var i = 0; i < 600; i += 5) {
+        SnowflakeX.push(i);
+        SnowflakeY.push(random(0, 600));
+    }
+    //} Set up arrays and animations
+    var importSave = function () {
+        let saveString = document.getElementById('getSave').value;
+        let saveArray = saveString.split("|");
+        let saveSecondaryArray = saveArray[2].split(",");
+        for (let i = 0; i < saveSecondaryArray.length; i++) {
+            saveSecondaryArray[i] = parseInt(saveSecondaryArray[i]);
+        }
+        saveArray[0] = saveArray[0] == 'true';
+        saveArray[1] = parseInt(saveArray[1]);
+        saveArray[4] = parseInt(saveArray[4]);
+        saveArray[5] = parseInt(saveArray[5]);
+        saveArray[2] = saveSecondaryArray;
+        Save = saveArray;
+        Biome = "Meadow";
+        BG = "Grassy";
+        Boundary = 1600;
+        Scene = "Menu";
+        keys = [];
+        Maps = [];
+        PlayScene = "Tutorial";
+        GameMode = "Creative";
+        SnowflakeX = [];
+        SnowflakeY = [];
+        Speed = 5;
+        x = 0;
+        y = 0;
+        for (var i = 0; i < 600; i += 5) {
+            SnowflakeX.push(i);
+            SnowflakeY.push(random(0, 600));
+        }
+    };
+    //{
+    var Block = function (x, y, Type, b, a, by, ba) {
+        /**
+        This function draws the blocks.
+        x is the x
+        y is the y
+        Type is the type drawn.
+        b, a, by, ba are all used for autotilling of the roads.
+    
+    **/
+        if (Type === 1) {
+            noStroke();
+            fill(25, 138, 46);
+            rect(x + 6, y + 2, 6, 2);
+            rect(x + 6, y + 4, 22, 2);
+            rect(x + 6, y + 6, 24, 2);
+            rect(x + 4, y + 8, 26, 2);
+            rect(x + 4, y + 10, 26, 2);
+            rect(x + 6, y + 12, 26, 2);
+            rect(x + 8, y + 14, 26, 2);
+            rect(x + 12, y + 16, 16, 2);
+            rect(x + 6, y + 18, 20, 2);
+            rect(x + 4, y + 20, 26, 2);
+            rect(x + 6, y + 22, 4, 2);
+            rect(x + 4, y + 24, 4, 2);
+            rect(x + 16, y + 24, 4, 2);
+            rect(x + 18, y + 22, 12, 2);
+            rect(x + 28, y + 24, 2, 2);
+            fill(24, 103, 53);
+            rect(x + 6, y + 0, 6, 2);
+            rect(x + 6, y + 2, 2, 4);
+            rect(x + 8, y + 4, 2, 2);
+            rect(x + 10, y + 6, 2, 2);
+            rect(x + 10, y + 8, 6, 2);
+            rect(x + 12, y + 2, 2, 2);
+            rect(x + 14, y + 4, 4, 2);
+            rect(x + 16, y + 6, 2, 2);
+            rect(x + 18, y + 2, 4, 2);
+            rect(x + 22, y + 4, 4, 2);
+            rect(x + 26, y + 2, 2, 2);
+            rect(x + 28, y + 2, 2, 8);
+            rect(x + 26, y + 8, 2, 2);
+            rect(x + 30, y + 10, 2, 2);
+            rect(x + 32, y + 12, 2, 6);
+            rect(x + 30, y + 16, 2, 2);
+            rect(x + 28, y + 14, 2, 2);
+            rect(x + 26, y + 16, 2, 4);
+            rect(x + 28, y + 20, 2, 2);
+            rect(x + 30, y + 22, 2, 4);
+            rect(x + 28, y + 26, 4, 2);
+            rect(x + 24, y + 24, 4, 2);
+            rect(x + 24, y + 18, 2, 2);
+            rect(x + 26, y + 12, 2, 2);
+            rect(x + 22, y + 10, 6, 2);
+            rect(x + 20, y + 6, 2, 4);
+            rect(x + 4, y + 6, 2, 2);
+            rect(x + 2, y + 8, 2, 6);
+            rect(x + 4, y + 12, 2, 2);
+            rect(x + 6, y + 10, 4, 2);
+            rect(x + 16, y + 10, 4, 2);
+            rect(x + 6, y + 14, 2, 2);
+            rect(x + 8, y + 16, 4, 2);
+            rect(x + 12, y + 14, 2, 6);
+            rect(x + 14, y + 12, 2, 2);
+            rect(x + 22, y + 16, 2, 8);
+            rect(x + 20, y + 14, 2, 2);
+            rect(x + 18, y + 12, 2, 6);
+            rect(x + 12, y + 20, 4, 2);
+            rect(x + 20, y + 24, 2, 2);
+            rect(x + 18, y + 26, 2, 2);
+            rect(x + 16, y + 18, 2, 8);
+            rect(x + 6, y + 18, 2, 2);
+            rect(x + 4, y + 20, 2, 4);
+            rect(x + 2, y + 24, 2, 2);
+            rect(x + 4, y + 26, 4, 2);
+            rect(x + 8, y + 24, 2, 2);
+            rect(x + 10, y + 22, 2, 2);
+            fill(124, 69, 18);
+            rect(x + 10, y + 24, 2, 2);
+            rect(x + 12, y + 26, 4, 2);
+            rect(x + 14, y + 22, 2, 8);
+            rect(x + 16, y + 26, 2, 10);
+            rect(x + 18, y + 28, 2, 8);
+            rect(x + 24, y + 26, 2, 2);
+            rect(x + 22, y + 28, 2, 2);
+            rect(x + 20, y + 30, 2, 2);
+        }
+        if (Type === 2) {
+            fill(77, 77, 77);
+            noStroke();
+            if (by === 2 && ba === 2 && b !== 2 && a !== 2) {
+                rect(x + 5, y + 0, 30, 40);
+                fill(242, 255, 0);
+                rect(x + 19, y, 2, 40);
+            }
+            if (b === 2 && a === 2 && ba !== 2 && by !== 2) {
+                rect(x, y + 5, 40, 30);
+                fill(242, 255, 0);
+                rect(x, y + 19, 40, 2);
+            }
+            if (b === 2 && a === 2 && ba === 2 && by === 2) {
+                rect(x, y + 5, 40, 30);
+                rect(x + 5, y + 0, 30, 40);
+                fill(242, 255, 0);
+                rect(x, y + 19, 5, 2);
+                rect(x + 35, y + 19, 5, 2);
+                rect(x + 19, y, 2, 5);
+                rect(x + 19, y + 35, 2, 5);
+            }
+            if (b === 2 && a === 2 && ba !== 2 && by === 2) {
+                rect(x, y + 5, 40, 30);
+                rect(x + 5, y, 30, 35);
+                fill(242, 255, 0);
+                rect(x, y + 19, 5, 2);
+                rect(x + 35, y + 19, 5, 2);
+                //rect(x+19, y, 2, 5);
+                rect(x + 19, y, 2, 5);
+            }
+            if (b === 2 && a === 2 && ba === 2 && by !== 2) {
+                rect(x, y + 5, 40, 30);
+                rect(x + 5, y + 5, 30, 35);
+                fill(242, 255, 0);
+                rect(x, y + 19, 5, 2);
+                rect(x + 35, y + 19, 5, 2);
+                rect(x + 19, y + 35, 2, 5);
+                //rect(x+19, y+35, 2, 5);
+            }
+            if (b === 2 && a !== 2 && ba === 2 && by === 2) {
+                rect(x, y + 5, 35, 30);
+                rect(x + 5, y, 30, 40);
+                fill(242, 255, 0);
+                rect(x, y + 19, 5, 2);
+                //rect(x+35, y+19, 5, 2);
+                rect(x + 19, y, 2, 5);
+                rect(x + 19, y + 35, 2, 5);
+            }
+            if (b !== 2 && a === 2 && ba === 2 && by === 2) {
+                rect(x + 5, y + 5, 35, 30);
+                rect(x + 5, y, 30, 40);
+                fill(242, 255, 0);
+                //rect(x, y+19, 5, 2);
+                rect(x + 35, y + 19, 5, 2);
+                rect(x + 19, y, 2, 5);
+                rect(x + 19, y + 35, 2, 5);
+            }
+            if (b !== 2 && a !== 2 && ba !== 2 && by !== 2) {
+                rect(x + 5, y + 5, 30, 30);
+                fill(242, 255, 0);
+                rect(x + 19, y + 19, 2, 2);
+            }
+            if (b !== 2 && a !== 2 && ba === 2 && by !== 2) {
+                rect(x + 5, y + 5, 30, 35);
+                fill(242, 255, 0);
+                rect(x + 19, y + 19, 2, 21);
+            }
+            if (b !== 2 && a !== 2 && ba !== 2 && by === 2) {
+                rect(x + 5, y, 30, 35);
+                fill(242, 255, 0);
+                rect(x + 19, y, 2, 21);
+            }
+            if (b !== 2 && a === 2 && ba !== 2 && by !== 2) {
+                rect(x + 5, y + 5, 35, 30);
+                fill(242, 255, 0);
+                rect(x + 19, y + 19, 21, 2);
+            }
+            if (b === 2 && a !== 2 && ba !== 2 && by !== 2) {
+                rect(x, y + 5, 35, 30);
+                fill(242, 255, 0);
+                rect(x + 0, y + 19, 21, 2);
+            }
+            if (b === 2 && a !== 2 && ba === 2 && by !== 2) {
+                rect(x, y + 5, 35, 30);
+                rect(x + 5, y + 5, 30, 35);
+                fill(242, 255, 0);
+                rect(x + 0, y + 19, 21, 2);
+                rect(x + 19, y + 19, 2, 21);
+            }
+            if (b !== 2 && a === 2 && ba === 2 && by !== 2) {
+                rect(x + 5, y + 5, 35, 30);
+                rect(x + 5, y + 5, 30, 35);
+                fill(242, 255, 0);
+                rect(x + 19, y + 19, 21, 2);
+                rect(x + 19, y + 19, 2, 21);
+            }
+            if (b === 2 && a !== 2 && ba !== 2 && by === 2) {
+                rect(x, y + 5, 35, 30);
+                rect(x + 5, y, 30, 35);
+                fill(242, 255, 0);
+                rect(x + 0, y + 19, 21, 2);
+                rect(x + 19, y, 2, 21);
+            }
+            if (b !== 2 && a === 2 && ba !== 2 && by === 2) {
+                rect(x + 5, y + 5, 35, 30);
+                rect(x + 5, y, 30, 35);
+                fill(242, 255, 0);
+                rect(x + 19, y + 19, 21, 2);
+                rect(x + 19, y, 2, 21);
+            }
+            fill(102, 102, 102);
+            if (ba === 6) {
+                rect(x + 15, y + 35, 10, 5);
+            }
+            if (by === 6) {
+                rect(x + 15, y, 10, 5);
+            }
+            if (a === 6) {
+                rect(x + 35, y + 15, 5, 10);
+            }
+            if (b === 6) {
+                rect(x, y + 15, 5, 10);
+            }
+        }
+        if (Type === 3) {
+            noStroke();
+            fill(253, 255, 158);
+            rect(x + 8, y + 10, 24, 25);
+            fill(255, 0, 0);
+            triangle(x + 5, y + 10, x + 20, y + 2, x + 35, y + 10);
+            fill(0, 255, 242);
+            rect(x + 12, y + 13, 4, 8);
+            rect(x + 18, y + 13, 4, 8);
+            rect(x + 24, y + 13, 4, 8);
+            rect(x + 12, y + 24, 4, 8);
+            rect(x + 24, y + 24, 4, 8);
+            fill(46, 19, 2);
+            rect(x + 18, y + 24, 4, 11);
+            stroke(255, 255, 0);
+            strokeWeight(1);
+            point(x + 19, y + 29);
+        }
+        if (Type === 4) {
+            noStroke();
+            fill(30, 0, 255);
+            rect(x + 3, y + 5, 34, 35);
+            fill(255, 251, 0);
+            textSize(10);
+            textAlign(CENTER);
+            text("EKEA", x + 20, y + 14);
+            fill(178, 255, 251);
+            rect(x + 5, y + 16, 13, 5);
+            rect(x + 22, y + 16, 13, 5);
+            rect(x + 5, y + 23, 13, 5);
+            rect(x + 22, y + 23, 13, 5);
+            rect(x + 5, y + 30, 13, 5);
+            rect(x + 22, y + 30, 13, 5);
+        }
+        if (Type === 5) {
+            noStroke();
+            fill(74, 47, 4);
+            rect(x + 5, y + 20, 30, 20);
+            triangle(x + 5, y + 20, x + 20, y + 10, x + 35, y + 20);
+            stroke(187, 255, 181);
+            strokeWeight(3);
+            line(x + 4, y + 20, x + 20, y + 10);
+            line(x + 20, y + 10, x + 36, y + 20);
+            stroke(0, 0, 0);
+            strokeWeight(1);
+            line(x + 10, y + 18, x + 30, y + 18);
+            line(x + 5, y + 22, x + 35, y + 22);
+            line(x + 18, y + 14, x + 22, y + 14);
+            line(x + 5, y + 26, x + 34, y + 26);
+            line(x + 5, y + 30, x + 34, y + 30);
+            line(x + 5, y + 34, x + 34, y + 34);
+            line(x + 5, y + 38, x + 34, y + 38);
+        }
+        if (Type === 6) {
+            stroke(102, 102, 102);
+            strokeWeight(8);
+            ellipse(x + 20, y + 20, 25, 25);
+            fill(102, 102, 102);
+            noStroke();
+            rect(x + 30, y + 15, 10, 10);
+            rect(x, y + 15, 10, 10);
+            rect(x + 15, y + 30, 10, 10);
+            rect(x + 15, y, 10, 10);
+            fill(7, 191, 191);
+            stroke(150, 150, 150);
+            strokeWeight(2);
+            ellipse(x + 20, y + 20, 20, 20);
+            noStroke();
+            fill(31, 255, 255);
+            rect(x + 14, y + -2, 2, 18);
+            rect(x + 24, y + 2, 2, 18);
+            rect(x + 17, y + 7, 2, 18);
+        }
+        if (Type === 7) {
+            stroke(0, 255, 0);
+            strokeWeight(5);
+            line(x + 20, y + 5, x + 20, y + 35);
+            line(x + 12, y + 16, x + 12, y + 24);
+            line(x + 12, y + 24, x + 20, y + 24);
+            line(x + 28, y + 30, x + 20, y + 30);
+            line(x + 28, y + 30, x + 28, y + 10);
+        }
+        if (Type === 8) {
+            noStroke();
+            fill(7, 191, 191);
+            ellipse(x + 15, y + 25, 27, 17);
+            fill(54, 33, 11);
+            rect(x + 33, y + 21, 2, 8);
+            fill(0, 43, 1);
+            triangle(x + 27, y + 21, x + 34, y + 0, x + 40, y + 21);
+        }
+    };
+    //} Draw Blocks
+
+    //{
+    var Menu = function () {
+        //🥚 Yay!!!
+        background(0, 0, 0);
+        textAlign(CENTER);
+        textSize(40);
+        font("monospace");
+        fill(163, 163, 163);
+        text("CITY CREATOR", 298, 74);
+        fill(255, 255, 255);
+        text("CITY CREATOR", 300, 76);
+        textSize(20);
+        text("Made by Pineapples, November 2023", 300, 124);
+        text("Version 1", 300, 537);
+        textSize(40);
+        //Draws "3D" text
+        fill(0, 0, 0);
+        stroke(0, 255, 0);
+        strokeWeight(5);
+        if (get.mouseX < 500 && get.mouseX > 100 && get.mouseY > 150 && get.mouseY < 250) {
+            rect(99, 149, 402, 102, 2);//If mouse is within rectangle, enlarge it!
+        } else {
+            rect(100, 150, 400, 100, 2);
+        }
+        if (get.mouseX < 500 && get.mouseX > 100 && get.mouseY > 300 && get.mouseY < 400) {
+            rect(99, 299, 402, 102, 2);//If mouse is within rectangle, enlarge it!
+        } else {
+            rect(100, 300, 400, 100, 2);
+        }
+        fill(0, 255, 0);
+        text("NEW GAME", 300, 213);
+        text("LOAD GAME", 300, 363);
+    };
+    //} Menu
+
+    //{
+    var Tutorial = function () {
+        fill(0, 0, 0, 180);
+        noStroke();
+        rect(0, 0, get.width, get.height);
+        stroke(255, 132, 0);
+        strokeWeight(5);
+        if (get.mouseX < 500 && get.mouseX > 100 && get.mouseY < 100 && get.mouseY > 50) {
+            fill(33, 33, 33);
+            rect(99, 49, 402, 52);
+        } else {
+            fill(0, 0, 0);
+            rect(100, 50, 400, 50);
+        }
+        fill(255, 255, 255);
+        textSize(15);
+        textAlign(CENTER);
+        text("Begin Game", 300, 81);
+        text("Hello! Welcome to City Creator, a game made by Pineapples for \nProvember 2023. This is the simple text tutorial for the game.", 300, 139);
+        text("In this game, you can build your own city!", 300, 193);
+        text("Simply click on a square to add a block.\nThere are some keyboard shortcuts listed there!", 300, 224);
+        text("Use WASD or Arrow Keys to move about your map.", 300, 267);
+        text("Since 80x80 and 40x40 maps are so large, you can teleport using\nthe teleport button in the upper left corner!", 300, 310);
+        text("Finally get your save code by pressing the blue button in the\nupper right corner!", 300, 369);
+        text("Thanks for playing!", 300, 431);
+    };
+    //} Tutorial
+
+    //{
+    var NewGame = function () {
+        background(0, 0, 0);
+        textAlign(CENTER);
+        textSize(80);
+        font("monospace");
+        fill(163, 163, 163);
+        text("New Game", 298, 74);
+        fill(255, 255, 255);
+        text("New Game", 300, 76);
+        //Draws "3D" text
+        stroke(255, 255, 255);
+        strokeWeight(5);
+        line(20, 100, 580, 100);
+        line(20, 200, 580, 200);
+        line(20, 300, 580, 300);
+        textAlign(CENTER);
+        textSize(20);
+        fill(255, 255, 255);
+        /**
+        MY NEAT ORGANIZATION OF BOXES
+        The following code draws the boxes/ or buttons in the new game menu.
+        That's pretty much it, I have them commented into sections.
+        **/
+
+        //{
+        text("City Dimensions (80x80, 40x40, or 20x20)", 300, 125);
+        if (Boundary === 1600) {
+            stroke(255, 255, 255);
+            fill(0, 0, 0);
+            rect(10, 140, 180, 50);
+            fill(255, 255, 255);
+            text("80x80", 100, 170);
+        } else {
+            stroke(0, 255, 0);
+            fill(0, 0, 0);
+            rect(10, 140, 180, 50);
+            fill(0, 255, 0);
+            text("80x80", 100, 162);
+            text("Default", 100, 181);
+        }
+        if (Boundary === 800) {
+            stroke(255, 255, 255);
+            fill(0, 0, 0);
+            rect(210, 140, 180, 50);
+            fill(255, 255, 255);
+            text("40x40", 300, 170);
+        } else {
+            stroke(0, 255, 0);
+            fill(0, 0, 0);
+            rect(210, 140, 180, 50);
+            fill(0, 255, 0);
+            text("40x40", 300, 170);
+        }
+        if (Boundary === 400) {
+            stroke(255, 255, 255);
+            fill(0, 0, 0);
+            rect(410, 140, 180, 50);
+            fill(255, 255, 255);
+            text("20x20", 500, 170);
+        } else {
+            stroke(0, 255, 0);
+            fill(0, 0, 0);
+            rect(410, 140, 180, 50);
+            fill(0, 255, 0);
+            text("20x20", 500, 170);
+        }//} Boundary Boxes
+
+        //{
+        fill(255, 255, 255);
+        text("Game Mode", 300, 223);
+        if (GameMode === "Creative") {
+            stroke(255, 255, 255);
+            fill(0, 0, 0);
+            rect(10, 230, 180, 50);
+            fill(255, 255, 255);
+            text("Creative", 100, 261);
+        } else {
+            stroke(0, 255, 0);
+            fill(0, 0, 0);
+            rect(10, 230, 180, 50);
+            fill(0, 255, 0);
+            text("Creative", 100, 252);
+            text("Default", 100, 272);
+        }
+        if (GameMode === "MM") {
+            stroke(255, 255, 255);
+            fill(0, 0, 0);
+            rect(210, 230, 180, 50);
+            fill(255, 255, 255);
+            text("Management", 300, 252);
+        } else {
+            stroke(0, 255, 0);
+            fill(0, 0, 0);
+            rect(210, 230, 180, 50);
+            fill(0, 255, 0);
+            text("Management", 300, 252);
+        }
+        fill(255, 0, 0);
+        text("WIP", 300, 272);//} Game Mode Boxes
+
+        //{
+        fill(255, 255, 255);
+        text("Biome you spawn in. (Amount of plant life)", 300, 325);
+        if (Biome === "Meadow") {
+            stroke(255, 255, 255);
+            fill(0, 0, 0);
+            rect(10, 340, 180, 50);
+            fill(255, 255, 255);
+            text("Meadow", 100, 362);
+            text("10% Plants", 100, 381);
+        } else {
+            stroke(0, 255, 0);
+            fill(0, 0, 0);
+            rect(10, 340, 180, 50);
+            fill(0, 255, 0);
+            text("Meadow", 100, 362);
+            text("10% Plants", 100, 381);
+        }
+        if (Biome === "Forest") {
+            stroke(255, 255, 255);
+            fill(0, 0, 0);
+            rect(210, 340, 180, 50);
+            fill(255, 255, 255);
+            text("Forest (Laggy)", 300, 362);
+            text("90% Plants", 300, 381);
+        } else {
+            stroke(0, 255, 0);
+            fill(0, 0, 0);
+            rect(210, 340, 180, 50);
+            fill(0, 255, 0);
+            text("Forest (Laggy)", 300, 362);
+            text("90% Plants", 300, 381);
+        }
+        if (Biome === "Field") {
+            stroke(255, 255, 255);
+            fill(0, 0, 0);
+            rect(410, 340, 180, 50);
+            fill(255, 255, 255);
+            text("Field", 500, 362);
+            text("0% Plants", 500, 381);
+        } else {
+            stroke(0, 255, 0);
+            fill(0, 0, 0);
+            rect(410, 340, 180, 50);
+            fill(0, 255, 0);
+            text("Field", 500, 362);
+            text("0% Plants", 500, 381);
+        }
+        //} Biome Boxes
+
+        //{
+        fill(255, 255, 255);
+        text("Biome you spawn in. (Amount of plant life)", 300, 325);
+        if (BG === "Grassy") {
+            stroke(255, 255, 255);
+            fill(0, 0, 0);
+            rect(10, 400, 180, 50);
+            fill(255, 255, 255);
+            text("Grassy", 100, 430);
+        } else {
+            stroke(0, 255, 0);
+            fill(0, 0, 0);
+            rect(10, 340 + 60, 180, 50);
+            fill(0, 255, 0);
+            text("Grassy", 100, 430);
+        }
+        if (BG === "Snowy") {
+            stroke(255, 255, 255);
+            fill(0, 0, 0);
+            rect(210, 340 + 60, 180, 50);
+            fill(255, 255, 255);
+            text("Snowy", 300, 430);
+        } else {
+            stroke(0, 255, 0);
+            fill(0, 0, 0);
+            rect(210, 340 + 60, 180, 50);
+            fill(0, 255, 0);
+            text("Snowy", 300, 430);
+        }
+        if (BG === "Desert") {
+            stroke(255, 255, 255);
+            fill(0, 0, 0);
+            rect(410, 340 + 60, 180, 50);
+            fill(255, 255, 255);
+            text("Desert", 500, 430);
+        } else {
+            stroke(0, 255, 0);
+            fill(0, 0, 0);
+            rect(410, 340 + 60, 180, 50);
+            fill(0, 255, 0);
+            text("Desert", 500, 430);
+        }
+        //} BG Boxes
+
+        //{
+        stroke(255, 255, 0);
+        noFill();
+        rect(100, 540, 400, 50);
+        fill(255, 255, 0);
+        textSize(30);
+        text("LOAD GAME", 300, 576);
+        //} Load Game Button
+    };
+    //} Set up new game
+
+    //{
+    var MoveCheck = function () {
+        /**
+        The following code is called to check which keys are being pressed and what to do if they are being pressed.
+        They are all commented too. =) 
+        **/
+        if (keys[38] || keys[87]) {
+            if (y < Boundary) {
+                y += Speed;
+                //If y is within boundary limits and up arrow/W key is pressed to change the y by the speed.
+            }
+        }
+        if (keys[40] || keys[83]) {
+            if (y > (-1 * Boundary) + 200) {
+                y -= Speed;
+                //If y is within boundary limits and down arrow/S key is pressed to change the y by the speed.
+            }
+        }
+        if (keys[39] || keys[68]) {
+            if (x > (-1 * Boundary) + 200) {
+                //The boundary is usefull because I literally can change it to anything and it still works. 
+                x -= Speed;
+                //If x is within boundary limits and right arrow/D key is pressed to change the x by the speed.
+            }
+        }
+        if (keys[37] || keys[65]) {
+            if (x < Boundary) {
+                x += Speed;
+                //If x is within boundary limits and left arrow/A key is pressed to change the x by the speed.
+            }
+        }
+    };
+    //} Checking Keys
+
+    //{
+    var Select = function () {
+        fill(0, 0, 0, 180);
+        noStroke();
+        rect(0, 0, get.width, get.height);
+        fill(255, 255, 255);
+        stroke(79, 79, 79);
+        strokeWeight(4);
+        rect(50, 10, 500, 580);
+        fill(0, 0, 0);
+        textAlign(CENTER);
+        textSize(40);
+        text("Select Block", 300, 51);
+        text("Keyboard Shortcuts", 300, 467);
+        textSize(15);
+        text('Easily make roads by dragging mouse and pressing "r"', 300, 501);
+        text('Easily make trees by dragging mouse and pressing "t"', 300, 520);
+        text('Easily delete by dragging mouse and pressing "e"', 300, 541);
+        for (var i = 60; i < 488; i += 50) {
+            if (BG === "Grassy") {
+                fill(32, 150, 40);//Draws Background
+            } else if (BG === "Snowy") {
+                fill(227, 227, 227);//Draws Background
+            } else if (BG === "Desert") {
+                fill(255, 243, 156);//Draws Background
+            }
+            stroke(0, 0, 0);
+            strokeWeight(1);
+            rect(i, 100, 40, 40);
+            Block(i, 100, (i - 60) / 50, 0, 2, 2, 2);
+        }
+    };
+    var Teleport = function () {
+        fill(0, 0, 0, 180);
+        noStroke();
+        rect(0, 0, get.width, get.height);
+        fill(255, 255, 255);
+        stroke(79, 79, 79);
+        strokeWeight(4);
+        rect(50, 10, 500, 580);
+        fill(0, 0, 0);
+        textAlign(CENTER);
+        textSize(40);
+        text("Teleport", 300, 51);
+        if (Boundary !== 400) {
+            textSize(18);
+            text("Click where you want to teleport.", 300, 83);
+            textSize(17);
+            text("To stay where you are, just click the red dot.\n(Your Location)", 300, 552);
+        }
+        if (Boundary === 400) {
+            textSize(16);
+            text("Teleportation is not supported in 20x20 worlds.", 300, 149);
+            text("This is because 20x20 worlds are very small.", 300, 173);
+            fill(0, 9, 255);
+            stroke(255, 128, 0);
+            strokeWeight(10);
+            if (get.mouseX < 500 && get.mouseX > 100 && get.mouseY < 400 & get.mouseY > 300) {
+                rect(98, 298, 404, 104);
+            } else {
+                rect(100, 300, 400, 100);
+            }
+            fill(255, 128, 0);
+            text("VIBRANT BUTTONS INC.", 300, 383);
+            textSize(36);
+            text("Accept & Go Back", 300, 349);
+            fill(255, 0, 0);
+            textSize(31);
+            text("Try out teleportation!", 300, 252);
+        }
+        if (Boundary === 1600) {
+            if (BG === "Grassy") {
+                fill(32, 150, 40);//Draws Background
+            } else if (BG === "Snowy") {
+                fill(227, 227, 227);//Draws Background
+            } else if (BG === "Desert") {
+                fill(255, 243, 156);//Draws Background
+            }
+            noStroke();
+            rect(100, 100, 400, 400);
+            for (var t = 0; t < ((Boundary / 40) * 2) * ((Boundary / 40) * 2); t++) {
+                if (Maps[t] !== 0) {
+                    if (Maps[t] === 1) {
+                        fill(28, 51, 29);
+                        ellipse(((t % (Boundary / 20)) * 5) + 102.5, (floor(t / (Boundary / 20)) * 5) + 102.5, 5, 5);
+                    }
+                    else if (Maps[t] === 2) {
+                        fill(66, 66, 66);
+                        rect(((t % (Boundary / 20)) * 5) + 100, (floor(t / (Boundary / 20)) * 5) + 100, 5, 5);
+                    }
+                    else {
+                        fill(0, 0, 0);
+                        rect(((t % (Boundary / 20)) * 5) + 100, (floor(t / (Boundary / 20)) * 5) + 100, 5, 5);
+                    }
+                }
+            }
+            fill(255, 0, 0);
+            ellipse(((((x - 1600) * -1) / 3000) * 400) + 100, ((((y - 1600) * -1) / 3000) * 400) + 100, 10, 10);
+            fill(255, 0, 0, 80);
+            stroke(255, 0, 0);
+            strokeWeight(1);
+            rect(((((x - 1600) * -1) / 3000) * 400) + 62, ((((y - 1600) * -1) / 3000) * 400) + 71, 75, 65);
+        }
+        if (Boundary === 800) {
+            if (BG === "Grassy") {
+                fill(32, 150, 40);//Draws Background
+            } else if (BG === "Snowy") {
+                fill(227, 227, 227);//Draws Background
+            } else if (BG === "Desert") {
+                fill(255, 243, 156);//Draws Background
+            }
+            noStroke();
+            rect(100, 100, 400, 400);
+            for (var t = 0; t < ((Boundary / 40) * 2) * ((Boundary / 40) * 2); t++) {
+                if (Maps[t] !== 0) {
+                    if (Maps[t] === 1) {
+                        fill(28, 51, 29);
+                        ellipse(((t % (Boundary / 20)) * 10) + 105, (floor(t / (Boundary / 20)) * 10) + 105, 10, 10);
+                    }
+                    else if (Maps[t] === 2) {
+                        fill(66, 66, 66);
+                        rect(((t % (Boundary / 20)) * 10) + 100, (floor(t / (Boundary / 20)) * 10) + 100, 10, 10);
+                    }
+                    else {
+                        fill(0, 0, 0);
+                        rect(((t % (Boundary / 20)) * 10) + 100, (floor(t / (Boundary / 20)) * 10) + 100, 10, 10);
+                    }
+                }
+            }
+            fill(255, 0, 0);
+            ellipse(((((x - 800) * -1) / 1400) * 400) + 100, ((((y - 800) * -1) / 1400) * 400) + 100, 10, 10);
+            fill(255, 0, 0, 80);
+            stroke(255, 0, 0);
+            strokeWeight(1);
+            rect(((((x - 800) * -1) / 1400) * 400) + 15, ((((y - 800) * -1) / 1400) * 400) + 37, 150, 129);
+        }
+    };
+    //} Scenes while playing 
+
+    //{
+    var DrawMap = function () {
+        /**DRAW BACKGROUND**/
+        //{
+        if (BG === "Grassy") {
+            background(32, 150, 40);//Draws Background
+        } else if (BG === "Snowy") {
+            background(227, 227, 227);//Draws Background
+        } else if (BG === "Desert") {
+            background(255, 243, 156);//Draws Background
+        }
+        //}
+        /**DRAW GRID (Sometimes)**/
+        //{
+        stroke(0, 0, 0, 20);//Set grid type.
+        strokeWeight(1);
+        for (var i = 200 + x - Boundary; i <= 200 + x + Boundary; i += 40) {
+            line(i, 200 + y - Boundary, i, 200 + y + Boundary);
+        }
+        for (var i = 200 + y - Boundary; i <= 200 + y + Boundary; i += 40) {
+            line(200 + x - Boundary, i, 200 + x + Boundary, i);
+        }
+        //Loops to draw a grid if I want it to.
+        //}
+        /**DRAW BUILDINGS (Only the ones shown, reduces lag)**/
+        //{
+        var XPos;
+        var YPos;
+        for (var t = 0; t < ((Boundary / 40) * 2) * ((Boundary / 40) * 2); t++) {
+            if (Maps[t] !== 0) {
+                XPos = (((t % (Boundary / 20)) * 40) - Boundary + 200) + x;
+                YPos = ((floor(t / (Boundary / 20)) * 40) - Boundary + 200) + y;
+                //If the map number isn't 0, draw a rectangle.
+                if (XPos < 600 && XPos > -40 && YPos < 600 && YPos > 60) {//Renders the blocks AKA the buildings only on the seen screen.  Note: I don't do this for the grid and the boundary. It doesn't affect the lag enough.
+                    noStroke();
+                    fill(255, 0, 0);
+                    Block(XPos, YPos, Maps[t], Maps[t - 1], Maps[t + 1], Maps[t - (Boundary / 20)], Maps[t + (Boundary / 20)]);//Draws Block at very specific x and y cord.
+                }
+            }
+        }
+        //}
+        /**DRAW BOUNDARIES**/
+        //{
+        stroke(255, 255, 255);
+        strokeWeight(10);
+        line(200 + x - Boundary, 200 + y - Boundary, 200 + x - Boundary, 200 + y + Boundary);
+        line(200 + x + Boundary, 200 + y + Boundary, 200 + x - Boundary, 200 + y + Boundary);
+        line(200 + x + Boundary, 200 + y + Boundary, 200 + x + Boundary, 200 + y - Boundary);
+        line(200 + x + Boundary, 200 + y - Boundary, 200 + x - Boundary, 200 + y - Boundary);
+        fill(255, 255, 255, 100);
+        noStroke();
+        rect(200 + x + Boundary, 200 + y - Boundary - 200, 400, (Boundary * 2) + 600);
+        rect(200 + x - Boundary - 200, 200 + y - Boundary - 200, 200, (Boundary * 2) + 600);
+        rect(200 + x - Boundary, 200 + y + Boundary, (Boundary * 2), 400);
+        rect(200 + x - Boundary, 200 + y - Boundary - 200, (Boundary * 2), 200);//}
+        /**DRAW ANIMATION (Snowflakes)**/
+        //{
+        if (BG === "Snowy") {
+            for (var i = 0; i < SnowflakeX.length; i++) {
+                noStroke();
+                fill(255, 255, 255);
+                ellipse(SnowflakeX[i], SnowflakeY[i], 10, 10);
+                SnowflakeY[i] += random(5, 10);
+                if (SnowflakeY[i] > 600) {
+                    SnowflakeY[i] = 0;
+                    SnowflakeX[i] += round(random(-10, 10));
+                }
+                if (SnowflakeX[i] >= 600) {
+                    SnowflakeX[i] = 5;
+                }
+                if (SnowflakeX[i] <= 0) {
+                    SnowflakeX[i] = 595;
+                }
+            }
+        }
+        //}
+        /**DRAW DASHBOARD**/
+        //{
+        fill(0, 0, 0);
+        noStroke();
+        rect(0, 0, get.width, 100);
+        fill(0, 255, 0);
+        textSize(20);
+        textAlign(LEFT);
+        if (GameMode === "Creative") {
+            text("∞", 10, 90);
+            text("$", 30, 90);
+            fill(255, 255, 255);
+            text("Creative Mode", 10, 24);
+        } else {
+            text(Money, 10, 90);
+            fill(255, 255, 255);
+            text("Management Mode", 10, 24);
+        }
+        fill(0, 0, 0);
+        stroke(255, 149, 0);
+        strokeWeight(5);
+        rect(10, 33, 105, 33);
+        if (get.mouseX < 115 && get.mouseX > 10 && get.mouseY < 66 && get.mouseY > 33) {
+            fill(255, 255, 0);
+        } else {
+            fill(255, 149, 0);
+        }
+        text("Teleport", 15, 56);
+        fill(0, 0, 0);
+        stroke(0, 255, 221);
+        if (get.mouseX < 590 && get.mouseX > 390 && get.mouseY > 10 && get.mouseY < 45) {
+            rect(389, 9, 202, 37);
+        } else {
+            rect(390, 10, 200, 35);
+        }
+        fill(0, 255, 221);
+        textAlign(CENTER);
+        text("Get Save Code", 490, 34);
+        //}
+    };
+    //} Draw Map
+
+    //{
+    var Alert = function () {
+        background(0, 0, 0);
+        fill(0, 0, 0);
+        stroke(255, 0, 0);
+        strokeWeight(5);
+        if (Scene === "Alert" && get.mouseX < 400 && get.mouseX > 200 && get.mouseY > 540 && get.mouseY < 590) {
+            rect(198, 538, 204, 54);
+        } else {
+            rect(200, 540, 200, 50);
+        }
+        fill(255, 0, 0);
+        textSize(30);
+        text("BACK", 300, 575);
+        fill(255, 242, 0);
+        noStroke();
+        triangle(get.width / 2, 400 / 3.5, (get.width / 2) + 50, 400 / 2, (get.width / 2) - 50, 400 / 2);
+        fill(0, 0, 0);
+        textSize(60);
+        text("!", 300, 185);
+        fill(255, 255, 255);
+        textSize(24);
+        text("Your save code is not in line 3.\nReplace line 3 with your save code.", 300, 243);
+    };
+    //} Check for functionality
+
+    //{
+    dl.draw = function () {
+        if (Scene === "Play") {
+            DrawMap();
+            if (PlayScene === "Play") {
+                MoveCheck();
+            }
+            if (PlayScene === "SelectB") {
+                Select();
+            }
+            if (PlayScene === "Teleport") {
+                Teleport();
+            }
+            if (PlayScene === "Tutorial") {
+                Tutorial();
+            }
+        } else if (Scene === "Menu") {
+            Menu();
+
+        } else if (Scene === "NewGame") {
+            NewGame();
+
+        } else if (Scene === "Alert") {
+            Alert();
+        }
+        //println(get.mouseX+", "+get.mouseY);
+        //println(x+", "+y);//I use this every once in a while.
+    };//} Draw Function
+
+    //{
+    dl.keyPressed = function (e) {
+        keys[e.keyCode] = true;
+    };
+    dl.keyReleased = function (e) {
+        delete keys[e.keyCode];
+    };//} Key Functions
+
+    //{
+    /**mouseClicked = function() {
+        
+        //This note is a reminder to myself that I can use mousePressed = mouseDragged = function() {};
+        //Draw Blocks when clicked
+        if (Scene === "Play") {
+        //get.mouseX-x+Boundary-200 > 130+x-Boundary && get.mouseX+x+Boundary-200 < 200+x+Boundary
+        if (get.mouseX > x-Boundary+200 && get.mouseX < x+Boundary+200 && get.mouseY > 100 && get.mouseY > y-Boundary+200 && get.mouseY < y+Boundary+200) {//Makes sure mouse is within the allowed board. (Had some glitches early on.) =)
+        Maps[floor((get.mouseX-x+Boundary-200)/40)+((floor((get.mouseY-y+Boundary-200)/40))*(Boundary/20))] = 1;//Puts a block where mouse was pressed.
+        }
+        }
+    };**///Note To MYSELF =)
+    dl.mouseDragged = function () {
+        //LastX = get.mouseX;
+        //LastY = get.mouseY;
+        if (keys[82]) {
+            PlayScene = "Play";
+            Maps[floor((get.mouseX - x + Boundary - 200) / 40) + ((floor((get.mouseY - y + Boundary - 200) / 40)) * (Boundary / 20))] = 2;
+            MouseMode = false;
+        }
+        else if (keys[84]) {
+            PlayScene = "Play";
+            Maps[floor((get.mouseX - x + Boundary - 200) / 40) + ((floor((get.mouseY - y + Boundary - 200) / 40)) * (Boundary / 20))] = 1;
+            MouseMode = false;
+        }
+        else if (keys[69]) {
+            PlayScene = "Play";
+            Maps[floor((get.mouseX - x + Boundary - 200) / 40) + ((floor((get.mouseY - y + Boundary - 200) / 40)) * (Boundary / 20))] = 0;
+            MouseMode = false;
+        }
+    };
+    dl.mouseReleased = function () {
+        if (Scene === "Alert" && get.mouseX < 400 && get.mouseX > 200 && get.mouseY > 540 && get.mouseY < 590) {
+            Scene = "Menu";
+        }
+        if (Scene === "Menu") {
+            if (get.mouseX < 500 && get.mouseX > 100 && get.mouseY > 150 && get.mouseY < 250) {
+                Scene = "NewGame";
+            }
+            if (get.mouseX < 500 && get.mouseX > 100 && get.mouseY > 300 && get.mouseY < 400) {
+                if (Save[0] === false) {
+                    Scene = "Alert";
+                } else {
+                    Scene = "Play";
+                    var SavedArray = Save[2];
+                    Maps = SavedArray;
+                    Boundary = Save[1];
+                    BG = Save[3];
+                    PlayScene = "Play";
+                    x = Save[4];
+                    y = Save[5];
+                }
+            }
+        }
+        else if (Scene === "NewGame") {
+            //Boundary Buttons
+            if (get.mouseX < 190 && get.mouseX > 10 && get.mouseY < 190 && get.mouseY > 140) {
+                Boundary = 1600;
+            }
+            else if (get.mouseX < 390 && get.mouseX > 210 && get.mouseY < 190 && get.mouseY > 140) {
+                Boundary = 800;
+            }
+            else if (get.mouseX < 590 && get.mouseX > 410 && get.mouseY < 190 && get.mouseY > 140) {
+                Boundary = 400;
+            }
+            //Game Mode Buttons
+            else if (get.mouseX < 190 && get.mouseX > 10 && get.mouseY < 280 && get.mouseY > 230) {
+                GameMode = "Creative";
+            }
+            else if (get.mouseX < 390 && get.mouseX > 210 && get.mouseY < 280 && get.mouseY > 230) {
+                GameMode = "MM";
+            }
+            //Biome Buttons
+            else if (get.mouseX < 190 && get.mouseX > 10 && get.mouseY < 390 && get.mouseY > 340) {
+                Biome = "Meadow";
+            }
+            else if (get.mouseX < 390 && get.mouseX > 210 && get.mouseY < 390 && get.mouseY > 340) {
+                Biome = "Forest";
+            }
+            else if (get.mouseX < 590 && get.mouseX > 410 && get.mouseY < 390 && get.mouseY > 340) {
+                Biome = "Field";
+            }
+            //Background boxes
+            else if (get.mouseX < 190 && get.mouseX > 10 && get.mouseY < 390 + 60 && get.mouseY > 340 + 60) {
+                BG = "Grassy";
+            }
+            else if (get.mouseX < 390 && get.mouseX > 210 && get.mouseY < 390 + 60 && get.mouseY > 340 + 60) {
+                BG = "Snowy";
+            }
+            else if (get.mouseX < 590 && get.mouseX > 410 && get.mouseY < 390 + 60 && get.mouseY > 340 + 60) {
+                BG = "Desert";
+            }
+            //Exit Button
+            else if (get.mouseX < 500 && get.mouseX > 100 && get.mouseY < 590 && get.mouseY > 540) {
+                Scene = "Play";
+                Maps.length = 0;
+                Maps = [];//Makes SURE there's nothing in the maps function!
+                for (var i = 0; i < ((Boundary / 40) * 2) * ((Boundary / 40) * 2); i++) {
+                    var RandomNum = round(random(0, 10));
+                    if (Biome === "Meadow") {
+                        if (RandomNum === 2) {
+                            if (BG !== "Desert") {
+                                Maps.push(1);//Maps.push();
+                            } else {
+                                Maps.push(7);
+                            }
+                        } else {
+                            Maps.push(0);//Maps.push();
+                        }
+                    }
+                    if (Biome === "Field") {
+                        Maps.push(0);//Maps.push();
+                    }
+                    if (Biome === "Forest") {
+                        if (RandomNum === 2) {
+                            Maps.push(0);
+                        } else {
+                            if (BG !== "Desert") {
+                                Maps.push(1);//Maps.push();
+                            } else {
+                                Maps.push(7);
+                            }
+                        }
+                    }
+                }
+                //Instead of writing out 6400 array numbers, I decided to just do this instead. It doesn't take too long, even on  a chromebook.
+                //It basically guide the computer into randomly picking out trees and such.
+            }
+        }
+        else if (Scene === "Play") {
+            if (PlayScene === "Tutorial") {
+                if (get.mouseX < 500 && get.mouseX > 100 && get.mouseY < 100 && get.mouseY > 50) {
+                    PlayScene = "Play";
+                }
+            }
+            if (PlayScene === "Play") {
+                if (get.mouseX > x - Boundary + 200 && get.mouseX < x + Boundary + 200 && get.mouseY > 100 && get.mouseY > y - Boundary + 200 && get.mouseY < y + Boundary + 200 && MouseMode === true) {//Makes sure mouse is within the allowed board. (Had some glitches early on.) =)
+                    LastX = get.mouseX;
+                    LastY = get.mouseY;
+                    if (keys[114]) {
+                        PlayScene = "Play";
+                        Maps[floor((LastX - x + Boundary - 200) / 40) + ((floor((LastY - y + Boundary - 200) / 40)) * (Boundary / 20))] = 2;
+                    }
+                    else if (keys[116]) {
+                        PlayScene = "Play";
+                        Maps[floor((LastX - x + Boundary - 200) / 40) + ((floor((LastY - y + Boundary - 200) / 40)) * (Boundary / 20))] = 1;
+                    }
+                    else {
+                        PlayScene = "SelectB";
+                    }
+                    //Maps[floor((get.mouseX-x+Boundary-200)/40)+((floor((get.mouseY-y+Boundary-200)/40))*(Boundary/20))] = 1;//Puts a block where mouse was pressed.
+                }
+                if (get.mouseX < 115 && get.mouseX > 10 && get.mouseY < 66 && get.mouseY > 33) {
+                    PlayScene = "Teleport";
+                    //Teleport Button
+                }
+                if (get.mouseX < 590 && get.mouseX > 390 && get.mouseY > 10 && get.mouseY < 45) {
+                    document.getElementById('saveCodeInput').textContent = ("true|" + Boundary + "|" + Maps + "|" + BG + "|" + x + "|" + y);
+                }
+            }
+            if (PlayScene === "SelectB") {
+                if (get.mouseX > 60 && get.mouseX < 100 && get.mouseY > 100 && get.mouseY < 140) {
+                    Maps[floor((LastX - x + Boundary - 200) / 40) + ((floor((LastY - y + Boundary - 200) / 40)) * (Boundary / 20))] = 0;//Puts a block where mouse was pressed.
+                    PlayScene = "Play";
+                }
+                if (get.mouseX > 110 && get.mouseX < 150 && get.mouseY > 100 && get.mouseY < 140) {
+                    Maps[floor((LastX - x + Boundary - 200) / 40) + ((floor((LastY - y + Boundary - 200) / 40)) * (Boundary / 20))] = 1;//Puts a block where mouse was pressed.
+                    PlayScene = "Play";
+                }
+                if (get.mouseX > 160 && get.mouseX < 200 && get.mouseY > 100 && get.mouseY < 140) {
+                    Maps[floor((LastX - x + Boundary - 200) / 40) + ((floor((LastY - y + Boundary - 200) / 40)) * (Boundary / 20))] = 2;//Puts a block where mouse was pressed.
+                    PlayScene = "Play";
+                }
+                if (get.mouseX > 210 && get.mouseX < 250 && get.mouseY > 100 && get.mouseY < 140) {
+                    Maps[floor((LastX - x + Boundary - 200) / 40) + ((floor((LastY - y + Boundary - 200) / 40)) * (Boundary / 20))] = 3;//Puts a block where mouse was pressed.
+                    PlayScene = "Play";
+                }
+                if (get.mouseX > 260 && get.mouseX < 300 && get.mouseY > 100 && get.mouseY < 140) {
+                    Maps[floor((LastX - x + Boundary - 200) / 40) + ((floor((LastY - y + Boundary - 200) / 40)) * (Boundary / 20))] = 4;//Puts a block where mouse was pressed.
+                    PlayScene = "Play";
+                }
+                if (get.mouseX > 310 && get.mouseX < 350 && get.mouseY > 100 && get.mouseY < 140) {
+                    Maps[floor((LastX - x + Boundary - 200) / 40) + ((floor((LastY - y + Boundary - 200) / 40)) * (Boundary / 20))] = 5;//Puts a block where mouse was pressed.
+                    PlayScene = "Play";
+                }
+                if (get.mouseX > 360 && get.mouseX < 400 && get.mouseY > 100 && get.mouseY < 140) {
+                    Maps[floor((LastX - x + Boundary - 200) / 40) + ((floor((LastY - y + Boundary - 200) / 40)) * (Boundary / 20))] = 6;//Puts a block where mouse was pressed.
+                    PlayScene = "Play";
+                }
+                if (get.mouseX > 410 && get.mouseX < 450 && get.mouseY > 100 && get.mouseY < 140) {
+                    Maps[floor((LastX - x + Boundary - 200) / 40) + ((floor((LastY - y + Boundary - 200) / 40)) * (Boundary / 20))] = 7;//Puts a block where mouse was pressed.
+                    PlayScene = "Play";
+                }
+                if (get.mouseX > 460 && get.mouseX < 500 && get.mouseY > 100 && get.mouseY < 140) {
+                    Maps[floor((LastX - x + Boundary - 200) / 40) + ((floor((LastY - y + Boundary - 200) / 40)) * (Boundary / 20))] = 8;//Puts a block where mouse was pressed.
+                    PlayScene = "Play";
+                }
+            }
+            if (PlayScene === "Teleport") {
+                if (get.mouseX < 500 && get.mouseX > 100 && get.mouseY < 400 & get.mouseY > 300 && Boundary === 400) {
+                    PlayScene = "Play";
+                }
+                if (get.mouseX < 500 && get.mouseX > 100 && get.mouseY > 100 && get.mouseY < 500 && Boundary === 1600) {
+                    x = ((((get.mouseX - 100) / 400) * 3000) * -1) + 1600;
+                    y = ((((get.mouseY - 100) / 400) * 3000) * -1) + 1600;
+                    PlayScene = "Play";
+                }
+                if (get.mouseX < 500 && get.mouseX > 100 && get.mouseY > 100 && get.mouseY < 500 && Boundary === 800) {
+                    x = ((((get.mouseX - 100) / 400) * 1400) * -1) + 800;
+                    y = ((((get.mouseY - 100) / 400) * 1400) * -1) + 800;
+                    PlayScene = "Play";
+                }
+            }
+            MouseMode = true;
+        }
+    };
+    //} Mouse Functions
+
+    /**OVER 1000 LINES!!!! IN ONE WEEK!!!**/
+    /**1214 LINES!!!! YAY!!!! MORE YAY!!!!**/
+</script>
+<script src="headerFooter.js"></script>
+<script src="bgscript.js"></script>
+
+</html>
